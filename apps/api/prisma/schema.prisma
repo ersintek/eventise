@@ -32,6 +32,50 @@ enum JobStatus {
   FAILED
 }
 
+enum EventPublicationStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+  ARCHIVED
+}
+enum EventRegistrationStatus {
+  NOT_OPEN
+  OPEN
+  CLOSED
+}
+enum EventPhase {
+  PRE_EVENT
+  LIVE
+  POST_EVENT
+  ARCHIVED
+}
+enum EventVisibility {
+  PUBLIC
+  LINK_ONLY
+  INVITE_ONLY
+}
+enum RegistrationMode {
+  DIRECT
+  APPROVAL
+  WAITLIST
+}
+enum RegistrationApplicationStatus {
+  SUBMITTED
+  PENDING
+  ACCEPTED
+  WAITLISTED
+  REJECTED
+}
+enum ConsentRecordStatus {
+  GRANTED
+  WITHDRAWN
+}
+enum MessageStatus {
+  QUEUED
+  SENT
+  FAILED
+}
+
 model User {
   id                String   @id @default(cuid())
   email             String   @unique
@@ -81,8 +125,189 @@ model Organization {
   tierOverride    OrganizationTierOverride?
   auditLogs       AuditLog[]
   usageCounters   UsageCounter[]
+  events          Event[]
+  forms           Form[]
+  formTemplates   FormTemplate[]
+  consentDefinitions ConsentDefinition[]
+  emailTemplates EmailTemplate[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model Event {
+  id String @id @default(cuid())
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  title String
+  slug String
+  summary String?
+  description String?
+  venueName String?
+  venueAddress String?
+  startsAt DateTime
+  endsAt DateTime
+  timezone String @default("Europe/Istanbul")
+  capacity Int
+  publicationStatus EventPublicationStatus @default(DRAFT)
+  registrationStatus EventRegistrationStatus @default(NOT_OPEN)
+  phase EventPhase @default(PRE_EVENT)
+  visibility EventVisibility @default(PUBLIC)
+  registrationMode RegistrationMode @default(DIRECT)
+  registrationOpensAt DateTime?
+  registrationClosesAt DateTime?
+  formId String?
+  form Form? @relation(fields: [formId], references: [id], onDelete: SetNull)
+  faqs EventFaqItem[]
+  registrations EventRegistration[]
+  consentRequirements EventConsentRequirement[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([organizationId, slug])
+  @@index([organizationId, publicationStatus])
+}
+
+model EventFaqItem {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  question String
+  answer String
+  sortOrder Int @default(0)
+}
+
+model FormTemplate {
+  id String @id @default(cuid())
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name String
+  description String?
+  schema Json
+  createdAt DateTime @default(now())
+}
+
+model Form {
+  id String @id @default(cuid())
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name String
+  versions FormVersion[]
+  events Event[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FormVersion {
+  id String @id @default(cuid())
+  formId String
+  form Form @relation(fields: [formId], references: [id], onDelete: Cascade)
+  version Int
+  schema Json
+  publishedAt DateTime?
+  registrations EventRegistration[]
+  createdAt DateTime @default(now())
+  @@unique([formId, version])
+}
+
+model EventRegistration {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  formVersionId String?
+  formVersion FormVersion? @relation(fields: [formVersionId], references: [id], onDelete: SetNull)
+  email String
+  firstName String
+  lastName String
+  answers Json
+  applicationStatus RegistrationApplicationStatus
+  statusHistory RegistrationStatusHistory[]
+  consents ConsentRecord[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([eventId, email])
+  @@index([eventId, applicationStatus])
+}
+
+model RegistrationStatusHistory {
+  id String @id @default(cuid())
+  registrationId String
+  registration EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  fromStatus RegistrationApplicationStatus?
+  toStatus RegistrationApplicationStatus
+  actorId String?
+  reason String?
+  createdAt DateTime @default(now())
+}
+
+model ConsentDefinition {
+  id String @id @default(cuid())
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  key String
+  title String
+  versions ConsentVersion[]
+  requirements EventConsentRequirement[]
+  createdAt DateTime @default(now())
+  @@unique([organizationId, key])
+}
+
+model ConsentVersion {
+  id String @id @default(cuid())
+  definitionId String
+  definition ConsentDefinition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  version Int
+  text String
+  records ConsentRecord[]
+  createdAt DateTime @default(now())
+  @@unique([definitionId, version])
+}
+
+model EventConsentRequirement {
+  eventId String
+  definitionId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  definition ConsentDefinition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  required Boolean @default(true)
+  @@id([eventId, definitionId])
+}
+
+model ConsentRecord {
+  id String @id @default(cuid())
+  registrationId String
+  registration EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  consentVersionId String
+  consentVersion ConsentVersion @relation(fields: [consentVersionId], references: [id])
+  status ConsentRecordStatus @default(GRANTED)
+  ipHash String?
+  createdAt DateTime @default(now())
+  @@unique([registrationId, consentVersionId])
+}
+
+model EmailTemplate {
+  id String @id @default(cuid())
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  key String
+  subject String
+  body String
+  messages EmailMessage[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([organizationId, key])
+}
+
+model EmailMessage {
+  id String @id @default(cuid())
+  templateId String?
+  template EmailTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  recipient String
+  subject String
+  body String
+  status MessageStatus @default(QUEUED)
+  scheduledAt DateTime @default(now())
+  sentAt DateTime?
+  lastError String?
+  createdAt DateTime @default(now())
+  @@index([status, scheduledAt])
 }
 
 model OrganizationMembership {

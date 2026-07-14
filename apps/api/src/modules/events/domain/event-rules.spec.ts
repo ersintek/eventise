@@ -1,0 +1,2 @@
+import { describe, expect, it } from 'vitest'; import { assertEventDates, canTransitionPublication } from './event-rules';
+describe('event lifecycle rules',()=>{it('only permits explicit publication transitions',()=>{expect(canTransitionPublication('DRAFT','PUBLISHED')).toBe(true);expect(canTransitionPublication('ARCHIVED','PUBLISHED')).toBe(false)});it('rejects an inverted event range',()=>{expect(()=>assertEventDates(new Date('2027-01-02'),new Date('2027-01-01'))).toThrow()})});

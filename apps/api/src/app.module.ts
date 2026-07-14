@@ -13,9 +13,12 @@ import { StorageModule } from './infrastructure/storage/storage.module';
 import { HealthController } from './health.controller';
 import { BigIntSerializationInterceptor } from './shared/http/bigint-serialization.interceptor';
 import { validateEnvironment } from './config/environment';
+import { EventsModule } from './modules/events/events.module';
+import { FormsModule } from './modules/forms/forms.module';
+import { RegistrationsModule } from './modules/registrations/registrations.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, AuthModule, OrganizationsModule, TiersModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, AuthModule, OrganizationsModule, TiersModule, EventsModule, FormsModule, RegistrationsModule],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }, { provide: APP_INTERCEPTOR, useClass: BigIntSerializationInterceptor }],
 })

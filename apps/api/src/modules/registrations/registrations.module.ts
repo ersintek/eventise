@@ -1,0 +1,1 @@
+import{Module}from'@nestjs/common';import{OrganizationsModule}from'../organizations/organizations.module';import{RegistrationsController}from'./registrations.controller';import{RegistrationsService}from'./registrations.service';@Module({imports:[OrganizationsModule],controllers:[RegistrationsController],providers:[RegistrationsService]})export class RegistrationsModule{}
