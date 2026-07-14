@@ -19,6 +19,7 @@ export class CreateEventDto {
   @IsOptional() @IsEnum(RegistrationMode) registrationMode?: RegistrationMode;
   @IsOptional() @IsDateString() registrationOpensAt?: string;
   @IsOptional() @IsDateString() registrationClosesAt?: string;
+  @IsOptional() @IsString() formId?: string;
   @IsOptional() @IsArray() @ValidateNested({ each: true }) @Type(() => FaqDto) faqs?: FaqDto[];
 }
 export class EventStateDto { @ApiProperty({ enum: ['DRAFT','PUBLISHED','UNPUBLISHED','ARCHIVED'] }) @IsString() publicationStatus!: string; @ApiPropertyOptional({ enum: EventRegistrationStatus }) @IsOptional() @IsEnum(EventRegistrationStatus) registrationStatus?: EventRegistrationStatus; }

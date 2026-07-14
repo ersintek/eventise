@@ -16,9 +16,12 @@ import { validateEnvironment } from './config/environment';
 import { EventsModule } from './modules/events/events.module';
 import { FormsModule } from './modules/forms/forms.module';
 import { RegistrationsModule } from './modules/registrations/registrations.module';
+import { CommunicationsModule } from './modules/communications/communications.module';
+import { ConsentsModule } from './modules/consents/consents.module';
+import { AiModule } from './infrastructure/ai/ai.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, AuthModule, OrganizationsModule, TiersModule, EventsModule, FormsModule, RegistrationsModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, AiModule, AuthModule, OrganizationsModule, TiersModule, EventsModule, FormsModule, CommunicationsModule, ConsentsModule, RegistrationsModule],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }, { provide: APP_INTERCEPTOR, useClass: BigIntSerializationInterceptor }],
 })

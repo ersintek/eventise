@@ -1,0 +1,1 @@
+import{Global,Module}from'@nestjs/common';import{AiProvider}from'./ai-provider.port';import{DeterministicAiProvider}from'./deterministic-ai-provider';@Global()@Module({providers:[DeterministicAiProvider,{provide:AiProvider,useExisting:DeterministicAiProvider}],exports:[AiProvider]})export class AiModule{}

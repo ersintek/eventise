@@ -76,6 +76,12 @@ enum MessageStatus {
   FAILED
 }
 
+enum ScheduledNotificationStatus {
+  SCHEDULED
+  CANCELLED
+  QUEUED
+}
+
 model User {
   id                String   @id @default(cuid())
   email             String   @unique
@@ -160,6 +166,7 @@ model Event {
   faqs EventFaqItem[]
   registrations EventRegistration[]
   consentRequirements EventConsentRequirement[]
+  scheduledNotifications ScheduledNotification[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([organizationId, slug])
@@ -290,9 +297,23 @@ model EmailTemplate {
   subject String
   body String
   messages EmailMessage[]
+  scheduledNotifications ScheduledNotification[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([organizationId, key])
+}
+
+model ScheduledNotification {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  templateId String
+  template EmailTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  sendAt DateTime
+  status ScheduledNotificationStatus @default(SCHEDULED)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([eventId, status, sendAt])
 }
 
 model EmailMessage {

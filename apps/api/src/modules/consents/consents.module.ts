@@ -1,0 +1,1 @@
+import{Module}from'@nestjs/common';import{OrganizationsModule}from'../organizations/organizations.module';import{ConsentsController}from'./consents.controller';import{ConsentsService}from'./consents.service';@Module({imports:[OrganizationsModule],controllers:[ConsentsController],providers:[ConsentsService],exports:[ConsentsService]})export class ConsentsModule{}

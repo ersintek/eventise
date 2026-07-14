@@ -1,2 +1,2 @@
-import { Module } from '@nestjs/common'; import { OrganizationsModule } from '../organizations/organizations.module'; import { TiersModule } from '../tiers/tiers.module'; import { EventsController } from './events.controller'; import { EventsService } from './events.service';
-@Module({imports:[OrganizationsModule,TiersModule],controllers:[EventsController],providers:[EventsService],exports:[EventsService]}) export class EventsModule {}
+import { Module } from '@nestjs/common'; import { OrganizationsModule } from '../organizations/organizations.module'; import { TiersModule } from '../tiers/tiers.module'; import { EventsController } from './events.controller'; import { EventDraftsController } from './event-drafts.controller'; import { EventsService } from './events.service';
+@Module({imports:[OrganizationsModule,TiersModule],controllers:[EventsController,EventDraftsController],providers:[EventsService],exports:[EventsService]}) export class EventsModule {}
