@@ -12,7 +12,8 @@ export class AuthService {
   async register(dto: RegisterDto) {
     const email = dto.email.trim().toLowerCase();
     if (await this.prisma.user.findUnique({ where: { email }, select: { id: true } })) throw new ConflictException('Bu e-posta adresiyle bir hesap zaten var.');
-    const user = await this.prisma.user.create({ data: { email, firstName: dto.firstName.trim(), lastName: dto.lastName.trim(), passwordHash: await hash(dto.password, 12) }, select: { id: true, email: true, firstName: true, lastName: true } });
+    const bootstrapAdmins=(process.env.SYSTEM_ADMIN_EMAILS??'').split(',').map(value=>value.trim().toLowerCase()).filter(Boolean);
+    const user = await this.prisma.user.create({ data: { email, firstName: dto.firstName.trim(), lastName: dto.lastName.trim(), passwordHash: await hash(dto.password, 12),systemRole:bootstrapAdmins.includes(email)?'SYSTEM_ADMIN':'USER' }, select: { id: true, email: true, firstName: true, lastName: true } });
     await this.audit.record({ actorId: user.id, action: 'identity.user_registered', resourceType: 'user', resourceId: user.id });
     return { user, accessToken: await this.sign(user.id, user.email) };
   }

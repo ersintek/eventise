@@ -8,5 +8,5 @@ export class DevelopmentStorageProvider implements StorageProvider {
   async put(key:string,data:Buffer):Promise<void>{this.objects.set(key,Buffer.from(data));}
   get(key:string){return this.objects.get(key)}
   store(key:string,data:Buffer){this.objects.set(key,Buffer.from(data))}
-  async delete(_key: string): Promise<void> { return; }
+  async delete(key: string): Promise<void> { this.objects.delete(key); }
 }

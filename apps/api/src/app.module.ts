@@ -32,10 +32,11 @@ import { PdfModule } from './infrastructure/pdf/pdf.module';
 import { CertificatesModule } from './modules/certificates/certificates.module';
 import { ReportingModule } from './modules/reporting/reporting.module';
 import { AdministrationModule } from './modules/administration/administration.module';
+import { ParticipantModule } from './modules/participant/participant.module';
 import { AbuseProtectionGuard } from './shared/http/abuse-protection.guard';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, PdfModule, AiModule, AuthModule, OrganizationsModule, TiersModule, EventsModule, FormsModule, CommunicationsModule, ConsentsModule, RegistrationsModule, FeaturesModule, CheckInModule, GroupsModule, ActivitiesModule, AssessmentsModule, FeedbackModule, NotificationsModule, MediaModule, ResourcesModule, CertificatesModule, ReportingModule, AdministrationModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, PdfModule, AiModule, AuthModule, OrganizationsModule, TiersModule, EventsModule, FormsModule, CommunicationsModule, ConsentsModule, RegistrationsModule, FeaturesModule, CheckInModule, GroupsModule, ActivitiesModule, AssessmentsModule, FeedbackModule, NotificationsModule, MediaModule, ResourcesModule, CertificatesModule, ReportingModule, AdministrationModule, ParticipantModule],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: AbuseProtectionGuard }, { provide: APP_GUARD, useClass: JwtAuthGuard }, { provide: APP_INTERCEPTOR, useClass: BigIntSerializationInterceptor }],
 })

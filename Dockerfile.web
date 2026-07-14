@@ -2,6 +2,7 @@ FROM node:24-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json tsconfig.base.json ./
 COPY apps/web/package.json apps/web/package.json
+COPY apps/api/package.json apps/api/package.json
 RUN npm ci
 COPY apps/web apps/web
 ARG API_INTERNAL_URL=http://api:3000

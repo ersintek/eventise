@@ -1,33 +1,41 @@
-# Birlikte — STK Etkinlik Yönetimi
+# Eventise — STK Etkinlik Yönetim Sistemi
 
-Mobil uyumlu kurum paneli ilk ürün demosu. Docker ile çalışır ve Dokploy'a doğrudan alınabilir.
+Etkinlik öncesi, etkinlik günü ve etkinlik sonrası süreçleri kapsayan modüler monolit. Next.js web, NestJS REST API, PostgreSQL, veritabanı tabanlı worker kuyruğu, S3 uyumlu depolama, SMTP ve sağlayıcıdan bağımsız AI/PDF adaptörlerinden oluşur.
 
-## Demo özellikleri
-
-- Genel bakış, yaklaşan etkinlikler, görevler ve kota özeti
-- Aranabilir ve durum bazında filtrelenebilir etkinlik alanı
-- Duyuru metninden tarih, saat ve kontenjan çıkaran üç adımlı oluşturma akışı
-- Kayıt modeli, görünürlük ve onam seçimi
-- Tarayıcıda kalıcı taslaklar ve taslaktan yayınlama
-- Katılımcı arama, etkinlik/durum filtreleri ve başvuru sayaçları
-- Tekli veya toplu kabul, ret ve yedek liste işlemleri
-- UTF-8 uyumlu CSV katılımcı dışa aktarımı
-- Kişisel veri içermeyen ortak etkinlik QR ekranı
-- İdempotent katılım teyidi ve canlı saha sayaçları
-- Mükerrer e-posta kontrolüyle kapıda kayıt
-- Düzenlenebilir hazır e-posta şablonları ve değişken doğrulama
-- Hedef kitle, kota kontrolü ve arka plan kuyruğu mantığıyla gönderim planlama
-- Planlanmış iletişimleri iptal etme ve teslimat özeti
-- Dört hazır kayıt formu şablonu ve özel form oluşturma
-- Alan türü, zorunluluk, veri sınıfı, seçenek ve sıralama yönetimi
-- Yayınlanan formu koruyan sürümleme ve Advanced koşullu soru ayarı
+## Yerel çalıştırma
 
 ```bash
+cp .env.example .env
 docker compose up --build
 ```
 
-Uygulama `http://localhost:8080`, sağlık kontrolü `/health` adresindedir.
+- Web: `http://localhost:8080`
+- API: `http://localhost:3000/api`
+- Swagger: `http://localhost:3000/swagger`
+- Sağlık: `http://localhost:3000/api/health`
+
+## Doğrulama
+
+```bash
+npm ci
+npm run build
+npm test
+npm run test:integration -w @eventise/api
+```
+
+Entegrasyon paketi temiz geçici PostgreSQL üzerinde migration, seed, altı ürün aşaması, tenant izolasyonu, davetli etkinlik, misafir hesap kurulumu, silme/kurtarma ve 100 eşzamanlı sağlık isteği senaryolarını çalıştırır.
 
 ## Dokploy
 
-Repository veya Compose kaynağı olarak ekleyin; `compose.yaml` kök dizindedir. Uygulama anahtarı ve diğer gizli değerleri Dokploy Environment ekranında tanımlayın, repoya eklemeyin.
+Dokploy’da repository içindeki `compose.yaml` dosyasını Compose kaynağı olarak kullanın. Aşağıdaki değerleri Environment ekranında tanımlayın; gizli değerleri repoya yazmayın:
+
+- `POSTGRES_PASSWORD`
+- `JWT_SECRET` (en az 32 rastgele karakter)
+- `SYSTEM_ADMIN_EMAILS` (virgülle ayrılmış ilk sistem yöneticileri)
+- `WEB_ORIGIN` ve `PUBLIC_APP_URL` (web alan adınız)
+- SMTP değişkenleri
+- S3 endpoint, bucket ve erişim anahtarları
+
+API container’ı migration ve idempotent seed işlemini uygular. Ayrı worker container’ı e-posta, hatırlatma, sertifika, rapor, kapanış ve silme job’larını yürütür. PostgreSQL verisi named volume’da kalır. API yalnız `/api/health` başarılı olduğunda web servisi başlatılır.
+
+İlk admin, `SYSTEM_ADMIN_EMAILS` içindeki adresle hesap oluşturduğunda `SYSTEM_ADMIN` rolünü alır. Bootstrap sonrası bu ortam değişkenini yalnız kontrollü adreslerle sınırlandırın.

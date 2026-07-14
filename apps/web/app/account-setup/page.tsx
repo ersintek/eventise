@@ -1,0 +1,1 @@
+import{AccountSetupForm}from'./setup-form';export default async function AccountSetupPage({searchParams}:{searchParams:Promise<{token?:string}>}){const{token}=await searchParams;return <main className="center-shell"><AccountSetupForm token={token??''}/></main>}

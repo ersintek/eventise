@@ -7,7 +7,7 @@ import { JobRunnerService } from './infrastructure/jobs/job-runner.service';
 async function bootstrapWorker() {
   const context = await NestFactory.createApplicationContext(AppModule);
   const runner = context.get(JobRunnerService), workerId = `worker-${randomUUID()}`;
-  const loop = async () => { const worked = await runner.runNext(workerId); setTimeout(loop, worked ? 50 : 1000).unref(); };
+  const loop = async () => { const worked = await runner.runNext(workerId); setTimeout(() => void loop(), worked ? 50 : 1000).unref(); };
   await loop();
 }
 void bootstrapWorker();
