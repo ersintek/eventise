@@ -8,6 +8,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - eventise_internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U eventise -d eventise"]
       interval: 10s
@@ -23,6 +25,8 @@ services:
       MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?S3_SECRET_KEY is required}
     volumes:
       - minio_data:/data
+    networks:
+      - eventise_internal
 
   mailpit:
     image: axllent/mailpit:latest
@@ -30,6 +34,8 @@ services:
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: "1"
       MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+    networks:
+      - eventise_internal
 
   api:
     build:
@@ -59,6 +65,8 @@ services:
       minio:
         condition: service_started
     command: ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && node dist/main.js"]
+    networks:
+      - eventise_internal
 
   worker:
     build:
@@ -86,6 +94,8 @@ services:
       minio:
         condition: service_started
     command: ["node", "dist/worker.js"]
+    networks:
+      - eventise_internal
 
   web:
     build:
@@ -98,7 +108,12 @@ services:
     environment:
       API_INTERNAL_URL: http://api:3000
       PUBLIC_APP_URL: ${PUBLIC_APP_URL:-http://localhost:8080}
+    networks:
+      - eventise_internal
 
 volumes:
   postgres_data:
   minio_data:
+
+networks:
+  eventise_internal:
