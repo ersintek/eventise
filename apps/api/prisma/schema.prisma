@@ -110,6 +110,30 @@ enum AssessmentKind {
   PRE_TEST
   POST_TEST
 }
+enum MediaAssetStatus {
+  PENDING
+  ACTIVE
+  DELETED
+}
+enum PhotoModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+enum ResourceKind {
+  FILE
+  LINK
+}
+enum CertificateStatus {
+  PENDING
+  READY
+  FAILED
+}
+enum ReportExportStatus {
+  PENDING
+  READY
+  FAILED
+}
 
 model User {
   id                String   @id @default(cuid())
@@ -167,6 +191,8 @@ model Organization {
   formTemplates   FormTemplate[]
   consentDefinitions ConsentDefinition[]
   emailTemplates EmailTemplate[]
+  mediaAssets MediaAsset[]
+  quotaReservations QuotaReservation[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -210,6 +236,12 @@ model Event {
   assessments Assessment[]
   feedbackForms FeedbackForm[]
   notifications InAppNotification[]
+  photos EventPhoto[]
+  resources EventResource[]
+  certificateTemplates CertificateTemplate[]
+  certificates Certificate[]
+  reportExports ReportExport[]
+  temporaryModulesClosedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([organizationId, slug])
@@ -291,10 +323,110 @@ model EventRegistration {
   gameParticipations GameParticipant[]
   assessmentSubmissions AssessmentSubmission[]
   feedbackSubmissions FeedbackSubmission[]
+  uploadedPhotos EventPhoto[]
+  certificates Certificate[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([eventId, email])
   @@index([eventId, applicationStatus])
+}
+
+model QuotaReservation {
+  id String @id @default(cuid())
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  key String
+  bytes BigInt
+  expiresAt DateTime
+  consumedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([organizationId, key, expiresAt])
+}
+
+model MediaAsset {
+  id String @id @default(cuid())
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  storageKey String @unique
+  originalName String
+  contentType String
+  sizeBytes BigInt
+  status MediaAssetStatus @default(PENDING)
+  checksum String?
+  photos EventPhoto[]
+  resources EventResource[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([organizationId, status])
+}
+
+model EventPhoto {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  assetId String @unique
+  asset MediaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  uploaderRegistrationId String?
+  uploaderRegistration EventRegistration? @relation(fields: [uploaderRegistrationId], references: [id], onDelete: SetNull)
+  status PhotoModerationStatus @default(PENDING)
+  caption String?
+  moderatedById String?
+  moderatedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([eventId, status])
+}
+
+model EventResource {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  kind ResourceKind
+  title String
+  assetId String?
+  asset MediaAsset? @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  externalUrl String?
+  visible Boolean @default(true)
+  createdAt DateTime @default(now())
+}
+
+model CertificateTemplate {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name String
+  bodyTemplate String
+  certificates Certificate[]
+  createdAt DateTime @default(now())
+}
+
+model Certificate {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  registrationId String
+  registration EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  templateId String
+  template CertificateTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  verificationCode String @unique
+  status CertificateStatus @default(PENDING)
+  storageKey String?
+  issuedAt DateTime?
+  lastError String?
+  createdAt DateTime @default(now())
+  @@unique([registrationId, templateId])
+}
+
+model ReportExport {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  format String
+  status ReportExportStatus @default(PENDING)
+  storageKey String?
+  requestedById String
+  lastError String?
+  createdAt DateTime @default(now())
+  completedAt DateTime?
 }
 
 model EventGroup {

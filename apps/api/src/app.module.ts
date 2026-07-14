@@ -26,10 +26,16 @@ import { ActivitiesModule } from './modules/activities/activities.module';
 import { AssessmentsModule } from './modules/assessments/assessments.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { MediaModule } from './modules/media/media.module';
+import { ResourcesModule } from './modules/resources/resources.module';
+import { PdfModule } from './infrastructure/pdf/pdf.module';
+import { CertificatesModule } from './modules/certificates/certificates.module';
+import { ReportingModule } from './modules/reporting/reporting.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, AiModule, AuthModule, OrganizationsModule, TiersModule, EventsModule, FormsModule, CommunicationsModule, ConsentsModule, RegistrationsModule, FeaturesModule, CheckInModule, GroupsModule, ActivitiesModule, AssessmentsModule, FeedbackModule, NotificationsModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, PdfModule, AiModule, AuthModule, OrganizationsModule, TiersModule, EventsModule, FormsModule, CommunicationsModule, ConsentsModule, RegistrationsModule, FeaturesModule, CheckInModule, GroupsModule, ActivitiesModule, AssessmentsModule, FeedbackModule, NotificationsModule, MediaModule, ResourcesModule, CertificatesModule, ReportingModule],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }, { provide: APP_INTERCEPTOR, useClass: BigIntSerializationInterceptor }],
 })
 export class AppModule {}
+export { JobRunnerService } from './infrastructure/jobs/job-runner.service';

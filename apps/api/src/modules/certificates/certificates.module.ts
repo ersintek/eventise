@@ -1,0 +1,1 @@
+import{Module}from'@nestjs/common';import{OrganizationsModule}from'../organizations/organizations.module';import{CertificatesController}from'./certificates.controller';import{CertificatesService}from'./certificates.service';@Module({imports:[OrganizationsModule],controllers:[CertificatesController],providers:[CertificatesService]})export class CertificatesModule{}

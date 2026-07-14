@@ -6,10 +6,11 @@ import { OrganizationAccessService } from '../organizations/policies/organizatio
 import { TiersService } from '../tiers/tiers.service';
 import { CreateEventDto, EventStateDto } from './dto/event.dto';
 import { assertEventDates, canTransitionPublication } from './domain/event-rules';
+import { EventLifecycleService } from './event-lifecycle.service';
 
 @Injectable()
 export class EventsService {
-  constructor(@Inject(PrismaService) private prisma: PrismaService, @Inject(OrganizationAccessService) private access: OrganizationAccessService, @Inject(TiersService) private tiers: TiersService, @Inject(AuditService) private audit: AuditService) {}
+  constructor(@Inject(PrismaService) private prisma: PrismaService, @Inject(OrganizationAccessService) private access: OrganizationAccessService, @Inject(TiersService) private tiers: TiersService, @Inject(AuditService) private audit: AuditService, @Inject(EventLifecycleService) private lifecycle:EventLifecycleService) {}
   async create(userId: string, organizationId: string, dto: CreateEventDto) {
     await this.access.requireMembership(userId, organizationId, ['ORGANIZATION_ADMIN','EVENT_MANAGER']);
     const limits = await this.tiers.limitsFor(userId, organizationId);
@@ -21,7 +22,7 @@ export class EventsService {
     if (dto.formId && !await this.prisma.form.findFirst({ where: { id: dto.formId, organizationId } })) throw new BadRequestException('Kayıt formu bu kuruma ait değil.');
     const membership = await this.prisma.organizationMembership.findUniqueOrThrow({ where: { userId_organizationId: { userId, organizationId } } });
     const event = await this.prisma.event.create({ data: { organizationId, formId: dto.formId, title: dto.title.trim(), slug: dto.slug.toLowerCase(), summary: dto.summary, description: dto.description, venueName: dto.venueName, venueAddress: dto.venueAddress, startsAt, endsAt, timezone: dto.timezone, capacity: dto.capacity, visibility: dto.visibility, registrationMode: dto.registrationMode, registrationOpensAt: opensAt, registrationClosesAt: closesAt, staffAssignments: { create: { membershipId: membership.id } }, faqs: { create: dto.faqs?.map((f, i) => ({ ...f, sortOrder: i })) ?? [] } }, include: { faqs: true } });
-    await this.audit.record({ actorId: userId, organizationId, action: 'event.created', resourceType: 'event', resourceId: event.id }); return event;
+    await this.lifecycle.schedule(event.id,event.endsAt);await this.audit.record({ actorId: userId, organizationId, action: 'event.created', resourceType: 'event', resourceId: event.id }); return event;
   }
   async list(userId: string, organizationId: string) { await this.access.requireMembership(userId, organizationId); return this.prisma.event.findMany({ where: { organizationId }, include: { faqs: true, _count: { select: { registrations: true } } }, orderBy: { startsAt: 'desc' } }); }
   async setState(userId: string, organizationId: string, eventId: string, dto: EventStateDto) {

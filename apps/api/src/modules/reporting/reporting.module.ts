@@ -1,0 +1,1 @@
+import{Module}from'@nestjs/common';import{OrganizationsModule}from'../organizations/organizations.module';import{ReportingController}from'./reporting.controller';import{ReportingService}from'./reporting.service';@Module({imports:[OrganizationsModule],controllers:[ReportingController],providers:[ReportingService]})export class ReportingModule{}

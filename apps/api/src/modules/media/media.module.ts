@@ -1,0 +1,1 @@
+import{Module}from'@nestjs/common';import{OrganizationsModule}from'../organizations/organizations.module';import{TiersModule}from'../tiers/tiers.module';import{MediaController}from'./media.controller';import{MediaService}from'./media.service';@Module({imports:[OrganizationsModule,TiersModule],controllers:[MediaController],providers:[MediaService]})export class MediaModule{}

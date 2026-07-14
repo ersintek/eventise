@@ -1,0 +1,1 @@
+import{Global,Module}from'@nestjs/common';import{PdfProvider}from'./pdf-provider.port';import{SimplePdfProvider}from'./simple-pdf-provider';@Global()@Module({providers:[SimplePdfProvider,{provide:PdfProvider,useExisting:SimplePdfProvider}],exports:[PdfProvider]})export class PdfModule{}
