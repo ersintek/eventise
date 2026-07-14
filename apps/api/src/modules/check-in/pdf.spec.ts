@@ -1,0 +1,1 @@
+import{describe,expect,it}from'vitest';import{simplePdf}from'./pdf';describe('signature PDF',()=>it('builds a valid PDF envelope',()=>{const pdf=simplePdf('Attendance',['Ada Test']);expect(pdf.subarray(0,8).toString()).toBe('%PDF-1.4');expect(pdf.toString()).toContain('startxref')}));

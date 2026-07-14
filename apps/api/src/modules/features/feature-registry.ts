@@ -1,0 +1,3 @@
+export interface FeatureDefinition{key:string;label:string;allowedPhases:Array<'PRE_EVENT'|'LIVE'|'POST_EVENT'>;defaultConfig:Record<string,unknown>}
+export const featureRegistry:FeatureDefinition[]=[{key:'check_in',label:'Ortak QR ile katılım teyidi',allowedPhases:['PRE_EVENT','LIVE'],defaultConfig:{}},{key:'door_registration',label:'Kapıda kayıt',allowedPhases:['LIVE'],defaultConfig:{enabledForGuests:true}},{key:'participant_area',label:'Katılımcı etkinlik alanı',allowedPhases:['LIVE','POST_EVENT'],defaultConfig:{}}];
+export function findFeature(key:string){return featureRegistry.find(f=>f.key===key)}

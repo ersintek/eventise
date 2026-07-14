@@ -1,0 +1,1 @@
+import{Module}from'@nestjs/common';import{OrganizationsModule}from'../organizations/organizations.module';import{FeaturesController}from'./features.controller';import{FeaturesService}from'./features.service';@Module({imports:[OrganizationsModule],controllers:[FeaturesController],providers:[FeaturesService],exports:[FeaturesService]})export class FeaturesModule{}

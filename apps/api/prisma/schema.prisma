@@ -82,6 +82,20 @@ enum ScheduledNotificationStatus {
   QUEUED
 }
 
+enum AttendanceStatus {
+  NOT_CONFIRMED
+  CHECKED_IN
+  NO_SHOW
+  MANUALLY_CONFIRMED
+}
+
+enum CheckInMethod {
+  ACCOUNT
+  MAGIC_LINK
+  DOOR_REGISTRATION
+  STAFF_MANUAL
+}
+
 model User {
   id                String   @id @default(cuid())
   email             String   @unique
@@ -93,6 +107,7 @@ model User {
   status            AccountStatus @default(ACTIVE)
   memberships       OrganizationMembership[]
   auditLogs         AuditLog[] @relation("ActorAuditLogs")
+  eventRegistrations EventRegistration[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
@@ -167,6 +182,12 @@ model Event {
   registrations EventRegistration[]
   consentRequirements EventConsentRequirement[]
   scheduledNotifications ScheduledNotification[]
+  checkInAccess EventCheckInAccess?
+  featureSettings EventFeatureSetting[]
+  attendanceRecords AttendanceRecord[]
+  checkInAttempts CheckInAttempt[]
+  guestAccessTokens GuestAccessToken[]
+  staffAssignments EventStaffAssignment[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([organizationId, slug])
@@ -180,6 +201,17 @@ model EventFaqItem {
   question String
   answer String
   sortOrder Int @default(0)
+}
+
+model EventStaffAssignment {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  membershipId String
+  membership OrganizationMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@unique([eventId, membershipId])
+  @@index([membershipId])
 }
 
 model FormTemplate {
@@ -219,6 +251,8 @@ model EventRegistration {
   id String @id @default(cuid())
   eventId String
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId String?
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
   formVersionId String?
   formVersion FormVersion? @relation(fields: [formVersionId], references: [id], onDelete: SetNull)
   email String
@@ -228,10 +262,74 @@ model EventRegistration {
   applicationStatus RegistrationApplicationStatus
   statusHistory RegistrationStatusHistory[]
   consents ConsentRecord[]
+  attendance AttendanceRecord?
+  checkInAttempts CheckInAttempt[]
+  guestAccessTokens GuestAccessToken[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([eventId, email])
   @@index([eventId, applicationStatus])
+}
+
+model EventCheckInAccess {
+  id String @id @default(cuid())
+  eventId String @unique
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  publicToken String @unique
+  enabled Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EventFeatureSetting {
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  featureKey String
+  enabled Boolean @default(false)
+  config Json
+  updatedAt DateTime @updatedAt
+  @@id([eventId, featureKey])
+}
+
+model AttendanceRecord {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  registrationId String @unique
+  registration EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  status AttendanceStatus @default(NOT_CONFIRMED)
+  method CheckInMethod?
+  confirmedAt DateTime?
+  confirmedById String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([eventId, status])
+}
+
+model CheckInAttempt {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  registrationId String?
+  registration EventRegistration? @relation(fields: [registrationId], references: [id], onDelete: SetNull)
+  method CheckInMethod
+  successful Boolean
+  ipHash String?
+  createdAt DateTime @default(now())
+  @@index([eventId, createdAt])
+}
+
+model GuestAccessToken {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  registrationId String
+  registration EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  tokenHash String @unique
+  expiresAt DateTime
+  usedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([eventId, expiresAt])
 }
 
 model RegistrationStatusHistory {
@@ -338,6 +436,7 @@ model OrganizationMembership {
   role           OrganizationRole
   user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  eventAssignments EventStaffAssignment[]
   createdAt      DateTime @default(now())
   @@unique([userId, organizationId])
   @@index([organizationId, role])

@@ -1,0 +1,1 @@
+import{describe,expect,it}from'vitest';import{featureRegistry,findFeature}from'./feature-registry';describe('feature registry',()=>it('contains unique modular event-day features',()=>{expect(new Set(featureRegistry.map(f=>f.key)).size).toBe(featureRegistry.length);expect(findFeature('door_registration')?.allowedPhases).toEqual(['LIVE'])}));

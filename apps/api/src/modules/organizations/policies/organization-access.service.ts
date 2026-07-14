@@ -11,4 +11,5 @@ export class OrganizationAccessService {
     if (roles && !roles.includes(membership.role)) throw new ForbiddenException('Bu işlem için kurum yetkiniz yok.');
     return membership;
   }
+  async requireEventAccess(userId:string,organizationId:string,eventId:string,roles?:OrganizationRole[]){const membership=await this.requireMembership(userId,organizationId,roles);const event=await this.prisma.event.findFirst({where:{id:eventId,organizationId},select:{id:true}});if(!event)throw new NotFoundException('Etkinlik bulunamadı.');if(membership.role!=='ORGANIZATION_ADMIN'){const assignment=await this.prisma.eventStaffAssignment.findUnique({where:{eventId_membershipId:{eventId,membershipId:membership.id}}});if(!assignment)throw new NotFoundException('Etkinlik bulunamadı.')}return membership}
 }
