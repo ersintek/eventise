@@ -1,0 +1,16 @@
+{
+  "name": "eventise",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "build": "npm run build -w @eventise/api",
+    "test": "npm run test -w @eventise/api",
+    "test:cov": "npm run test:cov -w @eventise/api",
+    "lint": "npm run lint -w @eventise/api",
+    "db:generate": "npm run db:generate -w @eventise/api",
+    "db:migrate": "npm run db:migrate -w @eventise/api",
+    "dev:api": "npm run start:dev -w @eventise/api"
+  },
+  "engines": { "node": ">=22" }
+}

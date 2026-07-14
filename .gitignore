@@ -3,3 +3,7 @@ swagger.json
 .env
 .env.*
 !.env.example
+node_modules/
+dist/
+coverage/
+*.log
