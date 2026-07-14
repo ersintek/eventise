@@ -1,0 +1,1 @@
+import{Module}from'@nestjs/common';import{OrganizationsModule}from'../organizations/organizations.module';import{FeedbackController}from'./feedback.controller';import{FeedbackService}from'./feedback.service';@Module({imports:[OrganizationsModule],controllers:[FeedbackController],providers:[FeedbackService]})export class FeedbackModule{}

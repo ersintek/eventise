@@ -96,6 +96,21 @@ enum CheckInMethod {
   STAFF_MANUAL
 }
 
+enum GroupingStrategy {
+  RANDOM
+  BALANCED
+  MANUAL
+}
+enum GameSessionStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+enum AssessmentKind {
+  PRE_TEST
+  POST_TEST
+}
+
 model User {
   id                String   @id @default(cuid())
   email             String   @unique
@@ -108,6 +123,7 @@ model User {
   memberships       OrganizationMembership[]
   auditLogs         AuditLog[] @relation("ActorAuditLogs")
   eventRegistrations EventRegistration[]
+  notifications InAppNotification[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
@@ -188,6 +204,12 @@ model Event {
   checkInAttempts CheckInAttempt[]
   guestAccessTokens GuestAccessToken[]
   staffAssignments EventStaffAssignment[]
+  groups EventGroup[]
+  groupingRuns GroupingRun[]
+  gameSessions GameSession[]
+  assessments Assessment[]
+  feedbackForms FeedbackForm[]
+  notifications InAppNotification[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([organizationId, slug])
@@ -265,10 +287,164 @@ model EventRegistration {
   attendance AttendanceRecord?
   checkInAttempts CheckInAttempt[]
   guestAccessTokens GuestAccessToken[]
+  groupMemberships EventGroupMember[]
+  gameParticipations GameParticipant[]
+  assessmentSubmissions AssessmentSubmission[]
+  feedbackSubmissions FeedbackSubmission[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([eventId, email])
   @@index([eventId, applicationStatus])
+}
+
+model EventGroup {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name String
+  sortOrder Int
+  members EventGroupMember[]
+  createdAt DateTime @default(now())
+  @@unique([eventId, name])
+}
+
+model EventGroupMember {
+  groupId String
+  group EventGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  registrationId String
+  registration EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  assignedAt DateTime @default(now())
+  @@id([groupId, registrationId])
+  @@unique([registrationId])
+}
+
+model GroupingRun {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  strategy GroupingStrategy
+  requestedGroupCount Int
+  metadata Json
+  createdById String
+  createdAt DateTime @default(now())
+}
+
+model GameSession {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  gameKey String
+  title String
+  status GameSessionStatus @default(DRAFT)
+  config Json
+  participants GameParticipant[]
+  responses GameResponse[]
+  assignments GameAssignment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GameAssignment {
+  id String @id @default(cuid())
+  sessionId String
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  registrationId String
+  targetRegistrationId String
+  prompt String
+  completedAt DateTime?
+  createdAt DateTime @default(now())
+  @@unique([sessionId, registrationId])
+}
+
+model GameParticipant {
+  sessionId String
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  registrationId String
+  registration EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  joinedAt DateTime @default(now())
+  @@id([sessionId, registrationId])
+}
+
+model GameResponse {
+  id String @id @default(cuid())
+  sessionId String
+  session GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  registrationId String
+  promptKey String
+  answer String
+  createdAt DateTime @default(now())
+  @@unique([sessionId, registrationId, promptKey])
+}
+
+model Assessment {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  kind AssessmentKind
+  title String
+  schema Json
+  open Boolean @default(false)
+  submissions AssessmentSubmission[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AssessmentSubmission {
+  id String @id @default(cuid())
+  assessmentId String
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  registrationId String
+  registration EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  answers Json
+  score Float?
+  submittedAt DateTime @default(now())
+  @@unique([assessmentId, registrationId])
+}
+
+model FeedbackForm {
+  id String @id @default(cuid())
+  eventId String
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  title String
+  schema Json
+  open Boolean @default(false)
+  submissions FeedbackSubmission[]
+  messages ParticipantFeedbackMessage[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FeedbackSubmission {
+  id String @id @default(cuid())
+  formId String
+  form FeedbackForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+  registrationId String
+  registration EventRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  answers Json
+  anonymous Boolean @default(false)
+  submittedAt DateTime @default(now())
+  @@unique([formId, registrationId])
+}
+
+model ParticipantFeedbackMessage {
+  id String @id @default(cuid())
+  formId String
+  form FeedbackForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+  message String
+  createdAt DateTime @default(now())
+}
+
+model InAppNotification {
+  id String @id @default(cuid())
+  eventId String?
+  event Event? @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title String
+  body String
+  readAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([userId, readAt, createdAt])
 }
 
 model EventCheckInAccess {

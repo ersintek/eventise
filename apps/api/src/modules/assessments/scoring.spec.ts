@@ -1,0 +1,1 @@
+import{describe,expect,it}from'vitest';import{scoreAssessment}from'./scoring';describe('assessment scoring',()=>it('scores objective questions and ignores free text',()=>expect(scoreAssessment([{id:'q1',type:'single',correctAnswer:'a',points:2},{id:'q2',type:'text'}],{q1:'a',q2:'yorum'})).toBe(100)));
