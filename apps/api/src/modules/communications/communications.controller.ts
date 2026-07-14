@@ -1,3 +1,14 @@
-import { Body, Controller, Get, Inject, Param, Patch, Post } from '@nestjs/common'; import { IsDateString, IsString } from 'class-validator'; import { AuthenticatedUser, CurrentUser } from '../identity/policies/current-user.decorator'; import { CommunicationsService } from './communications.service';
-class TemplateDto { @IsString() subject!:string; @IsString() body!:string; } class ReminderDto { @IsString() templateId!:string; @IsDateString() sendAt!:string; }
-@Controller('organizations/:organizationId') export class CommunicationsController { constructor(@Inject(CommunicationsService)private c:CommunicationsService){} @Get('email-templates') templates(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string){return this.c.listTemplates(u.id,o)} @Patch('email-templates/:id') update(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('id')id:string,@Body()d:TemplateDto){return this.c.updateTemplate(u.id,o,id,d.subject,d.body)} @Post('events/:eventId/reminders') remind(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('eventId')e:string,@Body()d:ReminderDto){return this.c.scheduleReminder(u.id,o,e,d.templateId,new Date(d.sendAt))} }
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post } from '@nestjs/common';
+import { IsDateString, IsString } from 'class-validator';
+import { AuthenticatedUser, CurrentUser } from '../identity/policies/current-user.decorator';
+import { CommunicationsService } from './communications.service';
+class TemplateDto { @IsString() subject!:string; @IsString() body!:string; }
+class ReminderDto { @IsString() templateId!:string; @IsDateString() sendAt!:string; }
+@Controller('organizations/:organizationId') export class CommunicationsController {
+  constructor(@Inject(CommunicationsService)private c:CommunicationsService){}
+  @Get('email-templates') templates(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string){return this.c.listTemplates(u.id,o)}
+  @Patch('email-templates/:id') update(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('id')id:string,@Body()d:TemplateDto){return this.c.updateTemplate(u.id,o,id,d.subject,d.body)}
+  @Get('events/:eventId/reminders') reminders(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('eventId')e:string){return this.c.listReminders(u.id,o,e)}
+  @Post('events/:eventId/reminders') remind(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('eventId')e:string,@Body()d:ReminderDto){return this.c.scheduleReminder(u.id,o,e,d.templateId,new Date(d.sendAt))}
+  @Delete('events/:eventId/reminders/:id') cancel(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('eventId')e:string,@Param('id')id:string){return this.c.cancelReminder(u.id,o,e,id)}
+}
