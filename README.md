@@ -2,6 +2,14 @@
 
 Mobil uyumlu kurum paneli ilk ürün demosu. Docker ile çalışır ve Dokploy'a doğrudan alınabilir.
 
+## Demo özellikleri
+
+- Genel bakış, yaklaşan etkinlikler, görevler ve kota özeti
+- Aranabilir ve durum bazında filtrelenebilir etkinlik alanı
+- Duyuru metninden tarih, saat ve kontenjan çıkaran üç adımlı oluşturma akışı
+- Kayıt modeli, görünürlük ve onam seçimi
+- Tarayıcıda kalıcı taslaklar ve taslaktan yayınlama
+
 ```bash
 docker compose up --build
 ```

@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="events.css" />
 </head>
 <body>
   <aside class="sidebar" aria-label="Ana menü">
@@ -16,8 +17,8 @@
     <button class="org-switch"><span class="org-logo">YA</span><span><b>Yaşam Atölyesi</b><small>Kurum paneli</small></span><span>⌄</span></button>
     <nav>
       <p>ÇALIŞMA ALANI</p>
-      <a class="active" href="#dashboard"><span>⌂</span> Genel bakış</a>
-      <a href="#events"><span>◇</span> Etkinlikler <em>4</em></a>
+      <a class="active" href="#dashboard" data-view="dashboard"><span>⌂</span> Genel bakış</a>
+      <a href="#events" data-view="events"><span>◇</span> Etkinlikler <em id="eventCount">4</em></a>
       <a href="#people"><span>♧</span> Katılımcılar</a>
       <a href="#messages"><span>✉</span> İletişim</a>
       <p>YÖNETİM</p>
@@ -31,7 +32,7 @@
 
   <main>
     <header><button class="mobile-menu" aria-label="Menüyü aç">☰</button><div></div><button class="icon-btn" aria-label="Yardım">?</button><button class="icon-btn notification" aria-label="Bildirimler">♢<i></i></button></header>
-    <section id="dashboard" class="content">
+    <section id="dashboard" class="content app-view">
       <div class="welcome"><div><p class="eyebrow">14 TEMMUZ 2026, SALI</p><h1>Günaydın, Elif <span>👋</span></h1><p>Etkinliklerinizde bugün neler olduğuna birlikte bakalım.</p></div><button class="primary" id="newEvent">＋ Yeni etkinlik</button></div>
 
       <div class="stats">
@@ -62,10 +63,24 @@
         <div class="summary"><div><span>Kayıt</span><b>156</b></div><div><span>Katılım</span><b>138 <small>%88</small></b></div><div><span>Geri bildirim</span><b>104 <small>%75</small></b></div><div><span>Memnuniyet</span><b>4.7 <small>/ 5</small></b></div><div class="spark"><span>Katılım akışı</span><svg viewBox="0 0 220 58" aria-label="Katılım akış grafiği"><path d="M2 51 C30 48 34 39 58 41 S90 31 109 34 S137 17 155 21 S183 8 218 5" fill="none" stroke="#2d8b68" stroke-width="3"/><path d="M2 51 C30 48 34 39 58 41 S90 31 109 34 S137 17 155 21 S183 8 218 5 V58 H2Z" fill="url(#g)"/><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#55b990" stop-opacity=".25"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs></svg></div></div>
       </section>
     </section>
+    <section id="events" class="content app-view" hidden>
+      <div class="page-title"><div><p class="eyebrow">ETKİNLİK YÖNETİMİ</p><h1>Etkinlikler</h1><p>Tüm etkinliklerinizi tek yerden planlayın ve yönetin.</p></div><button class="primary new-event-trigger">＋ Yeni etkinlik</button></div>
+      <div class="toolbar"><div class="search">⌕ <input id="eventSearch" type="search" placeholder="Etkinlik ara..." aria-label="Etkinlik ara"></div><div class="filters"><button class="filter active" data-filter="all">Tümü</button><button class="filter" data-filter="open">Kayıt açık</button><button class="filter" data-filter="draft">Taslak</button><button class="filter" data-filter="closed">Tamamlandı</button></div></div>
+      <div class="event-cards" id="eventCards"></div>
+      <div class="empty-state" id="eventEmpty" hidden><span>◇</span><h2>Etkinlik bulunamadı</h2><p>Aramanızı değiştirin veya yeni bir etkinlik oluşturun.</p></div>
+    </section>
   </main>
 
-  <dialog id="eventDialog"><form method="dialog"><button class="close" aria-label="Kapat">×</button><span class="modal-icon">✦</span><h2>Yeni bir etkinlik oluşturalım</h2><p>Duyuru metnini yapıştırın; başlık, tarih, yer ve kontenjanı sizin için taslak hâline getirelim.</p><label>Etkinlik duyurusu<textarea placeholder="Etkinlik metnini buraya yapıştırın..."></textarea></label><small>Yapay zekâ çıktısı siz onaylamadan yayınlanmaz.</small><div class="actions"><button value="cancel" class="secondary">Vazgeç</button><button value="default" class="primary" id="extract">Bilgileri çıkar →</button></div></form></dialog>
-  <div id="toast" role="status">Taslak hazırlandı. Bilgileri birlikte kontrol edelim.</div>
+  <dialog id="eventDialog"><form id="eventForm">
+    <button type="button" class="close" aria-label="Kapat">×</button>
+    <div class="wizard-head"><span class="modal-icon">✦</span><div><small>YENİ ETKİNLİK</small><h2 id="wizardTitle">Duyurudan hızlıca başlayın</h2></div><span class="step-label"><b id="stepCurrent">1</b> / 3</span></div>
+    <div class="steps"><i class="active"></i><i></i><i></i></div>
+    <section class="wizard-step active" data-step="1"><p>Duyuru metnini yapıştırın; bilgileri sizin için taslak hâline getirelim. İsterseniz boş başlayabilirsiniz.</p><label>Etkinlik duyurusu<textarea id="announcement" placeholder="Örnek: Gençlik İklim Atölyesi 28.07.2026 saat 10:00'da Kadıköy'de. Kontenjan 50 kişi."></textarea></label><small>✦ Üretilen bilgiler siz onaylamadan yayınlanmaz.</small></section>
+    <section class="wizard-step" data-step="2"><div class="form-grid"><label class="wide">Etkinlik adı<input required id="eventName" placeholder="Etkinlik adı"></label><label>Tarih<input required id="eventDate" type="date"></label><label>Saat<input required id="eventTime" type="time"></label><label class="wide">Mekân veya bağlantı<input required id="eventLocation" placeholder="Mekân adı veya çevrim içi"></label><label>Kontenjan<input required id="eventCapacity" type="number" min="1" max="500" value="50"></label><label>Kayıt modeli<select id="registrationModel"><option value="approval">Onaylı kayıt</option><option value="direct">Doğrudan kayıt</option><option value="waitlist">Kontenjan + yedek</option></select></label></div></section>
+    <section class="wizard-step" data-step="3"><div class="publish-card"><span>◎</span><div><h3>Kimler görebilir?</h3><p>Etkinlik sayfasının görünürlüğünü seçin.</p></div></div><div class="radio-cards"><label><input type="radio" name="visibility" value="public"><span><b>Herkese açık</b><small>Etkinlik sayfası herkese açıktır.</small></span></label><label class="selected"><input type="radio" name="visibility" value="link" checked><span><b>Bağlantıya sahip olanlar</b><small>Yalnızca bağlantıyı bilenler erişebilir.</small></span></label><label><input type="radio" name="visibility" value="invite"><span><b>Davetli</b><small>Yalnızca davet edilen hesaplar erişebilir.</small></span></label></div><label class="consent-check"><input id="addConsent" type="checkbox" checked> Standart katılım ve iletişim onamını ekle</label></section>
+    <div class="actions"><button type="button" class="secondary" id="wizardBack">Vazgeç</button><button type="button" class="primary" id="wizardNext">Bilgileri çıkar →</button></div>
+  </form></dialog>
+  <div id="toast" role="status"></div>
   <script src="app.js"></script>
 </body>
 </html>
