@@ -1,17 +1,2 @@
-import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { JwtService } from '@nestjs/jwt';
-import { IS_PUBLIC_KEY } from './public.decorator';
-
-@Injectable()
-export class JwtAuthGuard implements CanActivate {
-  constructor(@Inject(Reflector) private readonly reflector: Reflector, @Inject(JwtService) private readonly jwt: JwtService) {}
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    if (this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [context.getHandler(), context.getClass()])) return true;
-    const request = context.switchToHttp().getRequest<{ headers: { authorization?: string }; user?: unknown }>();
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    if (type !== 'Bearer' || !token) throw new UnauthorizedException('Oturum açmanız gerekiyor.');
-    try { request.user = await this.jwt.verifyAsync(token); return true; }
-    catch { throw new UnauthorizedException('Oturum süreniz dolmuş veya geçersiz.'); }
-  }
-}
+import{CanActivate,ExecutionContext,Inject,Injectable,UnauthorizedException}from'@nestjs/common';import{Reflector}from'@nestjs/core';import{JwtService}from'@nestjs/jwt';import{PrismaService}from'../../../shared/persistence/prisma.service';import{IS_PUBLIC_KEY}from'./public.decorator';
+@Injectable()export class JwtAuthGuard implements CanActivate{constructor(@Inject(Reflector)private reflector:Reflector,@Inject(JwtService)private jwt:JwtService,@Inject(PrismaService)private prisma:PrismaService){}async canActivate(context:ExecutionContext){if(this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY,[context.getHandler(),context.getClass()]))return true;const request=context.switchToHttp().getRequest<{headers:{authorization?:string};path:string;user?:unknown}>(),[type,token]=request.headers.authorization?.split(' ')??[];if(type!=='Bearer'||!token)throw new UnauthorizedException('Oturum açmanız gerekiyor.');try{const payload=await this.jwt.verifyAsync<{id:string}>(token),user=await this.prisma.user.findUnique({where:{id:payload.id},select:{id:true,email:true,status:true,systemRole:true}}),recovery=request.path==='/api/deletions/recover';if(!user||(user.status!=='ACTIVE'&&!(recovery&&user.status==='DELETED_PENDING')))throw new Error('inactive');request.user=user;return true}catch{throw new UnauthorizedException('Oturum süreniz dolmuş veya geçersiz.')}}}

@@ -31,11 +31,13 @@ import { ResourcesModule } from './modules/resources/resources.module';
 import { PdfModule } from './infrastructure/pdf/pdf.module';
 import { CertificatesModule } from './modules/certificates/certificates.module';
 import { ReportingModule } from './modules/reporting/reporting.module';
+import { AdministrationModule } from './modules/administration/administration.module';
+import { AbuseProtectionGuard } from './shared/http/abuse-protection.guard';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, PdfModule, AiModule, AuthModule, OrganizationsModule, TiersModule, EventsModule, FormsModule, CommunicationsModule, ConsentsModule, RegistrationsModule, FeaturesModule, CheckInModule, GroupsModule, ActivitiesModule, AssessmentsModule, FeedbackModule, NotificationsModule, MediaModule, ResourcesModule, CertificatesModule, ReportingModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, PdfModule, AiModule, AuthModule, OrganizationsModule, TiersModule, EventsModule, FormsModule, CommunicationsModule, ConsentsModule, RegistrationsModule, FeaturesModule, CheckInModule, GroupsModule, ActivitiesModule, AssessmentsModule, FeedbackModule, NotificationsModule, MediaModule, ResourcesModule, CertificatesModule, ReportingModule, AdministrationModule],
   controllers: [HealthController],
-  providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }, { provide: APP_INTERCEPTOR, useClass: BigIntSerializationInterceptor }],
+  providers: [{ provide: APP_GUARD, useClass: AbuseProtectionGuard }, { provide: APP_GUARD, useClass: JwtAuthGuard }, { provide: APP_INTERCEPTOR, useClass: BigIntSerializationInterceptor }],
 })
 export class AppModule {}
 export { JobRunnerService } from './infrastructure/jobs/job-runner.service';

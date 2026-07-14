@@ -1,0 +1,15 @@
+CREATE TYPE "SystemRole" AS ENUM ('USER', 'SYSTEM_ADMIN');
+CREATE TYPE "PromotionRequestStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+ALTER TABLE "User" ADD COLUMN "systemRole" "SystemRole" NOT NULL DEFAULT 'USER', ADD COLUMN "deletedAt" TIMESTAMP(3), ADD COLUMN "deletionScheduledFor" TIMESTAMP(3);
+ALTER TABLE "Organization" ADD COLUMN "deletedAt" TIMESTAMP(3), ADD COLUMN "deletionScheduledFor" TIMESTAMP(3);
+ALTER TABLE "Event" ADD COLUMN "deletedAt" TIMESTAMP(3), ADD COLUMN "deletionScheduledFor" TIMESTAMP(3);
+CREATE TABLE "PromotionRequest" ("id" TEXT NOT NULL, "organizationId" TEXT NOT NULL, "requestedTierId" TEXT NOT NULL, "reason" TEXT NOT NULL, "status" "PromotionRequestStatus" NOT NULL DEFAULT 'PENDING', "reviewedById" TEXT, "reviewedAt" TIMESTAMP(3), "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, CONSTRAINT "PromotionRequest_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "SupportAccessGrant" ("id" TEXT NOT NULL, "organizationId" TEXT NOT NULL, "adminId" TEXT NOT NULL, "tokenHash" TEXT NOT NULL, "reason" TEXT NOT NULL, "expiresAt" TIMESTAMP(3) NOT NULL, "revokedAt" TIMESTAMP(3), "lastUsedAt" TIMESTAMP(3), "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, CONSTRAINT "SupportAccessGrant_pkey" PRIMARY KEY ("id"));
+CREATE UNIQUE INDEX "SupportAccessGrant_tokenHash_key" ON "SupportAccessGrant"("tokenHash");
+CREATE INDEX "PromotionRequest_status_createdAt_idx" ON "PromotionRequest"("status", "createdAt");
+CREATE INDEX "SupportAccessGrant_organizationId_expiresAt_idx" ON "SupportAccessGrant"("organizationId", "expiresAt");
+ALTER TABLE "PromotionRequest" ADD CONSTRAINT "PromotionRequest_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "PromotionRequest" ADD CONSTRAINT "PromotionRequest_requestedTierId_fkey" FOREIGN KEY ("requestedTierId") REFERENCES "Tier"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "PromotionRequest" ADD CONSTRAINT "PromotionRequest_reviewedById_fkey" FOREIGN KEY ("reviewedById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "SupportAccessGrant" ADD CONSTRAINT "SupportAccessGrant_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SupportAccessGrant" ADD CONSTRAINT "SupportAccessGrant_adminId_fkey" FOREIGN KEY ("adminId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
