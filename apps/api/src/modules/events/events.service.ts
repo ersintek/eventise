@@ -4,7 +4,7 @@ import { PrismaService } from '../../shared/persistence/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { OrganizationAccessService } from '../organizations/policies/organization-access.service';
 import { TiersService } from '../tiers/tiers.service';
-import { CreateEventDto, EventStateDto } from './dto/event.dto';
+import { CreateEventDto, EventStateDto, UpdateEventDto } from './dto/event.dto';
 import { assertEventDates, canTransitionPublication } from './domain/event-rules';
 import { EventLifecycleService } from './event-lifecycle.service';
 
@@ -25,6 +25,15 @@ export class EventsService {
     await this.lifecycle.schedule(event.id,event.endsAt);await this.audit.record({ actorId: userId, organizationId, action: 'event.created', resourceType: 'event', resourceId: event.id }); return event;
   }
   async list(userId: string, organizationId: string) { const membership=await this.access.requireMembership(userId,organizationId);return this.prisma.event.findMany({where:{organizationId,...(membership.role==='ORGANIZATION_ADMIN'?{}:{staffAssignments:{some:{membershipId:membership.id}}})},include:{faqs:true,_count:{select:{registrations:true}}},orderBy:{startsAt:'desc'}}); }
+  async update(userId:string,organizationId:string,eventId:string,dto:UpdateEventDto){
+    await this.access.requireEventAccess(userId,organizationId,eventId,['ORGANIZATION_ADMIN','EVENT_MANAGER']);
+    const event=await this.prisma.event.findFirst({where:{id:eventId,organizationId}});if(!event)throw new NotFoundException('Etkinlik bulunamadı.');
+    const startsAt=new Date(dto.startsAt),endsAt=new Date(dto.endsAt);assertEventDates(startsAt,endsAt);
+    const limits=await this.tiers.limitsFor(userId,organizationId);if(dto.capacity>limits.maxParticipantsPerEvent)throw new BadRequestException('Katılımcı kapasitesi tier limitini aşıyor.');
+    if(dto.formId&&!await this.prisma.form.findFirst({where:{id:dto.formId,organizationId}}))throw new BadRequestException('Kayıt formu bu kuruma ait değil.');
+    const updated=await this.prisma.$transaction(async tx=>{await tx.eventFaqItem.deleteMany({where:{eventId}});return tx.event.update({where:{id:eventId},data:{title:dto.title.trim(),summary:dto.summary,description:dto.description,venueName:dto.venueName,venueAddress:dto.venueAddress,startsAt,endsAt,capacity:dto.capacity,visibility:dto.visibility,registrationMode:dto.registrationMode,formId:dto.formId||null,faqs:{create:dto.faqs.map((faq,index)=>({...faq,sortOrder:index}))}},include:{faqs:true,_count:{select:{registrations:true}}}})});
+    await this.audit.record({actorId:userId,organizationId,action:'event.updated',resourceType:'event',resourceId:eventId});return updated;
+  }
   async setState(userId: string, organizationId: string, eventId: string, dto: EventStateDto) {
     await this.access.requireEventAccess(userId, organizationId, eventId, ['ORGANIZATION_ADMIN','EVENT_MANAGER']);
     const event = await this.prisma.event.findFirst({ where: { id: eventId, organizationId } }); if (!event) throw new NotFoundException('Etkinlik bulunamadı.');

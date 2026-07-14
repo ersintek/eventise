@@ -24,3 +24,17 @@ export class CreateEventDto {
 }
 export class EventStateDto { @ApiProperty({ enum: ['DRAFT','PUBLISHED','UNPUBLISHED','ARCHIVED'] }) @IsString() publicationStatus!: string; @ApiPropertyOptional({ enum: EventRegistrationStatus }) @IsOptional() @IsEnum(EventRegistrationStatus) registrationStatus?: EventRegistrationStatus; }
 export class EventPhaseDto { @IsEnum(EventPhase) phase!: EventPhase; }
+export class UpdateEventDto {
+  @IsString() @MaxLength(160) title!:string;
+  @IsOptional() @IsString() summary?:string;
+  @IsOptional() @IsString() description?:string;
+  @IsOptional() @IsString() venueName?:string;
+  @IsOptional() @IsString() venueAddress?:string;
+  @IsDateString() startsAt!:string;
+  @IsDateString() endsAt!:string;
+  @IsInt() @Min(1) capacity!:number;
+  @IsEnum(EventVisibility) visibility!:EventVisibility;
+  @IsEnum(RegistrationMode) registrationMode!:RegistrationMode;
+  @IsOptional() @IsString() formId?:string;
+  @IsArray() @ValidateNested({each:true}) @Type(()=>FaqDto) faqs!:FaqDto[];
+}

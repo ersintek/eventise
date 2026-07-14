@@ -20,7 +20,7 @@ export default async function EventManagement({params}:{params:Promise<{eventId:
   const organizations=await api<Array<{id:string;slug:string}>>('organizations',token);
   if(!organizations.length)redirect('/onboarding');
   const organization=organizations[0],{eventId}=await params;
-  const events=await api<Array<{id:string;title:string;slug:string;summary?:string;startsAt:string;endsAt:string;publicationStatus:string;registrationStatus:string;phase:string;visibility:string;registrationMode:string;capacity:number;_count:{registrations:number}}>>(`organizations/${organization.id}/events`,token);
+  const events=await api<Array<{id:string;title:string;slug:string;summary?:string;description?:string;venueName?:string;venueAddress?:string;startsAt:string;endsAt:string;publicationStatus:string;registrationStatus:string;phase:string;visibility:string;registrationMode:string;capacity:number;formId?:string;faqs:Array<{question:string;answer:string}>;_count:{registrations:number}}>>(`organizations/${organization.id}/events`,token);
   const event=events.find(item=>item.id===eventId);
   if(!event)redirect('/dashboard');
   const [registrations,forms,templates,consents]=await Promise.all([
