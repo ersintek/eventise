@@ -9,6 +9,9 @@ Mobil uyumlu kurum paneli ilk ürün demosu. Docker ile çalışır ve Dokploy'a
 - Duyuru metninden tarih, saat ve kontenjan çıkaran üç adımlı oluşturma akışı
 - Kayıt modeli, görünürlük ve onam seçimi
 - Tarayıcıda kalıcı taslaklar ve taslaktan yayınlama
+- Katılımcı arama, etkinlik/durum filtreleri ve başvuru sayaçları
+- Tekli veya toplu kabul, ret ve yedek liste işlemleri
+- UTF-8 uyumlu CSV katılımcı dışa aktarımı
 
 ```bash
 docker compose up --build

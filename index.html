@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="events.css" />
+  <link rel="stylesheet" href="participants.css" />
 </head>
 <body>
   <aside class="sidebar" aria-label="Ana menü">
@@ -19,7 +20,7 @@
       <p>ÇALIŞMA ALANI</p>
       <a class="active" href="#dashboard" data-view="dashboard"><span>⌂</span> Genel bakış</a>
       <a href="#events" data-view="events"><span>◇</span> Etkinlikler <em id="eventCount">4</em></a>
-      <a href="#people"><span>♧</span> Katılımcılar</a>
+      <a href="#participants" data-view="participants"><span>♧</span> Katılımcılar <em id="pendingCount">12</em></a>
       <a href="#messages"><span>✉</span> İletişim</a>
       <p>YÖNETİM</p>
       <a href="#team"><span>♙</span> Kurum ekibi</a>
@@ -69,6 +70,16 @@
       <div class="event-cards" id="eventCards"></div>
       <div class="empty-state" id="eventEmpty" hidden><span>◇</span><h2>Etkinlik bulunamadı</h2><p>Aramanızı değiştirin veya yeni bir etkinlik oluşturun.</p></div>
     </section>
+    <section id="participants" class="content app-view" hidden>
+      <div class="page-title"><div><p class="eyebrow">BAŞVURU YÖNETİMİ</p><h1>Katılımcılar</h1><p>Başvuruları değerlendirin ve katılım sürecini takip edin.</p></div><button class="secondary" id="exportParticipants">⇩ CSV dışa aktar</button></div>
+      <div class="participant-stats"><article><span>Toplam başvuru</span><b id="totalApplicants">0</b><small>Tüm etkinlikler</small></article><article><span>Değerlendirme bekliyor</span><b id="pendingApplicants">0</b><small>İşlem gerektiriyor</small></article><article><span>Kabul edildi</span><b id="acceptedApplicants">0</b><small>Katılım hakkı kazandı</small></article><article><span>Yedek liste</span><b id="waitlistedApplicants">0</b><small>Kontenjan bekliyor</small></article></div>
+      <section class="panel participant-panel">
+        <div class="participant-toolbar"><div class="search">⌕ <input id="participantSearch" type="search" placeholder="Ad veya e-posta ara..." aria-label="Katılımcı ara"></div><select id="participantEvent" aria-label="Etkinlik filtresi"><option value="all">Tüm etkinlikler</option></select><select id="participantStatus" aria-label="Durum filtresi"><option value="all">Tüm durumlar</option><option value="pending">Bekliyor</option><option value="accepted">Kabul edildi</option><option value="waitlisted">Yedek liste</option><option value="rejected">Reddedildi</option></select></div>
+        <div class="bulk-bar" id="bulkBar" hidden><b><span id="selectedCount">0</span> kişi seçildi</b><button data-bulk="accepted">Kabul et</button><button data-bulk="waitlisted">Yedeğe al</button><button class="danger" data-bulk="rejected">Reddet</button></div>
+        <div class="table-wrap"><table><thead><tr><th><input type="checkbox" id="selectAll" aria-label="Tümünü seç"></th><th>Katılımcı</th><th>Etkinlik</th><th>Başvuru tarihi</th><th>Durum</th><th></th></tr></thead><tbody id="participantRows"></tbody></table></div>
+        <div class="empty-state compact" id="participantEmpty" hidden><span>♧</span><h2>Başvuru bulunamadı</h2><p>Filtreleri değiştirerek tekrar deneyin.</p></div>
+      </section>
+    </section>
   </main>
 
   <dialog id="eventDialog"><form id="eventForm">
@@ -80,7 +91,7 @@
     <section class="wizard-step" data-step="3"><div class="publish-card"><span>◎</span><div><h3>Kimler görebilir?</h3><p>Etkinlik sayfasının görünürlüğünü seçin.</p></div></div><div class="radio-cards"><label><input type="radio" name="visibility" value="public"><span><b>Herkese açık</b><small>Etkinlik sayfası herkese açıktır.</small></span></label><label class="selected"><input type="radio" name="visibility" value="link" checked><span><b>Bağlantıya sahip olanlar</b><small>Yalnızca bağlantıyı bilenler erişebilir.</small></span></label><label><input type="radio" name="visibility" value="invite"><span><b>Davetli</b><small>Yalnızca davet edilen hesaplar erişebilir.</small></span></label></div><label class="consent-check"><input id="addConsent" type="checkbox" checked> Standart katılım ve iletişim onamını ekle</label></section>
     <div class="actions"><button type="button" class="secondary" id="wizardBack">Vazgeç</button><button type="button" class="primary" id="wizardNext">Bilgileri çıkar →</button></div>
   </form></dialog>
-  <div id="toast" role="status"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
   <script src="app.js"></script>
 </body>
 </html>
