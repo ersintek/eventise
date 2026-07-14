@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="events.css" />
   <link rel="stylesheet" href="participants.css" />
+  <link rel="stylesheet" href="checkin.css" />
 </head>
 <body>
   <aside class="sidebar" aria-label="Ana menü">
@@ -21,6 +22,7 @@
       <a class="active" href="#dashboard" data-view="dashboard"><span>⌂</span> Genel bakış</a>
       <a href="#events" data-view="events"><span>◇</span> Etkinlikler <em id="eventCount">4</em></a>
       <a href="#participants" data-view="participants"><span>♧</span> Katılımcılar <em id="pendingCount">12</em></a>
+      <a href="#checkin" data-view="checkin"><span>▣</span> Etkinlik günü</a>
       <a href="#messages"><span>✉</span> İletişim</a>
       <p>YÖNETİM</p>
       <a href="#team"><span>♙</span> Kurum ekibi</a>
@@ -80,6 +82,16 @@
         <div class="empty-state compact" id="participantEmpty" hidden><span>♧</span><h2>Başvuru bulunamadı</h2><p>Filtreleri değiştirerek tekrar deneyin.</p></div>
       </section>
     </section>
+    <section id="checkin" class="content app-view" hidden>
+      <div class="page-title"><div><p class="eyebrow">SAHA OPERASYONU</p><h1>Etkinlik günü</h1><p>Katılım teyidi, ortak QR ve kapıda kayıt işlemleri.</p></div><select id="checkinEvent" class="event-select" aria-label="Aktif etkinlik"></select></div>
+      <div class="checkin-layout">
+        <aside class="panel qr-panel"><div class="live-label"><i></i> CANLI</div><h2>Ortak katılım QR'ı</h2><p>Katılımcılar telefonlarıyla okutup güvenli şekilde teyit verebilir.</p><div class="qr" aria-label="Ortak etkinlik QR kodu"><span>▦▥▦▥▦<br>▥▦▤▦▥<br>▦▤▦▥▦<br>▥▦▥▤▥<br>▦▥▦▥▦</span><b>b</b></div><small>QR yalnızca etkinliği tanımlar; katılımcı bilgisi içermez.</small><button class="secondary" id="fullscreenQr">⛶ Tam ekran göster</button></aside>
+        <div class="checkin-main">
+          <div class="checkin-stats"><article><span>Toplam kayıtlı</span><b id="checkinTotal">0</b></article><article class="success"><span>Katılım teyidi</span><b id="checkinDone">0</b><small id="checkinRate">%0</small></article><article><span>Beklenen</span><b id="checkinWaiting">0</b></article><article><span>Kapıda kayıt</span><b id="doorCount">0</b></article></div>
+          <section class="panel live-list"><div class="live-toolbar"><div><h2>Katılımcılar</h2><p>Anlık katılım listesi</p></div><button class="primary" id="openDoorRegistration">＋ Kapıda kayıt</button></div><div class="search live-search">⌕ <input id="checkinSearch" type="search" placeholder="Ad veya e-posta ile ara..." aria-label="Katılımcı ara"></div><div id="checkinRows" class="checkin-rows"></div><div id="checkinEmpty" class="empty-state compact" hidden><span>⌕</span><h2>Katılımcı bulunamadı</h2></div></section>
+        </div>
+      </div>
+    </section>
   </main>
 
   <dialog id="eventDialog"><form id="eventForm">
@@ -91,6 +103,7 @@
     <section class="wizard-step" data-step="3"><div class="publish-card"><span>◎</span><div><h3>Kimler görebilir?</h3><p>Etkinlik sayfasının görünürlüğünü seçin.</p></div></div><div class="radio-cards"><label><input type="radio" name="visibility" value="public"><span><b>Herkese açık</b><small>Etkinlik sayfası herkese açıktır.</small></span></label><label class="selected"><input type="radio" name="visibility" value="link" checked><span><b>Bağlantıya sahip olanlar</b><small>Yalnızca bağlantıyı bilenler erişebilir.</small></span></label><label><input type="radio" name="visibility" value="invite"><span><b>Davetli</b><small>Yalnızca davet edilen hesaplar erişebilir.</small></span></label></div><label class="consent-check"><input id="addConsent" type="checkbox" checked> Standart katılım ve iletişim onamını ekle</label></section>
     <div class="actions"><button type="button" class="secondary" id="wizardBack">Vazgeç</button><button type="button" class="primary" id="wizardNext">Bilgileri çıkar →</button></div>
   </form></dialog>
+  <dialog id="doorDialog"><form id="doorForm"><button type="button" class="close door-close" aria-label="Kapat">×</button><span class="modal-icon">＋</span><h2>Kapıda kayıt</h2><p>Yeni katılımcı kaydı oluşturulur ve katılımı aynı anda teyit edilir.</p><div class="form-grid"><label class="wide">Ad soyad<input id="doorName" required maxlength="80"></label><label class="wide">E-posta<input id="doorEmail" required type="email" maxlength="120"></label><label>Telefon (isteğe bağlı)<input id="doorPhone" type="tel" maxlength="30"></label><label>Onam<label class="inline-check"><input id="doorConsent" type="checkbox" required> Katılım onamı alındı</label></label></div><div class="actions"><button type="button" class="secondary door-close">Vazgeç</button><button type="submit" class="primary">Kaydet ve teyit et</button></div></form></dialog>
   <div id="toast" role="status" aria-live="polite"></div>
   <script src="app.js"></script>
 </body>

@@ -12,6 +12,9 @@ Mobil uyumlu kurum paneli ilk ürün demosu. Docker ile çalışır ve Dokploy'a
 - Katılımcı arama, etkinlik/durum filtreleri ve başvuru sayaçları
 - Tekli veya toplu kabul, ret ve yedek liste işlemleri
 - UTF-8 uyumlu CSV katılımcı dışa aktarımı
+- Kişisel veri içermeyen ortak etkinlik QR ekranı
+- İdempotent katılım teyidi ve canlı saha sayaçları
+- Mükerrer e-posta kontrolüyle kapıda kayıt
 
 ```bash
 docker compose up --build
