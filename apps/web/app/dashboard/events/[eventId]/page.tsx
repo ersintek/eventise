@@ -1,2 +1,29 @@
-import Link from 'next/link';import{cookies}from'next/headers';import{redirect}from'next/navigation';import{Applications}from'./applications';
-export default async function EventManagement({params}:{params:Promise<{eventId:string}>}){const token=(await cookies()).get('eventise_session')?.value;if(!token)redirect('/login');const orgs=await fetch(`${process.env.API_INTERNAL_URL}/api/organizations`,{headers:{authorization:`Bearer ${token}`},cache:'no-store'}).then(r=>r.json())as Array<{id:string}>;if(!orgs.length)redirect('/onboarding');const{eventId}=await params,organizationId=orgs[0].id,registrations=await fetch(`${process.env.API_INTERNAL_URL}/api/organizations/${organizationId}/events/${eventId}/registrations`,{headers:{authorization:`Bearer ${token}`},cache:'no-store'}).then(r=>r.json());return <main className="builder-shell"><header><Link href="/dashboard">← Etkinlikler</Link><div><p className="eyebrow">ETKİNLİK YÖNETİMİ</p><h1>Başvurular</h1><div className="action-links"><Link className="primary link-button"href={`/dashboard/events/${eventId}/day`}>Saha ekranı</Link><Link className="secondary link-button"href={`/dashboard/events/${eventId}/modules`}>Etkinlik modülleri</Link><Link className="secondary link-button"href={`/dashboard/events/${eventId}/post-event`}>Etkinlik sonrası</Link></div></div></header><Applications organizationId={organizationId}initial={registrations}/></main>}
+import Link from 'next/link';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { EventWorkspace } from './event-workspace';
+
+async function api<T>(path:string, token:string):Promise<T> {
+  const response=await fetch(`${process.env.API_INTERNAL_URL}/api/${path}`,{headers:{authorization:`Bearer ${token}`},cache:'no-store'});
+  if(response.status===401)redirect('/login');
+  if(!response.ok)throw new Error('Etkinlik verileri alınamadı.');
+  return response.json();
+}
+
+export default async function EventManagement({params}:{params:Promise<{eventId:string}>}) {
+  const token=(await cookies()).get('eventise_session')?.value;
+  if(!token)redirect('/login');
+  const organizations=await api<Array<{id:string;slug:string}>>('organizations',token);
+  if(!organizations.length)redirect('/onboarding');
+  const organization=organizations[0],{eventId}=await params;
+  const events=await api<Array<{id:string;title:string;slug:string;summary?:string;startsAt:string;endsAt:string;publicationStatus:string;registrationStatus:string;phase:string;visibility:string;registrationMode:string;capacity:number;_count:{registrations:number}}>>(`organizations/${organization.id}/events`,token);
+  const event=events.find(item=>item.id===eventId);
+  if(!event)redirect('/dashboard');
+  const [registrations,forms,templates,consents]=await Promise.all([
+    api<unknown[]>(`organizations/${organization.id}/events/${eventId}/registrations`,token),
+    api<unknown[]>(`organizations/${organization.id}/forms`,token),
+    api<unknown[]>(`organizations/${organization.id}/email-templates`,token),
+    api<unknown[]>(`public/events/${eventId}/consents`,token),
+  ]);
+  return <main className="builder-shell"><header><Link href="/dashboard">← Etkinlikler</Link><div><p className="eyebrow">ETKİNLİK ÖNCESİ</p><h1>{event.title}</h1><div className="action-links"><Link className="primary link-button" href={`/dashboard/events/${eventId}/day`}>Saha ekranı</Link><Link className="secondary link-button" href={`/dashboard/events/${eventId}/modules`}>Etkinlik modülleri</Link><Link className="secondary link-button" href={`/dashboard/events/${eventId}/post-event`}>Etkinlik sonrası</Link></div></div></header><EventWorkspace organization={organization} event={event} initialRegistrations={registrations} forms={forms} templates={templates} consents={consents}/></main>;
+}
