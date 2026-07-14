@@ -18,6 +18,9 @@ Mobil uyumlu kurum paneli ilk ürün demosu. Docker ile çalışır ve Dokploy'a
 - Düzenlenebilir hazır e-posta şablonları ve değişken doğrulama
 - Hedef kitle, kota kontrolü ve arka plan kuyruğu mantığıyla gönderim planlama
 - Planlanmış iletişimleri iptal etme ve teslimat özeti
+- Dört hazır kayıt formu şablonu ve özel form oluşturma
+- Alan türü, zorunluluk, veri sınıfı, seçenek ve sıralama yönetimi
+- Yayınlanan formu koruyan sürümleme ve Advanced koşullu soru ayarı
 
 ```bash
 docker compose up --build
