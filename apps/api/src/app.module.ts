@@ -12,9 +12,10 @@ import { EmailModule } from './infrastructure/email/email.module';
 import { StorageModule } from './infrastructure/storage/storage.module';
 import { HealthController } from './health.controller';
 import { BigIntSerializationInterceptor } from './shared/http/bigint-serialization.interceptor';
+import { validateEnvironment } from './config/environment';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, AuthModule, OrganizationsModule, TiersModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, AuthModule, OrganizationsModule, TiersModule],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }, { provide: APP_INTERCEPTOR, useClass: BigIntSerializationInterceptor }],
 })

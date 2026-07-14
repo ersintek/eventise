@@ -1,0 +1,9 @@
+'use client';
+import Link from 'next/link';
+import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
+export default function RegisterPage() {
+  const router=useRouter(),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+  async function submit(event:FormEvent<HTMLFormElement>){event.preventDefault();setBusy(true);setError('');const response=await fetch('/api/session/register',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(event.currentTarget)))});setBusy(false);if(!response.ok){setError((await response.json()).message??'Hesap oluşturulamadı.');return}router.push('/onboarding');router.refresh()}
+  return <main className="auth-shell"><section className="auth-brand"><div className="logo"><b>e</b>eventise</div><div><span>ÜCRETSİZ TIER 1</span><h1>Topluluğunuzu<br/><em>birlikte büyütün.</em></h1><p>20 aktif etkinlik, etkinlik başına 500 katılımcı ve güçlü operasyon araçları.</p></div></section><section className="auth-panel"><form className="auth-card" onSubmit={submit}><p className="eyebrow">HESAP OLUŞTUR</p><h2>Eventise’a katılın</h2><div className="two"><label>Ad<input name="firstName" required minLength={2}/></label><label>Soyad<input name="lastName" required minLength={2}/></label></div><label>E-posta<input name="email" type="email" required/></label><label>Şifre<input name="password" type="password" required minLength={12}/><small>En az 12 karakter; büyük/küçük harf ve rakam.</small></label>{error&&<p className="error">{error}</p>}<button className="primary" disabled={busy}>{busy?'Oluşturuluyor…':'Hesabımı oluştur'}</button><p className="auth-link">Zaten hesabınız var mı? <Link href="/login">Giriş yapın</Link></p></form></section></main>;
+}
