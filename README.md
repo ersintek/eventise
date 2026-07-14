@@ -15,6 +15,9 @@ Mobil uyumlu kurum paneli ilk ürün demosu. Docker ile çalışır ve Dokploy'a
 - Kişisel veri içermeyen ortak etkinlik QR ekranı
 - İdempotent katılım teyidi ve canlı saha sayaçları
 - Mükerrer e-posta kontrolüyle kapıda kayıt
+- Düzenlenebilir hazır e-posta şablonları ve değişken doğrulama
+- Hedef kitle, kota kontrolü ve arka plan kuyruğu mantığıyla gönderim planlama
+- Planlanmış iletişimleri iptal etme ve teslimat özeti
 
 ```bash
 docker compose up --build

@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="events.css" />
   <link rel="stylesheet" href="participants.css" />
   <link rel="stylesheet" href="checkin.css" />
+  <link rel="stylesheet" href="communications.css" />
 </head>
 <body>
   <aside class="sidebar" aria-label="Ana menü">
@@ -23,7 +24,7 @@
       <a href="#events" data-view="events"><span>◇</span> Etkinlikler <em id="eventCount">4</em></a>
       <a href="#participants" data-view="participants"><span>♧</span> Katılımcılar <em id="pendingCount">12</em></a>
       <a href="#checkin" data-view="checkin"><span>▣</span> Etkinlik günü</a>
-      <a href="#messages"><span>✉</span> İletişim</a>
+      <a href="#communications" data-view="communications"><span>✉</span> İletişim</a>
       <p>YÖNETİM</p>
       <a href="#team"><span>♙</span> Kurum ekibi</a>
       <a href="#templates"><span>▤</span> Şablonlar</a>
@@ -92,6 +93,11 @@
         </div>
       </div>
     </section>
+    <section id="communications" class="content app-view" hidden>
+      <div class="page-title"><div><p class="eyebrow">İLETİŞİM MERKEZİ</p><h1>E-postalar</h1><p>Katılımcı iletişimlerini hazırlayın ve güvenle planlayın.</p></div><button class="primary" id="newCampaign">＋ Yeni e-posta</button></div>
+      <div class="mail-overview"><article class="quota-card"><div><span>AYLIK ETKİNLİK E-POSTASI</span><b><i id="emailUsed">0</i> <small>/ <i id="emailLimit">0</i></small></b><p>Kota, bu ayki kayıtlı katılımcı sayısının 3 katıdır.</p></div><div class="quota-ring" id="quotaRing"><strong id="emailPercent">0%</strong></div></article><article><span>Planlandı</span><b id="scheduledCount">0</b><small>Kuyrukta bekleyen</small></article><article><span>Gönderildi</span><b id="sentCount">0</b><small>Bu ay</small></article><article><span>Teslim oranı</span><b>%98.6</b><small>Son 30 gün</small></article></div>
+      <div class="mail-layout"><section class="panel"><div class="panel-head"><div><h2>İletişim geçmişi</h2><p>Planlanan ve gönderilen mesajlar</p></div><select id="campaignFilter" aria-label="Gönderim durumu"><option value="all">Tümü</option><option value="scheduled">Planlandı</option><option value="sent">Gönderildi</option><option value="cancelled">İptal edildi</option></select></div><div id="campaignList" class="campaign-list"></div><div id="campaignEmpty" class="empty-state compact" hidden><span>✉</span><h2>Henüz e-posta yok</h2><p>İlk katılımcı iletişiminizi planlayın.</p></div></section><aside class="panel template-panel"><div class="panel-head"><div><h2>Hazır şablonlar</h2><p>Hızlı başlangıç</p></div></div><div id="templateList"></div></aside></div>
+    </section>
   </main>
 
   <dialog id="eventDialog"><form id="eventForm">
@@ -104,6 +110,7 @@
     <div class="actions"><button type="button" class="secondary" id="wizardBack">Vazgeç</button><button type="button" class="primary" id="wizardNext">Bilgileri çıkar →</button></div>
   </form></dialog>
   <dialog id="doorDialog"><form id="doorForm"><button type="button" class="close door-close" aria-label="Kapat">×</button><span class="modal-icon">＋</span><h2>Kapıda kayıt</h2><p>Yeni katılımcı kaydı oluşturulur ve katılımı aynı anda teyit edilir.</p><div class="form-grid"><label class="wide">Ad soyad<input id="doorName" required maxlength="80"></label><label class="wide">E-posta<input id="doorEmail" required type="email" maxlength="120"></label><label>Telefon (isteğe bağlı)<input id="doorPhone" type="tel" maxlength="30"></label><label>Onam<label class="inline-check"><input id="doorConsent" type="checkbox" required> Katılım onamı alındı</label></label></div><div class="actions"><button type="button" class="secondary door-close">Vazgeç</button><button type="submit" class="primary">Kaydet ve teyit et</button></div></form></dialog>
+  <dialog id="campaignDialog"><form id="campaignForm"><button type="button" class="close campaign-close" aria-label="Kapat">×</button><div class="wizard-head"><span class="modal-icon">✉</span><div><small>YENİ İLETİŞİM</small><h2>E-posta planla</h2></div></div><div class="form-grid campaign-form-grid"><label>Etkinlik<select id="campaignEvent" required></select></label><label>Hedef kitle<select id="campaignAudience"><option value="accepted">Kabul edilenler</option><option value="pending">Bekleyen başvurular</option><option value="waitlisted">Yedek liste</option><option value="all">Tüm başvurular</option></select></label><label class="wide">Şablon<select id="campaignTemplate"></select></label><label class="wide">Konu<input id="campaignSubject" required maxlength="120"></label><label class="wide">Mesaj<textarea id="campaignBody" required maxlength="5000"></textarea></label><div class="wide variable-help"><b>Kullanılabilir değişkenler</b><code>{{participant.first_name}}</code><code>{{event.name}}</code><code>{{event.start_date}}</code><code>{{event.location}}</code></div><label>Gönderim<select id="campaignTiming"><option value="now">Mümkün olan en kısa sürede</option><option value="scheduled">Tarih ve saatte</option></select></label><label id="scheduleField" hidden>Tarih ve saat<input id="campaignDate" type="datetime-local"></label></div><div class="recipient-preview"><span>Tahmini alıcı</span><b id="recipientCount">0 kişi</b><small id="quotaWarning"></small></div><div class="actions"><button type="button" class="secondary campaign-close">Vazgeç</button><button type="submit" class="primary">Gönderimi planla</button></div></form></dialog>
   <div id="toast" role="status" aria-live="polite"></div>
   <script src="app.js"></script>
 </body>
