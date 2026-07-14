@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../shared/persistence/prisma.service';
 
 export type JobHandler = (payload: Record<string, unknown>) => Promise<void>;
 @Injectable()
 export class JobRunnerService {
   private readonly handlers = new Map<string, JobHandler>();
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
   register(type: string, handler: JobHandler) { this.handlers.set(type, handler); }
   async runNext(workerId: string): Promise<boolean> {
     const candidate = await this.prisma.backgroundJob.findFirst({ where: { status: 'PENDING', runAt: { lte: new Date() } }, orderBy: { createdAt: 'asc' } });

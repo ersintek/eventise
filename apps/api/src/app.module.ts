@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuditModule } from './modules/audit/audit.module';
 import { AuthModule } from './modules/identity/auth.module';
 import { JwtAuthGuard } from './modules/identity/policies/jwt-auth.guard';
@@ -11,10 +11,11 @@ import { JobsModule } from './infrastructure/jobs/jobs.module';
 import { EmailModule } from './infrastructure/email/email.module';
 import { StorageModule } from './infrastructure/storage/storage.module';
 import { HealthController } from './health.controller';
+import { BigIntSerializationInterceptor } from './shared/http/bigint-serialization.interceptor';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, AuthModule, OrganizationsModule, TiersModule],
   controllers: [HealthController],
-  providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
+  providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }, { provide: APP_INTERCEPTOR, useClass: BigIntSerializationInterceptor }],
 })
 export class AppModule {}

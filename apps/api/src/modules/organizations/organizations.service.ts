@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../../shared/persistence/prisma.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
@@ -6,7 +6,7 @@ import { OrganizationAccessService } from './policies/organization-access.servic
 
 @Injectable()
 export class OrganizationsService {
-  constructor(private readonly prisma: PrismaService, private readonly access: OrganizationAccessService, private readonly audit: AuditService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService, @Inject(OrganizationAccessService) private readonly access: OrganizationAccessService, @Inject(AuditService) private readonly audit: AuditService) {}
   async create(userId: string, dto: CreateOrganizationDto) {
     const tier = await this.prisma.tier.findUnique({ where: { key: 'tier-1' } });
     if (!tier) throw new ConflictException('Varsayılan tier tanımlı değil. Sistem yöneticisine başvurun.');
