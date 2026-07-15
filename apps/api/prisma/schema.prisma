@@ -155,6 +155,8 @@ model User {
   firstName         String
   lastName          String
   preferredLanguage String   @default("tr")
+  emailNotifications Boolean @default(true)
+  partnerEventEmails Boolean @default(false)
   emailVerifiedAt   DateTime?
   status            AccountStatus @default(ACTIVE)
   systemRole        SystemRole @default(USER)
