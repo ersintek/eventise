@@ -1,0 +1,2 @@
+import { defineConfig, devices } from '@playwright/test';
+export default defineConfig({ testDir: './tests/web', timeout: 30_000, retries: 1, reporter: 'list', use: { baseURL: process.env.WEB_BASE_URL ?? 'https://eventise.167.114.2.234.sslip.io', trace: 'retain-on-failure' }, projects: [{ name: 'desktop-chrome', use: { ...devices['Desktop Chrome'], channel: 'chrome' } }, { name: 'mobile-edge', use: { ...devices['Pixel 7'], channel: 'msedge' } }] });

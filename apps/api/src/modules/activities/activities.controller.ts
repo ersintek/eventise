@@ -12,6 +12,9 @@ export class ActivitiesController {
   @Get('organizations/:organizationId/events/:eventId/games') list(@CurrentUser() u: AuthenticatedUser, @Param('organizationId') o: string, @Param('eventId') e: string) { return this.activities.list(u.id, o, e); }
   @Post('organizations/:organizationId/events/:eventId/games') create(@CurrentUser() u: AuthenticatedUser, @Param('organizationId') o: string, @Param('eventId') e: string, @Body() d: CreateDto) { return this.activities.create(u.id, o, e, d.title, d.prompt); }
   @Post('organizations/:organizationId/game-sessions/:id/open') open(@CurrentUser() u: AuthenticatedUser, @Param('organizationId') o: string, @Param('id') id: string) { return this.activities.open(u.id, o, id); }
+  @Post('organizations/:organizationId/game-sessions/:id/reveal') reveal(@CurrentUser() u: AuthenticatedUser, @Param('organizationId') o: string, @Param('id') id: string) { return this.activities.setStatus(u.id, o, id, 'REVEAL'); }
+  @Post('organizations/:organizationId/game-sessions/:id/complete') complete(@CurrentUser() u: AuthenticatedUser, @Param('organizationId') o: string, @Param('id') id: string) { return this.activities.setStatus(u.id, o, id, 'COMPLETED'); }
   @Get('game-sessions/:id/assignment') assignment(@CurrentUser() u: AuthenticatedUser, @Param('id') id: string) { return this.activities.myAssignment(u.id, id); }
+  @Get('game-sessions/:id/reveal') revealed(@CurrentUser() u: AuthenticatedUser, @Param('id') id: string) { return this.activities.revealedAnswer(u.id, id); }
   @Post('game-sessions/:id/responses') respond(@CurrentUser() u: AuthenticatedUser, @Param('id') id: string, @Body() d: ResponseDto) { return this.activities.respond(u.id, id, d.promptKey, d.answer); }
 }

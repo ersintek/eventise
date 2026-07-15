@@ -10,6 +10,7 @@
     "build": "npm run build -w @eventise/api && npm run build -w @eventise/web",
     "test": "npm run test -w @eventise/api",
     "test:cov": "npm run test:cov -w @eventise/api",
+    "test:web": "playwright test",
     "lint": "npm run lint -w @eventise/api",
     "db:generate": "npm run db:generate -w @eventise/api",
     "db:migrate": "npm run db:migrate -w @eventise/api",
@@ -29,5 +30,8 @@
   },
   "dependencies": {
     "uuid": "^11.1.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
   }
 }

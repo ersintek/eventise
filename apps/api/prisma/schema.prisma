@@ -115,6 +115,8 @@ enum GroupingStrategy {
 enum GameSessionStatus {
   DRAFT
   OPEN
+  REVEAL
+  COMPLETED
   CLOSED
 }
 enum AssessmentKind {

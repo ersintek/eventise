@@ -1,20 +1,18 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../shared/persistence/prisma.service';
 import { FeaturesService } from '../features/features.service';
-
 @Injectable()
 export class ParticipantService {
   constructor(@Inject(PrismaService) private prisma: PrismaService, @Inject(FeaturesService) private features: FeaturesService) {}
-
   async modules(userId: string, eventId: string) {
     await this.features.assertEnabled(eventId, 'participant_area');
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    const registration = user ? await this.prisma.eventRegistration.findUnique({ where: { eventId_email: { eventId, email: user.email } } }) : null;
+    const user = await this.prisma.user.findUnique({ where: { id: userId } }), registration = user ? await this.prisma.eventRegistration.findUnique({ where: { eventId_email: { eventId, email: user.email } } }) : null;
     if (!registration || registration.applicationStatus !== 'ACCEPTED') throw new NotFoundException('Kabul edilmiş katılımcı kaydı bulunamadı.');
+    const settings = await this.prisma.eventFeatureSetting.findMany({ where: { eventId, enabled: true }, select: { featureKey: true } }), enabled = new Set(settings.map(item => item.featureKey));
     const [assessments, feedback, games, resources, notifications] = await Promise.all([
-      this.prisma.assessment.findMany({ where: { eventId, open: true }, select: { id: true, kind: true, title: true, schema: true, submissions: { where: { registrationId: registration.id }, select: { id: true, score: true } } } }),
-      this.prisma.feedbackForm.findMany({ where: { eventId, open: true }, select: { id: true, title: true, schema: true, submissions: { where: { registrationId: registration.id }, select: { id: true } } } }),
-      this.prisma.gameSession.findMany({ where: { eventId, status: 'OPEN' }, select: { id: true, title: true, config: true, assignments: { where: { registrationId: registration.id } }, responses: { where: { registrationId: registration.id } } } }),
+      enabled.has('assessments') ? this.prisma.assessment.findMany({ where: { eventId, open: true }, select: { id: true, kind: true, title: true, schema: true, submissions: { where: { registrationId: registration.id }, select: { id: true, score: true } } } }) : [],
+      enabled.has('feedback') ? this.prisma.feedbackForm.findMany({ where: { eventId, open: true }, select: { id: true, title: true, schema: true, submissions: { where: { registrationId: registration.id }, select: { id: true } } } }) : [],
+      enabled.has('icebreaker') ? this.prisma.gameSession.findMany({ where: { eventId, status: { in: ['OPEN', 'REVEAL'] } }, select: { id: true, title: true, status: true, config: true, assignments: { where: { registrationId: registration.id } }, responses: { where: { registrationId: registration.id } } } }) : [],
       this.prisma.eventResource.findMany({ where: { eventId, visible: true }, select: { id: true, title: true, kind: true, externalUrl: true } }),
       this.prisma.inAppNotification.findMany({ where: { userId, eventId }, orderBy: { createdAt: 'desc' }, take: 20 }),
     ]);
