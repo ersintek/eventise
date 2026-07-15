@@ -1,1 +1,44 @@
-.check-in-card{max-width:560px}.check-in-actions{display:grid;gap:14px;margin-top:25px}.check-in-actions form label{display:block;font-size:11px;font-weight:700}.check-in-actions input{display:block;width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;margin:7px 0}.separator{text-align:center;color:var(--muted);font-size:10px}.field-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:25px;margin-top:30px;align-items:start}.qr-card,.operations-card{background:white;border:1px solid var(--line);border-radius:16px;padding:25px}.qr-card{text-align:center;position:sticky;top:20px}.qr-card img{width:min(100%,420px);display:block;margin:auto}.qr-card code{font-size:9px;word-break:break-all;color:var(--muted)}.field-operations{display:grid;gap:18px}.field-metrics{grid-template-columns:repeat(3,1fr);margin:0}.door-form{margin-top:0}.door-form>.primary{width:100%}.operations-head{display:flex;justify-content:space-between;align-items:center;gap:14px}.operations-head h2{margin:4px 0}.operations-head p{color:var(--muted);font-size:11px}.feature-switches{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.feature-switches button{border-radius:20px;padding:8px 11px;font-size:10px;font-weight:700}.feature-on{border:1px solid #2c8d66;background:#e3f4eb;color:#246c50}.feature-off{border:1px solid #cbd4d0;background:#fff;color:#66756f}.roster-search{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;margin:10px 0}.roster-list{max-height:420px;overflow:auto}.roster-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #edf2ef}.roster-row div,.roster-row small{display:block}.roster-row small{color:var(--muted);margin-top:3px}@media(max-width:800px){.field-grid{grid-template-columns:1fr}.field-metrics{grid-template-columns:repeat(3,1fr)}.qr-card{position:static}.operations-head{align-items:flex-start;flex-direction:column}}
+/* ============================================================
+   phase3.css — Etkinlik günü: check-in, saha operasyonları
+   ============================================================ */
+.check-in-card{max-width:35rem}
+.check-in-actions{display:grid;gap:.875rem;margin-top:1.5625rem}
+.check-in-actions form label{display:block;font-size:var(--fs-sm);font-weight:600}
+.check-in-actions input{display:block;width:100%;padding:.625rem .75rem;border:1px solid var(--line);border-radius:var(--radius-sm);margin:.4375rem 0}
+.separator{text-align:center;color:var(--muted);font-size:var(--fs-sm)}
+
+/* Saha düzeni (QR + operasyonlar) */
+.field-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:1.5625rem;margin-top:1.875rem;align-items:start}
+.qr-card,.operations-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:1.5625rem;box-shadow:var(--shadow-sm)}
+.qr-card{text-align:center;position:sticky;top:1.25rem}
+.qr-card img{width:min(100%,26rem);display:block;margin:auto}
+.qr-card code{font-size:var(--fs-xs);word-break:break-all;color:var(--muted)}
+
+.field-operations{display:grid;gap:1.125rem}
+.field-metrics{grid-template-columns:repeat(3,1fr);margin:0}
+.door-form{margin-top:0}
+.door-form>.primary{width:100%}
+
+.operations-head{display:flex;justify-content:space-between;align-items:center;gap:.875rem}
+.operations-head h2{margin:.25rem 0;font-size:var(--fs-lg);font-weight:700}
+.operations-head p{color:var(--muted);font-size:var(--fs-sm)}
+
+/* Özellik açma/kapama düğmeleri */
+.feature-switches{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.9375rem}
+.feature-switches button{border-radius:var(--radius-full);padding:.5rem .6875rem;font-size:var(--fs-sm);font-weight:600;cursor:pointer}
+.feature-on{border:1px solid var(--success-border);background:var(--success-bg);color:var(--success)}
+.feature-off{border:1px solid var(--line);background:var(--surface);color:var(--muted)}
+
+/* Katılımcı arama ve liste */
+.roster-search{width:100%;padding:.625rem .75rem;border:1px solid var(--line);border-radius:var(--radius-sm);margin:.625rem 0}
+.roster-list{max-height:26rem;overflow:auto}
+.roster-row{display:flex;justify-content:space-between;align-items:center;gap:.75rem;padding:.6875rem 0;border-bottom:1px solid var(--line-soft)}
+.roster-row div,.roster-row small{display:block}
+.roster-row small{color:var(--muted);margin-top:.1875rem}
+
+@media(max-width:800px){
+  .field-grid{grid-template-columns:1fr}
+  .field-metrics{grid-template-columns:repeat(3,1fr)}
+  .qr-card{position:static}
+  .operations-head{align-items:flex-start;flex-direction:column}
+}

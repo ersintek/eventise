@@ -1,1 +1,11 @@
-.usage-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:28px}.usage-grid article{background:#fff;border:1px solid var(--line);border-radius:15px;padding:22px}.usage-grid article>div{display:flex;justify-content:space-between}.usage-grid span{font-size:12px;font-weight:700}.usage-grid b{color:#2563eb}.usage-grid progress{width:100%;height:8px;margin:18px 0 8px;accent-color:#2563eb}.usage-grid p{font-size:10px;color:var(--muted);margin:0}@media(max-width:650px){.usage-grid{grid-template-columns:1fr}}
+/* ============================================================
+   product.css — Kota ve kullanım ekranları
+   ============================================================ */
+.usage-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9375rem;margin-top:1.75rem}
+.usage-grid article{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:1.375rem;box-shadow:var(--shadow-sm)}
+.usage-grid article>div{display:flex;justify-content:space-between}
+.usage-grid span{font-size:var(--fs-sm);font-weight:700}
+.usage-grid b{color:var(--primary);font-size:var(--fs-md)}
+.usage-grid progress{width:100%;height:8px;margin:1.125rem 0 .5rem;accent-color:var(--primary);border:0;border-radius:4px}
+.usage-grid p{font-size:var(--fs-sm);color:var(--muted);margin:0}
+@media(max-width:650px){.usage-grid{grid-template-columns:1fr}}

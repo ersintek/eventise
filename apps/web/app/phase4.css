@@ -1,1 +1,27 @@
-.action-links{display:flex;gap:8px;margin-top:12px}.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:30px}.module-grid article{background:white;border:1px solid var(--line);border-radius:14px;padding:20px}.module-grid h2{font-size:16px}.module-grid p{font-size:11px;color:var(--muted);line-height:1.5}.module-grid>.notice{grid-column:1/-1}.module-workspace{display:grid;grid-template-columns:minmax(280px,.75fr) minmax(0,1.25fr);gap:18px;align-items:start}.module-workspace label{display:block;font-size:11px;font-weight:700}.module-workspace input,.module-workspace textarea,.module-workspace select{display:block;width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;margin-top:6px}.module-workspace textarea{min-height:100px}.module-workspace details{border-top:1px solid var(--line);padding-top:12px}.module-workspace summary{cursor:pointer;font-size:11px;font-weight:700}.group-board,.results-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.participant-chip{display:block;background:#edf4ef;color:#285b47;padding:8px;border-radius:8px;margin:5px 0;font-size:11px}@media(max-width:800px){.module-grid,.module-workspace{grid-template-columns:1fr}.action-links{flex-wrap:wrap}.group-board,.results-list{grid-template-columns:1fr}}
+/* ============================================================
+   phase4.css — Etkinlik içi modüller: gruplar, oyunlar, testler
+   ============================================================ */
+.action-links{display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap}
+.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.9375rem;margin-top:1.875rem}
+.module-grid article{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--shadow-sm);transition:all var(--transition)}
+.module-grid article:hover{border-color:var(--primary-200);box-shadow:var(--shadow)}
+.module-grid h2{font-size:var(--fs-lg);font-weight:700;margin:0 0 .5rem}
+.module-grid p{font-size:var(--fs-sm);color:var(--muted);line-height:1.5}
+.module-grid>.notice{grid-column:1/-1}
+
+/* Modül çalışma alanı (sol ayar + sağ içerik) */
+.module-workspace{display:grid;grid-template-columns:minmax(280px,.75fr) minmax(0,1.25fr);gap:1.125rem;align-items:start}
+.module-workspace label{display:block;font-size:var(--fs-sm);font-weight:600}
+.module-workspace input,.module-workspace textarea,.module-workspace select{display:block;width:100%;padding:.625rem .75rem;border:1px solid var(--line);border-radius:var(--radius-sm);margin-top:.375rem}
+.module-workspace textarea{min-height:6.25rem}
+.module-workspace details{border-top:1px solid var(--line);padding-top:.75rem;margin-top:.5rem}
+.module-workspace summary{cursor:pointer;font-size:var(--fs-sm);font-weight:700}
+
+/* Grup panosu ve sonuç listesi */
+.group-board,.results-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+.participant-chip{display:block;background:var(--info-bg);color:var(--primary-dark);padding:.5rem;border-radius:var(--radius-sm);margin:.3125rem 0;font-size:var(--fs-sm)}
+
+@media(max-width:800px){
+  .module-grid,.module-workspace{grid-template-columns:1fr}
+  .group-board,.results-list{grid-template-columns:1fr}
+}
