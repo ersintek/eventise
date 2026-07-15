@@ -8,5 +8,6 @@ import './acceptance.css';
 import './product.css';
 import './participant.css';
 import './admin.css';
+import './operations.css';
 export const metadata: Metadata = { title: 'Eventise — STK Etkinlik Yönetimi', description: 'STK etkinliklerini uçtan uca yönetin.' };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="tr"><body>{children}</body></html>; }
