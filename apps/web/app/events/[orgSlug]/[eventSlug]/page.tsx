@@ -14,7 +14,7 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
   if (!response.ok) throw new Error('Etkinlik bilgileri alınamadı.');
   const event = await response.json() as EventData;
   const [consentResponse, formResponse] = await Promise.all([
-    fetch(`${base}/public/events/${event.id}/consents`, { cache: 'no-store' }),
+    fetch(`${base}/public/event-consents/${event.id}`, { cache: 'no-store' }),
     fetch(`${base}/public/event-forms/${event.id}`, { cache: 'no-store' }),
   ]);
   const consents = consentResponse.ok ? await consentResponse.json() : [];
