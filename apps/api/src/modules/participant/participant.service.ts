@@ -4,6 +4,12 @@ import { FeaturesService } from '../features/features.service';
 @Injectable()
 export class ParticipantService {
   constructor(@Inject(PrismaService) private prisma: PrismaService, @Inject(FeaturesService) private features: FeaturesService) {}
+  async registration(userId: string, eventId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true, firstName: true, lastName: true } });
+    if (!user) return null;
+    const registration = await this.prisma.eventRegistration.findUnique({ where: { eventId_email: { eventId, email: user.email } }, select: { id: true, applicationStatus: true } });
+    return { user, registration };
+  }
   async modules(userId: string, eventId: string) {
     await this.features.assertEnabled(eventId, 'participant_area');
     const user = await this.prisma.user.findUnique({ where: { id: userId } }), registration = user ? await this.prisma.eventRegistration.findUnique({ where: { eventId_email: { eventId, email: user.email } } }) : null;
