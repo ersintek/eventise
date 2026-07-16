@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { EventPhase, EventRegistrationStatus, EventVisibility, RegistrationMode } from '@prisma/client';
+import { EventFormat, EventPhase, EventRegistrationStatus, EventVisibility, RegistrationMode } from '@prisma/client';
 import { IsArray, IsDateString, IsEnum, IsInt, IsOptional, IsString, MaxLength, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -11,6 +11,8 @@ export class CreateEventDto {
   @IsOptional() @IsString() description?: string;
   @IsOptional() @IsString() venueName?: string;
   @IsOptional() @IsString() venueAddress?: string;
+  @IsOptional() @IsEnum(EventFormat) format?: EventFormat;
+  @IsOptional() @IsString() onlineLink?: string;
   @IsDateString() startsAt!: string;
   @IsDateString() endsAt!: string;
   @IsOptional() @IsString() timezone?: string;
@@ -30,6 +32,8 @@ export class UpdateEventDto {
   @IsOptional() @IsString() description?:string;
   @IsOptional() @IsString() venueName?:string;
   @IsOptional() @IsString() venueAddress?:string;
+  @IsOptional() @IsEnum(EventFormat) format?:EventFormat;
+  @IsOptional() @IsString() onlineLink?:string;
   @IsDateString() startsAt!:string;
   @IsDateString() endsAt!:string;
   @IsInt() @Min(1) capacity!:number;

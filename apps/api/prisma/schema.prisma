@@ -70,6 +70,11 @@ enum RegistrationMode {
   APPROVAL
   WAITLIST
 }
+enum EventFormat {
+  OFFLINE
+  ONLINE
+  HYBRID
+}
 enum RegistrationApplicationStatus {
   SUBMITTED
   PENDING
@@ -233,6 +238,8 @@ model Event {
   description String?
   venueName String?
   venueAddress String?
+  onlineLink String?
+  format EventFormat @default(OFFLINE)
   startsAt DateTime
   endsAt DateTime
   timezone String @default("Europe/Istanbul")

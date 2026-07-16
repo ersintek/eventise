@@ -277,6 +277,27 @@ button{border-radius:var(--radius-sm)}
 .roadmap-steps li .link-button{color:var(--primary);font-size:var(--fs-sm);font-weight:600;align-self:flex-start;padding:0}
 .roadmap-steps li .link-button:hover{text-decoration:underline}
 
+/* Ayar bölümleri (settings formunda görsel ayrım) */
+.event-settings{display:flex;flex-direction:column;gap:0}
+.settings-section{padding:1.5rem 0;border-bottom:1px solid var(--line-soft)}
+.event-settings .settings-section:first-child{padding-top:0}
+.event-settings .settings-section:last-of-type{border-bottom:0}
+.event-settings>.primary{margin-top:1rem}
+
+/* Markdown render (etkinlik açıklaması) */
+.prose{line-height:1.7;color:var(--ink-secondary)}
+.prose h1,.prose h2,.prose h3{color:var(--ink);font-weight:var(--weight-extrabold);letter-spacing:var(--tracking-tight);margin:1.5rem 0 .75rem}
+.prose h1{font-size:var(--fs-xl)}
+.prose h2{font-size:var(--fs-lg)}
+.prose h3{font-size:var(--fs-md)}
+.prose p{margin:.75rem 0}
+.prose ul,.prose ol{margin:.75rem 0;padding-left:1.5rem}
+.prose li{margin:.375rem 0}
+.prose strong{color:var(--ink);font-weight:700}
+.prose a{color:var(--primary);font-weight:600}
+.prose blockquote{border-left:3px solid var(--primary);padding-left:1rem;margin:1rem 0;color:var(--muted)}
+.prose code{background:var(--cream);padding:.125rem .375rem;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:var(--fs-xs)}
+
 @media(max-width:800px){
   .workspace-grid{grid-template-columns:1fr}
   .workspace-card.wide{grid-column:auto}
