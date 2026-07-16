@@ -54,11 +54,10 @@
 /* Etkinlik içi navigasyon */
 .event-nav{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);margin:1.125rem 0;padding:.75rem 1rem}
 .event-nav-back{padding:.125rem .25rem .75rem;border-bottom:1px solid var(--line-soft);font-size:var(--fs-sm);font-weight:700;color:var(--primary)}
-.event-nav-groups{display:flex;gap:1.75rem;padding-top:.625rem;overflow-x:auto}
-.event-nav-groups>div{display:flex;align-items:center;gap:.25rem;white-space:nowrap}
-.event-nav-groups small{color:var(--muted-light);font-size:var(--fs-xs);font-weight:800;margin-right:.25rem}
-.event-nav a{font-size:var(--fs-sm);color:var(--muted);padding:.4375rem .5625rem;border-radius:var(--radius-sm)}
-.event-nav a.active{background:var(--primary-50);color:var(--primary);font-weight:700}
+.event-nav-links{display:flex;gap:.375rem;padding-top:.625rem;overflow-x:auto;flex-wrap:wrap}
+.event-nav-links a{font-size:var(--fs-sm);color:var(--muted);padding:.4375rem .75rem;border-radius:var(--radius-sm);white-space:nowrap;font-weight:600;transition:all var(--transition)}
+.event-nav-links a:hover{background:var(--line-soft);color:var(--ink)}
+.event-nav-links a.active{background:var(--primary);color:#fff;font-weight:700}
 
 /* Etkinlik ızgarası (liste görünümü) */
 .event-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.875rem}
@@ -118,9 +117,7 @@
   .quick-metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:.4375rem}
   .quick-metrics article{padding:.75rem}
   .quick-metrics b{font-size:1.25rem}
-  .event-nav-groups{gap:.875rem}
-  .event-nav-groups>div{align-items:flex-start;flex-direction:column}
-  .event-nav-groups small{margin-bottom:.125rem}
+  .event-nav-links{gap:.25rem;flex-wrap:nowrap}
   .event-manage{font-size:0}
   .event-manage span{font-size:1.125rem}
   .page-heading>.primary{padding:.625rem;font-size:0}

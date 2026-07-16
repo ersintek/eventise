@@ -242,6 +242,20 @@ button{border-radius:var(--radius-sm)}
 .template-form{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius-md);padding:1rem;display:flex;flex-direction:column;gap:.4375rem}
 .template-form label{font-size:var(--fs-xs);font-weight:600}
 
+/* Kayıt amaç seçimi (STK / Katılımcı) */
+.intent-choice h2{margin:.5rem 0 .25rem}
+.intent-subtitle{color:var(--muted);font-size:var(--fs-sm);margin:0 0 1.5rem}
+.intent-card{display:flex;align-items:center;gap:.875rem;width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius-md);padding:1.125rem 1.25rem;margin-bottom:.75rem;cursor:pointer;transition:all var(--transition)}
+.intent-card:hover{border-color:var(--primary);background:var(--primary-50);transform:translateY(-1px);box-shadow:var(--shadow)}
+.intent-icon{flex:none;font-size:1.5rem;line-height:1;width:2.75rem;height:2.75rem;display:grid;place-items:center;background:var(--primary-50);border-radius:var(--radius-md)}
+.intent-card div{flex:1;min-width:0}
+.intent-card b{display:block;font-size:var(--fs-md);font-weight:700;margin-bottom:.1875rem}
+.intent-card small{display:block;font-size:var(--fs-sm);color:var(--muted);line-height:1.45}
+.intent-arrow{flex:none;color:var(--muted-light);font-size:var(--fs-lg);font-weight:700;transition:transform var(--transition),color var(--transition)}
+.intent-card:hover .intent-arrow{color:var(--primary);transform:translateX(4px)}
+.intent-back{background:transparent;border:0;color:var(--muted);font-size:var(--fs-sm);margin-top:.75rem;cursor:pointer;width:100%}
+.intent-back:hover{color:var(--primary)}
+
 /* AI taslak çıkarma (katlanır bölüm) */
 .smart-draft{border:1px solid var(--line);border-radius:var(--radius-md);padding:.8125rem;margin-top:1rem}
 .smart-draft summary{cursor:pointer;font-size:var(--fs-sm);font-weight:700;color:var(--ink-secondary)}
@@ -253,6 +267,15 @@ button{border-radius:var(--radius-sm)}
 .danger-zone h2{color:var(--danger)}
 .danger-zone button{background:var(--danger);color:#fff;border:0;border-radius:var(--radius-sm);padding:.5rem .875rem;font-size:var(--fs-sm);font-weight:600;cursor:pointer}
 .danger-zone button:hover{background:#be123c}
+
+/* Etkinlik yol haritası (faz bazlı süreç rehberi) */
+.roadmap-card{background:linear-gradient(135deg,var(--surface),var(--primary-50));border-color:var(--primary-100)}
+.roadmap-current{font-size:var(--fs-sm);color:var(--ink-secondary);margin:.5rem 0 1rem;line-height:1.5}
+.roadmap-steps{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.875rem}
+.roadmap-steps li{display:flex;flex-direction:column;gap:.3125rem;padding:.875rem 1rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);border-left:3px solid var(--primary)}
+.roadmap-steps li b{font-size:var(--fs-sm);font-weight:700;color:var(--ink)}
+.roadmap-steps li .link-button{color:var(--primary);font-size:var(--fs-sm);font-weight:600;align-self:flex-start;padding:0}
+.roadmap-steps li .link-button:hover{text-decoration:underline}
 
 @media(max-width:800px){
   .workspace-grid{grid-template-columns:1fr}

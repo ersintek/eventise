@@ -36,11 +36,12 @@ export function EventNav({ eventId, active, enabled = {} }: { eventId: string; a
   const link = (href: string, label: string, key: string) => (enabled[key] ?? true) ? <Link className={active === key ? 'active' : ''} href={href}>{label}</Link> : null;
   return <nav className="event-nav" aria-label="Etkinlik bölümleri">
     <div className="event-nav-back"><Link href="/dashboard">← Tüm etkinlikler</Link></div>
-    <div className="event-nav-groups">
-      <div><small>GENEL</small>{link(base, 'Etkinlik özeti', 'overview')}</div>
-      <div><small>HAZIRLIK</small>{link(base, 'Başvurular', 'applications')}{link(`${base}/modules`, 'Modüller', 'modules')}</div>
-      <div><small>ETKİNLİK GÜNÜ</small>{link(`${base}/day`, 'Kontrol merkezi', 'day')}</div>
-      <div><small>ETKİNLİK SONRASI</small>{link(`${base}/post-event`, 'Sonuçlar ve çıktılar', 'post')}</div>
+    <div className="event-nav-links">
+      {link(base, 'Genel bakış', 'overview')}
+      {link(base, 'Başvurular', 'applications')}
+      {link(`${base}/modules`, 'Modüller', 'modules')}
+      {link(`${base}/day`, 'Etkinlik günü', 'day')}
+      {link(`${base}/post-event`, 'Sonuçlar', 'post')}
     </div>
   </nav>;
 }
