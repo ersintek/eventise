@@ -5,7 +5,7 @@ type Intent='organizer'|'participant';
 
 export default function RegisterPage(){
   const router=useRouter(),[error,setError]=useState(''),[busy,setBusy]=useState(false),[intent,setIntent]=useState<Intent|''>('');
-  async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();setBusy(true);setError('');const form=e.currentTarget,data=Object.fromEntries(new FormData(form));data.intent=intent;const r=await fetch('/api/session/register',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});setBusy(false);if(!r.ok){setError((await r.json()).message??'Hesap oluşturulamadı.');return}router.push(intent==='participant'?'/participant':'/onboarding');router.refresh()}
+  async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();setBusy(true);setError('');const data=Object.fromEntries(new FormData(e.currentTarget));const r=await fetch('/api/session/register',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(data)});setBusy(false);if(!r.ok){setError((await r.json()).message??'Hesap oluşturulamadı.');return}router.push(intent==='participant'?'/participant':'/onboarding');router.refresh()}
   return <main className="auth-shell">
     <section className="auth-brand"><div className="logo"><b>e</b>eventise</div><div><span>ÜCRETSİZ TIER 1</span><h1>Topluluğunuzu<br/><em>birlikte büyütün.</em></h1><p>20 aktif etkinlik, etkinlik başına 500 katılımcı ve güçlü operasyon araçları.</p></div></section>
     <section className="auth-panel">
