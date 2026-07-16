@@ -12,7 +12,7 @@ export default function RegisterPage(){
       {!intent?<>
         <div className="auth-card intent-choice">
           <p className="eyebrow">HESAP OLUŞTUR</p>
-          <h2>NasıI devam edelim?</h2>
+          <h2>Nasıl devam edelim?</h2>
           <p className="intent-subtitle">Size uygun olanı seçin; istediğiniz zaman değiştirebilirsiniz.</p>
           <button type="button" className="intent-card" onClick={()=>setIntent('organizer')}>
             <span className="intent-icon">🏛️</span>
