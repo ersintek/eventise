@@ -33,16 +33,16 @@ export function MobileTopBar({ backHref = '/dashboard', backLabel = 'Ana sayfa' 
 
 export function EventNav({ eventId, active, enabled = {} }: { eventId: string; active: string; enabled?: Record<string, boolean> }) {
   const base = `/dashboard/events/${eventId}`;
-  const link = (href: string, label: string, key: string) => (enabled[key] ?? true) ? <Link className={active === key ? 'active' : ''} href={href}>{label}</Link> : null;
-  const external = (href: string, label: string, key: string) => (enabled[key] ?? true) ? <Link className={active === key ? 'active' : ''} href={href} target="_blank" rel="noopener noreferrer">{label} ↗</Link> : null;
+  const item = (href: string, label: string, key: string, external = false) => (enabled[key] ?? true) ? <Link className={active === key ? 'active' : ''} href={href} {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{label}{external && ' ↗'}</Link> : null;
   return <nav className="event-nav" aria-label="Etkinlik bölümleri">
     <div className="event-nav-back"><Link href="/dashboard">← Tüm etkinlikler</Link></div>
     <div className="event-nav-links">
-      {link(base, 'Genel bakış', 'overview')}
-      {link(base, 'Başvurular', 'applications')}
-      {link(`${base}/modules`, 'Modüller', 'modules')}
-      {external(`${base}/day`, 'Etkinlik günü', 'day')}
-      {link(`${base}/post-event`, 'Sonuçlar', 'post')}
+      {item(base, 'Dashboard', 'dashboard')}
+      {item(`${base}/settings`, 'Ayarlar', 'settings')}
+      {item(`${base}/modules`, 'Modüller', 'modules')}
+      {item(`${base}/communication`, 'İletişim', 'communication')}
+      {item(`${base}/day`, 'Etkinlik Günü', 'day', true)}
+      {item(`${base}/post-event`, 'Etkinlik Sonrası', 'post')}
     </div>
   </nav>;
 }
