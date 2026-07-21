@@ -7,12 +7,13 @@ export class ParticipantService {
   async registration(userId: string, eventId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true, firstName: true, lastName: true } });
     if (!user) return null;
-    const registration = await this.prisma.eventRegistration.findUnique({ where: { eventId_email: { eventId, email: user.email } }, select: { id: true, applicationStatus: true } });
+    const email = user.email.trim().toLowerCase();
+    const registration = await this.prisma.eventRegistration.findUnique({ where: { eventId_email: { eventId, email } }, select: { id: true, applicationStatus: true } });
     return { user, registration };
   }
   async modules(userId: string, eventId: string) {
     await this.features.assertEnabled(eventId, 'participant_area');
-    const user = await this.prisma.user.findUnique({ where: { id: userId } }), registration = user ? await this.prisma.eventRegistration.findUnique({ where: { eventId_email: { eventId, email: user.email } } }) : null;
+    const user = await this.prisma.user.findUnique({ where: { id: userId } }), email = user?.email.trim().toLowerCase(), registration = email ? await this.prisma.eventRegistration.findUnique({ where: { eventId_email: { eventId, email } } }) : null;
     if (!registration || registration.applicationStatus !== 'ACCEPTED') throw new NotFoundException('Kabul edilmiş katılımcı kaydı bulunamadı.');
     const settings = await this.prisma.eventFeatureSetting.findMany({ where: { eventId, enabled: true }, select: { featureKey: true } }), enabled = new Set(settings.map(item => item.featureKey));
     const [assessments, feedback, games, resources, notifications] = await Promise.all([

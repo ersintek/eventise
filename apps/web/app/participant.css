@@ -50,6 +50,22 @@
 .global-toast{position:fixed;right:1.5rem;bottom:1.5rem;z-index:50;background:var(--ink);color:#fff;border-radius:var(--radius-md);padding:.8125rem 1.0625rem;box-shadow:var(--shadow-lg);font-size:var(--fs-sm)}
 
 .participant-empty{margin-top:1.875rem}
+
+/* Bekleyen görev rozeti */
+.task-badge{display:inline-grid;place-items:center;min-width:1.375rem;height:1.375rem;padding:0 .3125rem;background:var(--danger);color:#fff;border-radius:var(--radius-full);font-size:var(--fs-xs);font-weight:800;margin-left:.4375rem;vertical-align:middle;box-shadow:0 2px 6px rgba(225,29,72,.3)}
+
+/* Yıldız rating */
+.star-rating{display:flex;gap:.125rem}
+.star-rating .star{background:transparent;border:0;font-size:1.5rem;line-height:1;color:var(--line);cursor:pointer;padding:.125rem;transition:color var(--transition),transform var(--transition)}
+.star-rating .star:hover{transform:scale(1.15)}
+.star-rating .star.filled{color:#f59e0b}
+.star-rating .star.filled:hover{color:#d97706}
+
+/* Resource link düzeltme */
+.resource-link{display:flex;align-items:center;gap:.5rem;padding:.5rem 0;border-bottom:1px solid var(--line-soft);font-size:var(--fs-sm);font-weight:600;color:var(--primary)}
+.resource-link a{color:var(--primary);text-decoration:none}
+.resource-link a:hover{text-decoration:underline}
+.resource-link small{color:var(--muted);font-weight:400}
 @media(max-width:650px){
   .participant-event>header{align-items:flex-start}
   .participant-modules{grid-template-columns:1fr}
