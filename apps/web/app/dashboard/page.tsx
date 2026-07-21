@@ -9,7 +9,7 @@ async function api<T>(path: string, token: string): Promise<T> {
   if (!response.ok) throw new Error('Veriler alınamadı.');
   return response.json();
 }
-const statusName: Record<string, string> = { PUBLISHED: 'Yayında', UNPUBLISHED: 'Taslak', OPEN: 'Başvuru açık', CLOSED: 'Başvuru kapalı' };
+const statusName: Record<string, string> = { PUBLISHED: 'Yayında', UNPUBLISHED: 'Taslak', DRAFT: 'Taslak', ARCHIVED: 'Arşivlendi', OPEN: 'Başvuru açık', CLOSED: 'Başvuru kapalı', NOT_OPEN: 'Başlamadı' };
 
 export default async function Dashboard() {
   const token = (await cookies()).get('eventise_session')?.value;
@@ -19,7 +19,8 @@ export default async function Dashboard() {
   const organization = organizations[0], events = await api<any[]>(`organizations/${organization.id}/events`, token), now = Date.now();
   const upcoming = events.filter(event => new Date(event.endsAt).getTime() >= now);
   const registrations = events.reduce((total, event) => total + (event._count?.registrations ?? 0), 0);
-  const drafts = events.filter(event => event.publicationStatus !== 'PUBLISHED').length;
+  const drafts = events.filter(event => event.publicationStatus === 'DRAFT' || event.publicationStatus === 'UNPUBLISHED').length;
+  const archived = events.filter(event => event.publicationStatus === 'ARCHIVED');
   return <main className="app-shell"><AppNav organization={organization} active="home" systemAdmin={me.systemRole === 'SYSTEM_ADMIN'} /><section className="dashboard"><MobileTopBar />
     <header className="page-heading"><div><p className="eyebrow">BUGÜN</p><h1>Merhaba {me.firstName || ''} 👋</h1><p>Etkinliklerinizde neler olduğuna birlikte bakalım.</p></div><Link className="primary link-button" href="/dashboard/events/new">+ Yeni etkinlik</Link></header>
     <section className="attention-card"><div><span className="attention-icon">✓</span><div><h2>{drafts ? `${drafts} konu sizi bekliyor` : 'Her şey yolunda'}</h2><p>{drafts ? `${drafts} etkinlik henüz yayınlanmadı.` : 'Yayın bekleyen etkinliğiniz yok.'}</p></div></div>{drafts > 0 && <a href="#events">Taslakları göster →</a>}</section>

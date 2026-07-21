@@ -5,5 +5,6 @@ export function assertEventDates(startsAt: Date, endsAt: Date, opensAt?: Date, c
   if (closesAt && closesAt > startsAt) throw new BadRequestException('Kayıt kapanışı etkinlik başlangıcından sonra olamaz.');
 }
 export function canTransitionPublication(from: string, to: string) {
+  if (from === to) return true;
   return ({ DRAFT: ['PUBLISHED','ARCHIVED'], PUBLISHED: ['UNPUBLISHED','ARCHIVED'], UNPUBLISHED: ['PUBLISHED','ARCHIVED'], ARCHIVED: [] } as Record<string,string[]>)[from]?.includes(to) ?? false;
 }

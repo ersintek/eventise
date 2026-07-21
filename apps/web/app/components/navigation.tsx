@@ -4,8 +4,7 @@ import { LogoutButton } from '../dashboard/logout-button';
 type Organization = { name: string; memberships?: Array<{ role?: string }> };
 
 const roleNames: Record<string, string> = {
-  OWNER: 'Kurum yöneticisi', ADMIN: 'Yönetici', EVENT_MANAGER: 'Etkinlik yöneticisi',
-  STAFF: 'Ekip üyesi', MEMBER: 'Üye',
+  ORGANIZATION_ADMIN: 'Kurum yöneticisi', OWNER: 'Kurum yöneticisi', ADMIN: 'Yönetici', EVENT_MANAGER: 'Etkinlik yetkilisi', FIELD_STAFF: 'Saha görevlisi', STAFF: 'Ekip üyesi', MEMBER: 'Üye', SYSTEM_ADMIN: 'Sistem yöneticisi',
 };
 
 function Mark() { return <div className="brand"><span>e</span><b>eventise</b></div>; }
