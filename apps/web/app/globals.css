@@ -244,7 +244,8 @@ button{border-radius:var(--radius-sm)}
 .slug-preview button{flex:none;padding:.5rem .625rem}
 
 .workspace-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
-.workspace-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:1.25rem;display:flex;flex-direction:column;gap:.75rem;box-shadow:var(--shadow-sm)}
+.workspace-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:1.25rem;display:flex;flex-direction:column;gap:.75rem;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition),border-color var(--transition)}
+.workspace-card:hover{box-shadow:var(--shadow);border-color:var(--primary-100)}
 .workspace-card.wide{grid-column:1/-1}
 .workspace-card input,.workspace-card textarea,.workspace-card select{width:100%}
 .workspace-card h2{font-size:var(--fs-lg);font-weight:700;margin:0 0 .25rem}
@@ -394,9 +395,10 @@ button{border-radius:var(--radius-sm)}
 
 /* Metrik kartları */
 .metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.875rem;margin-top:1.75rem}
-.metric-grid article{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--shadow-sm)}
+.metric-grid article{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--shadow-sm);transition:all var(--transition)}
+.metric-grid article:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
 .metric-grid span,.metric-grid small{display:block;color:var(--muted);font-size:var(--fs-xs)}
-.metric-grid b{display:block;font-size:1.5rem;margin:.5rem 0 .25rem;font-weight:800}
+.metric-grid b{display:block;font-size:1.875rem;margin:.5rem 0 .25rem;font-weight:800;letter-spacing:-.02em;color:var(--primary)}
 
 /* Durum noktası */
 .status-dot{display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:var(--success);margin-right:.375rem}
