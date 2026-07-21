@@ -406,3 +406,32 @@ button{border-radius:var(--radius-sm)}
   .app-nav nav a{white-space:nowrap}
   .app-nav .nav-button{margin-top:.25rem}
 }
+
+/* ============================================================
+   Etkinlik eylem çubuğu (toolbar) — tüm sekmelerde görünür
+   ============================================================ */
+.event-toolbar{display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;padding:.875rem 1rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);margin-bottom:1rem;box-shadow:var(--shadow-sm)}
+.event-toolbar-group{display:flex;align-items:center;gap:.625rem}
+.event-toolbar-spacer{flex:1}
+
+/* Aç/kapa düğmesi (slide toggle) */
+.toggle-switch{position:relative;display:inline-flex;align-items:center;gap:.5rem;cursor:pointer;user-select:none}
+.toggle-switch>span{font-size:var(--fs-xs);font-weight:600;color:var(--ink-secondary);white-space:nowrap}
+.toggle-track{position:relative;width:38px;height:22px;background:var(--danger);border-radius:var(--radius-full);transition:background var(--transition);flex:none}
+.toggle-track::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform var(--transition);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle-switch.on .toggle-track{background:var(--success)}
+.toggle-switch.on .toggle-track::after{transform:translateX(16px)}
+.toggle-switch.disabled{opacity:.5;cursor:not-allowed}
+
+/* Toolbar hızlı butonları */
+.toolbar-btn{display:inline-flex;align-items:center;gap:.375rem;background:var(--surface);border:1px solid var(--line);color:var(--ink-secondary);border-radius:var(--radius-sm);padding:.4375rem .6875rem;font-size:var(--fs-sm);font-weight:600;cursor:pointer;transition:all var(--transition)}
+.toolbar-btn:hover{border-color:var(--primary);color:var(--primary)}
+.toolbar-btn.danger:hover{border-color:var(--danger);color:var(--danger)}
+.toolbar-btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.toolbar-btn.primary:hover{background:var(--primary-dark)}
+
+@media(max-width:700px){
+  .event-toolbar{gap:.5rem;padding:.625rem}
+  .event-toolbar-group{gap:.4375rem}
+  .toggle-switch>span{display:none}
+}
