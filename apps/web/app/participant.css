@@ -23,7 +23,9 @@
 
 /* Bildirim kutusu */
 .participant-notice{border-left:3px solid var(--primary-light);padding:.5rem .625rem;background:var(--info-bg);border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin:.4375rem 0}
+.participant-notice.featured{border-left-width:4px;background:linear-gradient(135deg,var(--info-bg),var(--primary-50));padding:.875rem 1rem}
 .participant-notice b{font-size:var(--fs-sm)}
+.participant-notice small{display:block;color:var(--muted);font-size:var(--fs-xs);margin-top:.25rem}
 .participant-notice p,.participant-task p{font-size:var(--fs-sm);color:var(--muted);margin:.25rem 0}
 
 /* Başarı durumu */
