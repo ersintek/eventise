@@ -458,3 +458,27 @@ button{border-radius:var(--radius-sm)}
   .event-toolbar-group{gap:.4375rem}
   .toggle-switch>span{display:none}
 }
+
+/* Test soru editörü */
+.question-card{border:1px solid var(--line);border-radius:var(--radius-md);padding:.875rem;margin-bottom:.625rem;background:var(--cream)}
+.question-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem}
+.question-header span{font-weight:700;font-size:var(--fs-sm);color:var(--primary)}
+.question-header select{width:auto;margin:0}
+.question-input{font-weight:600;margin-bottom:.5rem}
+.options-editor{margin-top:.5rem}
+.option-row{display:flex;gap:.375rem;margin-bottom:.375rem;align-items:center}
+.option-row input{flex:1;margin:0}
+.correct-answer{margin-top:.5rem;font-size:var(--fs-sm)}
+.correct-answer label{font-weight:600;margin-bottom:.25rem}
+.option-check{display:inline-flex;align-items:center;gap:.25rem;margin-right:.625rem;font-weight:400}
+
+/* Assessment + submissions tablo */
+.assessment-header{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.assessment-header h3{margin:0}
+.submissions-table{width:100%;border-collapse:collapse;margin-top:.625rem}
+.submissions-table th{text-align:left;font-size:var(--fs-xs);color:var(--muted);font-weight:700;text-transform:uppercase;padding:.5rem;border-bottom:1px solid var(--line)}
+.submissions-table td{padding:.5rem;border-bottom:1px solid var(--line-soft);font-size:var(--fs-sm)}
+
+/* Feedback kart spacing */
+.participant-task{padding:1rem!important}
+.participant-task h4{margin-bottom:.625rem}

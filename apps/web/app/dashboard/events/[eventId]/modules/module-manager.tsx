@@ -3,33 +3,248 @@ import { FormEvent, useState } from 'react';
 import { ManualGroups } from './manual-groups';
 import { TestComparison } from './test-comparison';
 import { FeedbackEditor } from '../visual-editors';
+import { AssessmentEditor } from './assessment-editor';
 
-type Group={id:string;name:string;members:Array<{registration:{id:string;firstName:string;lastName:string}}>};
-type Game={id:string;title:string;status:string;_count:{participants:number;responses:number}};
-type Assessment={id:string;kind:'PRE_TEST'|'POST_TEST';title:string;open:boolean;_count:{submissions:number}};
-type Feedback={id:string;title:string;open:boolean;_count:{submissions:number}};
-type Feature={key:string;enabled:boolean}; type Person={id:string;firstName:string;lastName:string};
-type Comparison={pre:{submissions:number;average:number|null};post:{submissions:number;average:number|null};improvement:number|null};
+type Game = { id: string; title: string; status: string; _count: { participants: number; responses: number } };
+type Assessment = { id: string; kind: 'PRE_TEST' | 'POST_TEST'; title: string; open: boolean; _count: { submissions: number } };
+type Comparison = { pre: { submissions: number; average: number | null }; post: { submissions: number; average: number | null }; improvement: number | null };
 
-export function ModuleManager(p:{organizationId:string;eventId:string;initialGroups:Group[];initialGames:Game[];initialAssessments:Assessment[];initialFeedback:Feedback[];initialFeatures:Feature[];roster:Person[];initialComparison:Comparison}) {
- const {organizationId,eventId,roster}=p; const[tab,setTab]=useState('groups'),[groups,setGroups]=useState(p.initialGroups),[games,setGames]=useState(p.initialGames),[assessments,setAssessments]=useState(p.initialAssessments),[feedback,setFeedback]=useState(p.initialFeedback),[features,setFeatures]=useState(p.initialFeatures),[comparison,setComparison]=useState(p.initialComparison),[message,setMessage]=useState('');
- async function call(path:string,method='POST',body?:object){try{const response=await fetch(`/api/backend/${path}`,{method,headers:{'content-type':'application/json'},body:body?JSON.stringify(body):undefined});const text=await response.text();const data=text?JSON.parse(text):{};if(!response.ok){setMessage(Array.isArray(data.message)?data.message.join(' '):(data.message??'İşlem tamamlanamadı.'));return null}setMessage('İşlem tamamlandı.');return data}catch(err){setMessage('Bağlantı hatası: '+(err instanceof Error?err.message:'bilinmeyen hata'));return null}}
- async function enable(key:string){return true}
- async function generate(e:FormEvent<HTMLFormElement>){e.preventDefault();if(!await enable('groups'))return;const d=new FormData(e.currentTarget),r=await call(`organizations/${organizationId}/events/${eventId}/groups/generate`,'POST',{count:Number(d.get('count')),strategy:d.get('strategy'),balanceField:d.get('balanceField')||undefined});if(r)setGroups(r)}
- async function saveManual(values:string[][]){if(!await enable('groups'))return false;const r=await call(`organizations/${organizationId}/events/${eventId}/groups/manual`,'POST',{groups:values});if(r)setGroups(r);return Boolean(r)}
- async function createGame(e:FormEvent<HTMLFormElement>){e.preventDefault();if(!await enable('icebreaker'))return;const d=new FormData(e.currentTarget),created=await call(`organizations/${organizationId}/events/${eventId}/games`,'POST',{title:d.get('title'),prompt:d.get('prompt')});if(created){const opened=await call(`organizations/${organizationId}/game-sessions/${created.id}/open`);if(opened)setGames(v=>[{...created,status:'OPEN',_count:{participants:opened.assignments.length,responses:0}},...v])}}
- async function gameStatus(x:Game,action:'reveal'|'complete'){const r=await call(`organizations/${organizationId}/game-sessions/${x.id}/${action}`);if(r)setGames(v=>v.map(g=>g.id===x.id?{...g,status:r.status}:g))}
- async function createTest(e:FormEvent<HTMLFormElement>){e.preventDefault();if(!await enable('assessments'))return;const d=new FormData(e.currentTarget),questions=String(d.get('questions')).split('\n').map((line,i)=>{const parts=line.split('|');return{id:`q${i+1}`,type:'single',label:(parts[0]??'').trim(),correctAnswer:(parts[1]??'').trim()}}).filter(x=>x.label&&x.correctAnswer);if(!questions.length){setMessage('En az bir soru yazın. Format: Soru | doğru yanıt (her satıra bir soru). Örn: Başkentimiz neresi? | Ankara');return}const created=await call(`organizations/${organizationId}/events/${eventId}/assessments`,'POST',{kind:d.get('kind'),title:d.get('title'),questions});if(created){await call(`organizations/${organizationId}/assessments/${created.id}/open`,'PATCH',{open:true});setAssessments(v=>[{...created,open:true,_count:{submissions:0}},...v])}}
- async function copyTest(x:Assessment){const kind=x.kind==='PRE_TEST'?'POST_TEST':'PRE_TEST',r=await call(`organizations/${organizationId}/assessments/${x.id}/copy`,'POST',{kind,title:`${x.title} — ${kind==='POST_TEST'?'Son test':'Ön test'}`});if(r)setAssessments(v=>[{...r,open:false,_count:{submissions:0}},...v])}
- async function createFeedback(e:FormEvent<HTMLFormElement>){e.preventDefault();if(!await enable('feedback'))return;const d=new FormData(e.currentTarget),questions=(JSON.parse(String(d.get('questions')??'[]'))as Array<{label:string;type:string}>).filter(q=>q.label.trim());if(!questions.length){setMessage('En az bir soru ekleyin.');return}const r=await call(`organizations/${organizationId}/events/${eventId}/feedback`,'POST',{title:d.get('title'),schema:{questions:questions.map((q,i)=>({id:`q${i+1}`,type:q.type,label:q.label}))}});if(r){await call(`organizations/${organizationId}/feedback/${r.id}/open`,'PATCH',{open:true});setFeedback(v=>[{...r,open:true,_count:{submissions:0}},...v])}}
- const tabs=[['groups','Gruplar'],['game','Tanışma oyunu'],['tests','Testler'],['feedback','Geri bildirim'],['notifications','Duyurular'],['resources','Kaynaklar']];
- const intro:{[k:string]:{title:string;desc:string}}={groups:{title:'Katılımcıları gruplara ayırın',desc:'Atölye veya küçük grup çalışmaları için katılımcıları otomatik veya elle gruplara bölün.'},game:{title:'Buz kırıcı tanışma oyunu',desc:'Katılımcıların birbirini tanıması için eğlenceli, etkileşimli bir oyun başlatın.'},tests:{title:'Ön test ve son test',desc:'Etkinlik öncesi ve sonrası bilgi düzeyini ölçün, değişimi karşılaştırın.'},feedback:{title:'Katılımcı geri bildirimi',desc:'Etkinlik hakkındaki görüşleri toplayın ve geliştirme noktalarını görün.'},notifications:{title:'Katılımcılara duyuru',desc:'Etkinlik alanındaki tüm katılımcılara anlık bildirim gönderin.'},resources:{title:'Dosya ve bağlantı paylaşımı',desc:'Katılımcılarla sunum, döküman veya harici bağlantı paylaşın. Etkinlik sırasında ve sonrasında kullanılabilir.'}};
- return <><nav className="workspace-tabs">{tabs.map(([k,l])=><button key={k} className={tab===k?'active':''} onClick={()=>setTab(k)}>{l}</button>)}</nav>{intro[tab]&&<div className="section-intro"><h2>{intro[tab].title}</h2><p>{intro[tab].desc}</p></div>}{message&&<p className="notice">{message}</p>}<section className="module-workspace">
- {tab==='groups'&&<><form className="workspace-card" onSubmit={generate}><div className="section-intro"><h2>Otomatik gruplama</h2><p>Sistem, katılımcıları seçtiğiniz sayıda gruba böler.</p></div><label>Grup sayısı<input name="count" type="number" min="1" defaultValue="2"/></label><label>Dağıtım yöntemi<select name="strategy"><option value="RANDOM">Rastgele — karışık dağıt</option><option value="BALANCED">Dengeli — ölçüte göre</option></select></label><label>Denge ölçütü <span className="tooltip" data-tip="Dengeli dağıtımda grupları homojenleştirmek için kayıt formundaki bir alanı seçin. Örneğin kurum, şehir veya deneyim seviyesi.">(?)</span><input name="balanceField" placeholder="Örn. kurum, şehir (isteğe bağlı)"/></label><button className="primary">Grupları oluştur</button></form><div className="group-board">{groups.map(g=><article className="workspace-card" key={g.id}><h3>{g.name}</h3>{g.members.map(m=><span className="participant-chip" key={m.registration.id}>{m.registration.firstName} {m.registration.lastName}</span>)}</article>)}</div><ManualGroups people={roster} initial={groups.map(g=>g.members.map(m=>m.registration.id))} onSave={saveManual}/></>}
- {tab==='game'&&<><form className="workspace-card" onSubmit={createGame}><div className="section-intro"><h2>Tanışma oyunu başlat</h2><p>“Başkasının yanıtını oku” oyunu: herkese bir soru sorulur, yanıtlar toplanır, sonra herkes başka birinin yanıtını okur.</p></div><label>Oyun başlığı<input name="title" defaultValue="Başkasının Yanıtını Oku"/></label><label>Katılımcılara sorulacak soru<textarea name="prompt" required placeholder="Örn. Bu etkinlikten en çok ne bekliyorsunuz?"/></label><button className="primary">Oluştur ve katılımcılara aç</button><small className="field-help">Oyun açıldığında katılımcılar alanlarından yanıt verebilir. Yeterli yanıt toplanınca “Yanıtları göster” ile paylaşım aşamasına geçebilirsiniz.</small></form>{games.map(g=><article className="workspace-card" key={g.id}><h3>{g.title}</h3><p>{g.status} · {g._count.responses}/{g._count.participants} yanıt</p>{g.status==='OPEN'&&<button className="primary" onClick={()=>gameStatus(g,'reveal')}>Yanıtları göster</button>}{g.status==='REVEAL'&&<button className="primary" onClick={()=>gameStatus(g,'complete')}>Oyunu tamamla</button>}</article>)}</>}
- {tab==='tests'&&<><form className="workspace-card" onSubmit={createTest}><div className="section-intro"><h2>Test oluşturun</h2><p>Ön test ile katılımcının başlangıç düzeyini, son test ile etkinlik sonrası gelişimi ölçün.</p></div><label>Test türü<select name="kind"><option value="PRE_TEST">Ön test — etkinlik öncesi</option><option value="POST_TEST">Son test — etkinlik sonrası</option></select></label><label>Test başlığı<input name="title" placeholder="Örn. Etkinlik bilgi testi" required/></label><div className="hint-box">Hazır şablonu seçip düzenleyebilir veya aşağıya kendi sorularınızı yazabilirsiniz.</div><label>Şablon seç (isteğe bağlı)<select name="template" defaultValue="" onChange={e=>{const ta=(e.currentTarget.form as HTMLFormElement).querySelector('[name=questions]') as HTMLTextAreaElement;if(ta&&e.currentTarget.value)ta.value=e.currentTarget.value}}><option value="">— Şablon seçin —</option><option value={"Bu etkinlikten ne bekliyorsunuz? | \nHangi konuda bilgi sahibisiniz? | \nKatılım motivasyonunuz nedir? | "}>Beklenti anketi (ön test)</option><option value={"Etkinliğin ana teması neydi? | \nEn çok hangi bölümü faydalı buldunuz? | \nÖğrendiğiniz en önemli şey ne? | "}>Kazanım değerlendirme (son test)</option><option value={"Etkinlik hangi alana odaklandı? | \nÜç temel çıktıdan biri nedir? | \nEtkinlik sonrası ilk adım ne olmalı? | "}>Genel bilgi testi</option></select></label><label>Sorular <span className="tooltip" data-tip="Her satıra: Soru metni | doğru yanıt. Örnek: Türkiye'nin başkenti neresidir? | Ankara">(?)</span><textarea name="questions" required placeholder={"Soru metni | doğru yanıt\nDiğer soru | yanıtı"}/></label><button className="primary">Oluştur ve aç</button><small className="field-help">Test oluşturulur oluşturulmaz katılımcılara açılır. Katılımcı yanıtladıktan sonra sonuçlar burada görünür.</small></form><TestComparison comparison={comparison}/><button className="secondary" onClick={async()=>{const r=await call(`organizations/${organizationId}/events/${eventId}/assessments/comparison`,'GET');if(r)setComparison(r)}}>Karşılaştırmayı yenile</button>{assessments.map(a=><article className="workspace-card" key={a.id}><h3>{a.title}</h3><p>{a.kind==='PRE_TEST'?'Ön test':'Son test'} · {a._count.submissions} yanıt</p><button className="secondary" onClick={()=>copyTest(a)}>Diğer teste kopyala</button></article>)}</>}
- {tab==='feedback'&&<><form className="workspace-card" onSubmit={createFeedback}><div className="section-intro"><h2>Geri bildirim formu oluşturun</h2><p>Katılımcılara etkinliğin farklı yönleriyle ilgili sorular sorun. Puan (1-5) veya açık yanıt türlerini kullanın.</p></div><label>Form başlığı<input name="title" defaultValue="Etkinlik geri bildirimi" required/></label><FeedbackEditor/><button className="primary">Oluştur ve aç</button><small className="field-help">Form oluşturulur oluşturulmaz katılımcılara açılır. Katılımcıların yanıtları burada toplanır.</small></form>{feedback.map(f=><article className="workspace-card" key={f.id}><h3>{f.title}</h3><p>{f._count.submissions} yanıt</p></article>)}</>}
- {tab==='notifications'&&<form className="workspace-card" onSubmit={async e=>{e.preventDefault();const d=new FormData(e.currentTarget);const r=await call(`organizations/${organizationId}/events/${eventId}/notifications`,'POST',{title:d.get('title'),body:d.get('body'),audience:d.get('audience')});if(r)setMessage(`Duyuru ${r.recipientCount} kişiye gönderildi.`)}}><div className="section-intro"><h2>Duyuru gönderin</h2><p>Bu mesaj seçtiğiniz katılımcıların etkinlik alanında anlık bildirim olarak görünür.</p></div><label>Hedef kitle <span className="tooltip" data-tip="Kabul edilenler: başvurusu kabul edilmiş herkes. Katılım teyidi verenler: etkinliğe giriş yapmış kişiler. Tüm kayıtlılar: başvuran herkes.">(?)</span><select name="audience" defaultValue="ACCEPTED"><option value="ACCEPTED">Kabul edilenler</option><option value="CHECKED_IN">Katılım teyidi verenler</option><option value="ALL">Tüm kayıtlılar</option></select></label><label>Başlık<input name="title" required placeholder="Örn. Öğle arası saati değişti"/></label><label>Mesaj<textarea name="body" required placeholder="Kısa ve net bir duyuru yazın."/></label><button className="primary">Duyuruyu gönder</button></form>}
- {tab==='resources'&&<><form className="workspace-card" onSubmit={async e=>{e.preventDefault();const d=new FormData(e.currentTarget);if(await call(`organizations/${organizationId}/events/${eventId}/resources/link`,'POST',{title:d.get('title'),url:d.get('url')}))setMessage('Kaynak bağlantısı paylaşıldı. Katılımcılar etkinlik alanında görebilir.')}}><div className="section-intro"><h2>Bağlantı paylaş</h2><p>Harici bir bağlantı (sunum, anket, form vb.) katılımcılarla paylaşın.</p></div><label>Başlık<input name="title" required placeholder="Örn. Etkinlik sunumu"/></label><label>URL<input name="url" type="url" required placeholder="https://…"/></label><button className="primary">Paylaş</button></form><form className="workspace-card" onSubmit={async e=>{e.preventDefault();const f=new FormData(e.currentTarget),file=f.get('file')as File;if(!file)return;setMessage('Dosya yükleniyor…');const grant=await call(`organizations/${organizationId}/events/${eventId}/resources/upload`,'POST',{name:file.name,contentType:file.type,sizeBytes:file.size});if(grant){const uploaded=await fetch(String(grant.uploadUrl).replace('/api/','/api/backend/'),{method:'PUT',headers:{'content-type':file.type},body:file});if(uploaded.ok&&await call(`organizations/${organizationId}/events/${eventId}/resources/confirm`,'POST',{title:f.get('title'),assetId:grant.assetId,reservationId:grant.reservationId}))setMessage('Dosya katılımcılarla paylaşıldı.');else setMessage('Dosya yüklenemedi.')}}}><div className="section-intro"><h2>Dosya paylaş</h2><p>PDF, doküman veya tablo yükleyin. Katılımcılar etkinlik alanından indirebilir.</p></div><label>Başlık<input name="title" required placeholder="Örn. Etkinlik raporu"/></label><label>Dosya<input name="file" type="file" required/></label><button className="primary">Yükle ve paylaş</button></form><div className="hint-box">Paylaştığınız kaynaklar anında katılımcıların etkinlik alanında görünür. Etkinlik sonrasında da erişilebilir kalır.</div></>}
- </section></>;
+export function ModuleManager(p: {
+  organizationId: string; eventId: string;
+  initialGroups: any[]; initialGames: Game[]; initialAssessments: Assessment[];
+  initialFeedback: any[]; initialFeatures: any[]; roster: any[]; initialComparison: Comparison;
+}) {
+  const { organizationId, eventId } = p;
+  const [tab, setTab] = useState('tests');
+  const [groups, setGroups] = useState(p.initialGroups);
+  const [games, setGames] = useState(p.initialGames);
+  const [assessments, setAssessments] = useState(p.initialAssessments);
+  const [feedback, setFeedback] = useState(p.initialFeedback);
+  const [comparison, setComparison] = useState(p.initialComparison);
+  const [message, setMessage] = useState('');
+  const [gameDetails, setGameDetails] = useState<any>(null);
+  const [subDetails, setSubDetails] = useState<any>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function api(path: string, method = 'POST', body?: object) {
+    setBusy(true);
+    try {
+      const res = await fetch('/api/backend/' + path, { method, headers: { 'content-type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
+      if (!res.ok) { setMessage(Array.isArray(data.message) ? data.message.join(' ') : (data.message || 'Hata')); setBusy(false); return null; }
+      setBusy(false);
+      return data;
+    } catch (err) {
+      setMessage('Baglanti hatasi: ' + (err instanceof Error ? err.message : '?'));
+      setBusy(false);
+      return null;
+    }
+  }
+
+  const base = 'organizations/' + organizationId + '/events/' + eventId;
+  const gameBase = 'organizations/' + organizationId + '/game-sessions';
+
+  // === GAME ===
+  async function createGame(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget as HTMLFormElement);
+    const created = await api(base + '/games', 'POST', { title: f.get('title'), prompt: f.get('prompt') });
+    if (!created) return;
+    const opened = await api(gameBase + '/' + created.id + '/open', 'POST');
+    if (opened) {
+      setGames(v => [{ ...created, status: 'OPEN', _count: { participants: opened.assignments?.length || 0, responses: 0 } }, ...v]);
+      setMessage('Oyun acildi! ' + (opened.assignments?.length || 0) + ' kisiye atama yapildi.');
+    } else {
+      setMessage('Oyun olusturuldu ama acilamadi - en az 2 kabul edilmis katilimci gerekir.');
+    }
+  }
+  async function gameAction(g: Game, action: string) {
+    const r = await api(gameBase + '/' + g.id + '/' + action, 'POST');
+    if (r) { setGames(v => v.map(x => x.id === g.id ? { ...x, status: r.status } : x)); }
+  }
+  async function showGameDetails(g: Game) {
+    const d = await api(gameBase + '/' + g.id + '/details', 'GET');
+    if (d) setGameDetails(d);
+  }
+
+  // === TEST ===
+  async function createTest(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget as HTMLFormElement);
+    const qs = JSON.parse(String(f.get('questions') || '[]'));
+    if (!qs.length) { setMessage('En az bir soru ekleyin.'); return; }
+    const created = await api(base + '/assessments', 'POST', { kind: 'PRE_TEST', title: f.get('title'), questions: qs });
+    if (!created) return;
+    await api('organizations/' + organizationId + '/assessments/' + created.id + '/open', 'PATCH', { open: true });
+    setAssessments(v => [{ ...created, kind: 'PRE_TEST', open: true, _count: { submissions: 0 } }, ...v]);
+    setMessage('On test olusturuldu ve gonderildi.');
+  }
+  async function sendPostTest(a: Assessment) {
+    const r = await api('organizations/' + organizationId + '/assessments/' + a.id + '/copy', 'POST', { kind: 'POST_TEST', title: a.title + ' (Son test)' });
+    if (!r) return;
+    await api('organizations/' + organizationId + '/assessments/' + r.id + '/open', 'PATCH', { open: true });
+    setAssessments(v => [{ ...r, kind: 'POST_TEST', open: true, _count: { submissions: 0 } }, ...v]);
+    setMessage('Son test olusturuldu ve gonderildi.');
+  }
+  async function showSubmissions(a: Assessment) {
+    const d = await api('organizations/' + organizationId + '/assessments/' + a.id + '/submissions', 'GET');
+    if (d) setSubDetails(d);
+  }
+  async function refreshComparison() {
+    const r = await api(base + '/assessments/comparison', 'GET');
+    if (r) { setComparison(r); setMessage('Karsilastirma yenilendi.'); }
+  }
+
+  // === FEEDBACK ===
+  async function createFeedback(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget as HTMLFormElement);
+    const qs = JSON.parse(String(f.get('questions') || '[]')).filter((q: any) => q.label.trim());
+    if (!qs.length) { setMessage('En az bir soru ekleyin.'); return; }
+    const r = await api(base + '/feedback', 'POST', { title: f.get('title'), schema: { questions: qs.map((q: any, i: number) => ({ id: 'q' + (i + 1), type: q.type, label: q.label })) } });
+    if (!r) return;
+    await api('organizations/' + organizationId + '/feedback/' + r.id + '/open', 'PATCH', { open: true });
+    setFeedback(v => [{ ...r, open: true, _count: { submissions: 0 } }, ...v]);
+    setMessage('Geri bildirim olusturuldu.');
+  }
+
+  const tabs: [string, string][] = [['tests', 'Testler'], ['game', 'Tanisma Oyunu'], ['feedback', 'Geri Bildirim'], ['groups', 'Gruplar'], ['notifications', 'Duyurular'], ['resources', 'Kaynaklar']];
+
+  return (
+    <>
+      <nav className="workspace-tabs">{tabs.map(([k, l]) => <button key={k} className={tab === k ? 'active' : ''} onClick={() => setTab(k)}>{l}</button>)}</nav>
+      {message && <p className="notice">{message}</p>}
+      <section className="module-workspace">
+        {tab === 'tests' && (
+          <>
+            <form className="workspace-card" onSubmit={createTest}>
+              <div className="section-intro"><h2>On Test Olustur</h2><p>Katilimcilara gonderilir. Son testi sonra gonderebilirsiniz.</p></div>
+              <label>Test basligi<input name="title" required placeholder="Orn. Etkinlik Bilgi Testi" /></label>
+              <AssessmentEditor />
+              <button className="primary" disabled={busy}>{busy ? 'Gonderiliyor...' : 'On test olustur ve gonder'}</button>
+            </form>
+            <TestComparison comparison={comparison} />
+            <button className="secondary" onClick={refreshComparison} disabled={busy}>Karsilastirmayi yenile</button>
+            {assessments.map(a => (
+              <article className="workspace-card" key={a.id}>
+                <div className="assessment-header"><h3>{a.title}</h3><span className={'pill ' + (a.kind === 'PRE_TEST' ? 'published' : '')}>{a.kind === 'PRE_TEST' ? 'On Test' : 'Son Test'}</span></div>
+                <p>{a._count.submissions} yanit - {a.open ? 'Acik' : 'Kapali'}</p>
+                <div className="action-links">
+                  {a.kind === 'PRE_TEST' && <button className="secondary" onClick={() => sendPostTest(a)} disabled={busy}>Son test gonder</button>}
+                  <button className="secondary" onClick={() => showSubmissions(a)} disabled={busy}>Yanitlari gor ({a._count.submissions})</button>
+                </div>
+              </article>
+            ))}
+            {subDetails && (
+              <article className="workspace-card wide">
+                <div className="section-intro"><h2>{subDetails.assessment?.title} - Yanitlar</h2></div>
+                <table className="submissions-table">
+                  <thead><tr><th>Katilimci</th>{(subDetails.assessment?.questions || []).map((q: any, i: number) => <th key={i}>{q.label}</th>)}</tr></thead>
+                  <tbody>{(subDetails.submissions || []).map((s: any) => <tr key={s.id}><td>{s.name}</td>{(subDetails.assessment?.questions || []).map((q: any, i: number) => <td key={i}>{String((s.answers || {})[q.id] || '-')}</td>)}</tr>)}</tbody>
+                </table>
+              </article>
+            )}
+          </>
+        )}
+        {tab === 'game' && (
+          <>
+            <form className="workspace-card" onSubmit={createGame}>
+              <div className="section-intro"><h2>Tanisma Oyunu</h2><p>Her katilimci bir cumle yazar. Sonra herkese random bir baskasinin yazdigi isimsiz gosterilir.</p></div>
+              <label>Oyun basligi<input name="title" defaultValue="Baskasinin Yanitini Oku" /></label>
+              <label>Katilimcilara sorulacak soru<textarea name="prompt" required defaultValue="Diger katilimcilarin seni tanimasini saglayacak kisa bir anini veya ilgi alanini yaz." /></label>
+              <button className="primary" disabled={busy}>{busy ? 'Olusturuluyor...' : 'Olustur ve ac'}</button>
+            </form>
+            {games.map(g => (
+              <article className="workspace-card" key={g.id}>
+                <h3>{g.title}</h3>
+                <p><span className={'pill ' + (g.status === 'OPEN' ? 'published' : '')}>{g.status}</span> - {g._count.responses}/{g._count.participants} yanit</p>
+                <div className="action-links">
+                  {g.status === 'OPEN' && <button className="primary" onClick={() => gameAction(g, 'reveal')} disabled={busy}>Yanitlari goster</button>}
+                  {g.status === 'OPEN' && <button className="secondary" onClick={() => showGameDetails(g)} disabled={busy}>Detaylar</button>}
+                  {g.status === 'REVEAL' && <button className="primary" onClick={() => gameAction(g, 'complete')} disabled={busy}>Tamamla</button>}
+                </div>
+              </article>
+            ))}
+            {gameDetails && (
+              <article className="workspace-card wide">
+                <div className="section-intro"><h2>Oyun Detaylari</h2><p>Soru: {gameDetails.session?.prompt}</p></div>
+                <table className="submissions-table">
+                  <thead><tr><th>Katilimci</th><th>Yaniti</th><th>Atanan kisi</th></tr></thead>
+                  <tbody>{(gameDetails.responses || []).map((r: any, i: number) => <tr key={i}><td>{r.name}</td><td>{r.answer}</td><td>{(gameDetails.assignments || []).find((a: any) => a.from === r.name)?.to || '-'}</td></tr>)}</tbody>
+                </table>
+              </article>
+            )}
+          </>
+        )}
+        {tab === 'feedback' && (
+          <>
+            <form className="workspace-card" onSubmit={createFeedback}>
+              <div className="section-intro"><h2>Geri Bildirim Formu</h2></div>
+              <label>Form basligi<input name="title" defaultValue="Etkinlik geri bildirimi" required /></label>
+              <FeedbackEditor />
+              <button className="primary" disabled={busy}>{busy ? 'Olusturuluyor...' : 'Olustur ve ac'}</button>
+            </form>
+            {feedback.map((f: any) => <article className="workspace-card" key={f.id}><h3>{f.title}</h3><p>{f._count.submissions} yanit</p></article>)}
+          </>
+        )}
+        {tab === 'groups' && (
+          <GroupsPanel organizationId={organizationId} eventId={eventId} groups={groups} setGroups={setGroups} api={api} roster={p.roster} />
+        )}
+        {tab === 'notifications' && <NotificationsPanel base={base} api={api} />}
+        {tab === 'resources' && <ResourcesPanel base={base} organizationId={organizationId} api={api} />}
+      </section>
+    </>
+  );
+}
+
+function GroupsPanel({ organizationId, eventId, groups, setGroups, api, roster }: any) {
+  const [busy, setBusy] = useState(false);
+  async function generate(e: FormEvent<HTMLFormElement>) { e.preventDefault(); setBusy(true); const d = new FormData(e.currentTarget); const r = await api('organizations/' + organizationId + '/events/' + eventId + '/groups/generate', 'POST', { count: Number(d.get('count')), strategy: d.get('strategy') }); if (r) setGroups(r); setBusy(false); }
+  return (
+    <>
+      <form className="workspace-card" onSubmit={generate}>
+        <div className="section-intro"><h2>Otomatik gruplama</h2></div>
+        <label>Grup sayisi<input name="count" type="number" min="1" defaultValue="2" /></label>
+        <label>Dagitim<select name="strategy"><option value="RANDOM">Rastgele</option><option value="BALANCED">Dengeli</option></select></label>
+        <button className="primary" disabled={busy}>Gruplari olustur</button>
+      </form>
+      <div className="group-board">{groups.map((g: any) => <article className="workspace-card" key={g.id}><h3>{g.name}</h3>{g.members.map((m: any) => <span className="participant-chip" key={m.registration.id}>{m.registration.firstName} {m.registration.lastName}</span>)}</article>)}</div>
+    </>
+  );
+}
+
+function NotificationsPanel({ base, api }: any) {
+  async function send(e: FormEvent<HTMLFormElement>) { e.preventDefault(); const d = new FormData(e.currentTarget); const r = await api(base + '/notifications', 'POST', { title: d.get('title'), body: d.get('body'), audience: d.get('audience') }); }
+  return (
+    <form className="workspace-card" onSubmit={send}>
+      <div className="section-intro"><h2>Duyuru gonder</h2></div>
+      <label>Hedef<select name="audience" defaultValue="ACCEPTED"><option value="ACCEPTED">Kabul edilenler</option><option value="CHECKED_IN">Teyit verenler</option><option value="ALL">Tum kayitlilar</option></select></label>
+      <label>Baslik<input name="title" required /></label>
+      <label>Mesaj<textarea name="body" required /></label>
+      <button className="primary">Gonder</button>
+    </form>
+  );
+}
+
+function ResourcesPanel({ base, organizationId, api }: any) {
+  const [busy, setBusy] = useState(false);
+  async function shareLink(e: FormEvent<HTMLFormElement>) { e.preventDefault(); setBusy(true); const d = new FormData(e.currentTarget); await api(base + '/resources/link', 'POST', { title: d.get('title'), url: d.get('url') }); setBusy(false); }
+  async function shareFile(e: FormEvent<HTMLFormElement>) { e.preventDefault(); setBusy(true); const f = new FormData(e.currentTarget); const file = f.get('file') as File; if (!file) return; const grant = await api(base + '/resources/upload', 'POST', { name: file.name, contentType: file.type, sizeBytes: file.size }); if (grant) { const up = await fetch(String(grant.uploadUrl).replace('/api/', '/api/backend/'), { method: 'PUT', headers: { 'content-type': file.type }, body: file }); if (up.ok) await api(base + '/resources/confirm', 'POST', { title: f.get('title'), assetId: grant.assetId, reservationId: grant.reservationId }); } setBusy(false); }
+  return (
+    <>
+      <form className="workspace-card" onSubmit={shareLink}>
+        <div className="section-intro"><h2>Baglanti paylas</h2></div>
+        <label>Baslik<input name="title" required /></label>
+        <label>URL<input name="url" type="url" required /></label>
+        <button className="primary" disabled={busy}>Paylas</button>
+      </form>
+      <form className="workspace-card" onSubmit={shareFile}>
+        <div className="section-intro"><h2>Dosya paylas</h2></div>
+        <label>Baslik<input name="title" required /></label>
+        <label>Dosya<input name="file" type="file" required /></label>
+        <button className="primary" disabled={busy}>Yukle</button>
+      </form>
+    </>
+  );
 }

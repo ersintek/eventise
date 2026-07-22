@@ -84,3 +84,9 @@
 .participant-date{color:var(--muted);font-size:var(--fs-sm);margin:.25rem 0}
 .event-actions{display:flex;gap:.5rem;align-items:center}
 @media(max-width:650px){.event-actions{flex-direction:column;gap:.375rem}}
+
+/* Test soruları (katılımcı) */
+.test-question{margin-bottom:.875rem;padding-bottom:.625rem;border-bottom:1px solid var(--line-soft)}
+.test-question>label{font-weight:700;margin-bottom:.375rem;display:block}
+.test-option{display:flex;align-items:center;gap:.375rem;padding:.375rem;margin:0;font-weight:400;cursor:pointer}
+.test-option input{width:auto;margin:0}
