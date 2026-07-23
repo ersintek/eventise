@@ -22,19 +22,23 @@ export default async function ParticipantEventPage({ params }: { params: Promise
   const title = eventInfo?.title ?? 'Etkinlik';
   const orgName = eventInfo?.organization?.name ?? '';
   const startsAt = eventInfo?.startsAt;
-  const period = eventInfo?.period ?? (session?.registration ? 'CURRENT' : 'PAST');
+  const eventCerts = certificates.filter((c: any) => c.event?.id === eventId);
+
+  if (!session?.registration) {
+    return <main className="participant-standalone participant-event-page">
+      <div className="participant-event-header">
+        <Link href="/participant" className="participant-back">← Tüm etkinliklerim</Link>
+        <h1>{title}</h1>
+      </div>
+      <section className="empty-state participant-empty"><span className="empty-illustration">✦</span><h2>Bu etkinliğe kaydınız bulunamadı</h2><p>Etkinlik sayfasından kayıt olabilirsiniz.</p></section>
+    </main>;
+  }
 
   return <main className="participant-standalone participant-event-page">
     <div className="participant-event-header">
       <Link href="/participant" className="participant-back">← Tüm etkinliklerim</Link>
       <p className="eyebrow">{orgName}</p>
-      <h1>{title}</h1>
-      {startsAt && <p className="participant-date">{new Intl.DateTimeFormat('tr-TR', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(startsAt))}</p>}
-      {session?.registration && <span className={`pill ${session.registration.applicationStatus === 'ACCEPTED' ? 'published' : ''}`}>{session.registration.applicationStatus === 'ACCEPTED' ? 'Kabul edildiniz ✓' : session.registration.applicationStatus}</span>}
     </div>
-    {session?.registration
-      ? <ParticipantArea history={[{ id: eventId, title, startsAt: startsAt ?? new Date().toISOString(), period: period as 'CURRENT' | 'UPCOMING' | 'PAST', organization: { name: orgName } }]} certificates={certificates.filter((c: any) => c.event?.id === eventId)} />
-      : <section className="empty-state participant-empty"><span className="empty-illustration">✦</span><h2>Bu etkinliğe kaydınız bulunamadı</h2><p>Etkinlik sayfasından kayıt olabilir veya kurum yöneticisiyle iletişime geçebilirsiniz.</p></section>
-    }
+    {startsAt && <ParticipantArea eventId={eventId} title={title} orgName={orgName} startsAt={startsAt} certificates={eventCerts} />}
   </main>;
 }

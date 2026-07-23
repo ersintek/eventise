@@ -90,3 +90,16 @@
 .test-question>label{font-weight:700;margin-bottom:.375rem;display:block}
 .test-option{display:flex;align-items:center;gap:.375rem;padding:.375rem;margin:0;font-weight:400;cursor:pointer}
 .test-option input{width:auto;margin:0}
+
+/* Liste: etkinlik link kartları */
+.participant-event-link{display:flex;align-items:center;gap:.75rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:1rem;margin-bottom:.5rem;text-decoration:none;color:inherit;transition:all var(--transition);cursor:pointer}
+.participant-event-link:hover{border-color:var(--primary-200);box-shadow:var(--shadow);transform:translateY(-1px)}
+.participant-event-link>div{flex:1;min-width:0}
+.participant-event-link h3{font-size:var(--fs-md);margin:.25rem 0;font-weight:700}
+.participant-event-link small{color:var(--muted);font-size:var(--fs-xs)}
+.participant-event-link p{color:var(--muted);font-size:var(--fs-sm);margin:.125rem 0 0}
+.event-arrow{flex:none;color:var(--primary);font-size:var(--fs-lg);font-weight:700}
+
+/* Tek olay: toolbar */
+.participant-event-toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:1rem}
+.participant-event-toolbar h3{font-size:var(--fs-lg);font-weight:800;margin:0}
