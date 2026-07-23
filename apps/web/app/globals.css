@@ -478,7 +478,3 @@ button{border-radius:var(--radius-sm)}
 .submissions-table{width:100%;border-collapse:collapse;margin-top:.625rem}
 .submissions-table th{text-align:left;font-size:var(--fs-xs);color:var(--muted);font-weight:700;text-transform:uppercase;padding:.5rem;border-bottom:1px solid var(--line)}
 .submissions-table td{padding:.5rem;border-bottom:1px solid var(--line-soft);font-size:var(--fs-sm)}
-
-/* Feedback kart spacing */
-.participant-task{padding:1rem!important}
-.participant-task h4{margin-bottom:.625rem}
