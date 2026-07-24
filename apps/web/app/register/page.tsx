@@ -24,7 +24,7 @@ export default function RegisterPage(){
             <div><b>Etkinliklere katıl</b><small>Kayıt olun, etkinlik günü içeriklere erişin, sertifikanızı alın.</small></div>
             <span className="intent-arrow">→</span>
           </button>
-          <p className="auth-link">Zaten hesabınız var mı? <Link href="/login">Giriş yapın</Link></p>
+          <p className="auth-link">Zaten hesabınız var mı? <Link href="/login">Giriş yapın</Link></p><p className="auth-link"><Link href="/yardim">STK'lar için rehber →</Link></p>
         </div>
       </>:<>
         <form className="auth-card" onSubmit={submit}>
