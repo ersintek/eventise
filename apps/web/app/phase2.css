@@ -35,13 +35,13 @@
 .public-columns details{border-bottom:1px solid var(--line);padding:.875rem 0}
 .public-columns summary{font-weight:700;font-size:var(--fs-md)}
 
-/* Kayıt kartı (public etkinlik sağ tarafı) */
-.registration-card{align-self:start;background:var(--glass-bg)!important;backdrop-filter:blur(var(--glass-blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);border:1px solid var(--glass-border);box-shadow:var(--shadow-md);position:sticky;top:1.5rem}
+/* Kayıt kartı (public etkinlik sağ tarafı) — .builder-grid form arka planını ezer */
+.public-columns .registration-card,.registration-card{align-self:start;background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);border:1px solid var(--glass-border);box-shadow:var(--shadow-md);position:sticky;top:1.5rem}
 .registration-card>.primary{width:100%}
 .registration-card h2{font-family:var(--font-display);font-weight:700}
 
-/* Onam kutusu */
-.consent{display:flex!important;gap:.5625rem;align-items:start}
+/* Onam kutusu — label{display:block} kuralını flex ile ezer */
+label.consent,.consent{display:flex;gap:.5625rem;align-items:start}
 .consent input{width:auto;margin-top:.1875rem}
 .consent b,.consent small{display:block}
 .consent small{color:var(--muted);font-weight:400;line-height:1.5;margin-top:.25rem}

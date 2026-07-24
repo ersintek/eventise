@@ -19,7 +19,7 @@
 .quick-metrics b{display:block;margin:.375rem 0 .125rem;font-size:1.5rem;font-weight:800}
 
 /* Dikkat kartı (dashboard CTA) */
-.attention-card{display:flex;align-items:center;justify-content:space-between;margin-top:1.75rem;padding:1.125rem 1.25rem;background:linear-gradient(110deg,var(--primary-50),#f5f3ff);border:1px solid var(--primary-100);border-radius:var(--radius-lg)}
+.attention-card{display:flex;align-items:center;justify-content:space-between;margin-top:1.75rem;padding:1.125rem 1.25rem;background:linear-gradient(110deg,var(--primary-50),var(--violet-50));border:1px solid var(--primary-100);border-radius:var(--radius-lg)}
 .attention-card>div{display:flex;align-items:center;gap:.8125rem}
 .attention-card h2{font-size:var(--fs-md);margin:0 0 .25rem}
 .attention-card p{font-size:var(--fs-sm);color:var(--muted);margin:0}

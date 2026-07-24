@@ -14,7 +14,7 @@
 .admin-metrics .metric-warning{border-color:var(--warning-border);background:var(--warning-bg)}
 
 /* Karşılama kartı */
-.admin-welcome{display:flex;justify-content:space-between;align-items:center;margin-top:.9375rem;padding:1.25rem;background:linear-gradient(110deg,var(--primary-50),#f5f3ff);border:1px solid var(--primary-100);border-radius:var(--radius-lg)}
+.admin-welcome{display:flex;justify-content:space-between;align-items:center;margin-top:.9375rem;padding:1.25rem;background:linear-gradient(110deg,var(--primary-50),var(--violet-50));border:1px solid var(--primary-100);border-radius:var(--radius-lg)}
 .admin-welcome h2{font-size:var(--fs-md);margin:0 0 .3125rem;font-weight:700}
 .admin-welcome p{font-size:var(--fs-sm);color:var(--muted);margin:0}
 .admin-welcome button{border:0;background:transparent;color:var(--primary);font-size:var(--fs-sm);font-weight:700;cursor:pointer}

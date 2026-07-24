@@ -7,7 +7,7 @@ function StarRating({value,onChange}:{value:number;onChange:(v:number)=>void}){c
 /** Liste sayfası: her etkinlik bir kart + link */
 export function ParticipantList({history,certificates}:{history:History[];certificates:Certificate[]}){
   if(!history.length&&!certificates.length)return <section className="empty-state participant-empty"><span className="empty-illustration">✦</span><h2>Henüz bir etkinliğiniz yok</h2><p>Bir etkinliğe kabul edildiğinizde bütün bilgiler burada görünecek.</p></section>;
-  return <><section className="participant-events"><div className="section-heading"><div><p className="eyebrow">ETKİNLİKLER</p><h2>Katılımlarınız</h2></div><span>{history.length} etkinlik</span></div>{[...history].sort((a,b)=>order[a.period]-order[b.period]).map(event=><Link href={'/participant/event/'+event.id} key={event.id} className="participant-event-link"><span className={'pill '+(event.period==='CURRENT'?'published':'')}>{periodLabel[event.period]}</span><div><h3>{event.title}</h3><small>{event.organization.name}</small><p>{new Intl.DateTimeFormat('tr-TR',{dateStyle:'long'}).format(new Date(event.startsAt))}</p></div><span className="event-arrow">→</span></Link>)}</section><section className="certificate-section"><div className="section-heading"><div><p className="eyebrow">BELGELER</p><h2>Sertifikalarım</h2></div></div>{certificates.length===0?<p className="friendly-status">Henüz sertifikanız yok.</p>:<div className="certificate-grid">{certificates.map(c=> <article key={c.id}><span>✓</span><div><b>{c.event.title}</b><p>{c.event.organization.name}</p><a href={c.downloadUrl}>PDF indir</a><a href={'/certificates/'+c.verificationCode}>Doğrula</a></div></article>)}</div>}</section></>;
+  return <><section className="participant-events"><div className="section-heading"><div><p className="eyebrow">ETKİNLİKLER</p><h2>Katılımlarınız</h2></div><span>{history.length} etkinlik</span></div>{[...history].sort((a,b)=>order[a.period]-order[b.period]).map(event=><Link href={'/participant/event/'+event.id} key={event.id} className="participant-event-link"><span className={'pill '+(event.period==='CURRENT'?'live':'')}>{periodLabel[event.period]}</span><div><h3>{event.title}</h3><small>{event.organization.name}</small><p>{new Intl.DateTimeFormat('tr-TR',{dateStyle:'long'}).format(new Date(event.startsAt))}</p></div><span className="event-arrow">→</span></Link>)}</section><section className="certificate-section"><div className="section-heading"><div><p className="eyebrow">BELGELER</p><h2>Sertifikalarım</h2></div></div>{certificates.length===0?<p className="friendly-status">Henüz sertifikanız yok.</p>:<div className="certificate-grid">{certificates.map(c=> <article key={c.id}><span>✓</span><div><b>{c.event.title}</b><p>{c.event.organization.name}</p><a href={c.downloadUrl}>PDF indir</a><a href={'/certificates/'+c.verificationCode}>Doğrula</a></div></article>)}</div>}</section></>;
 }
 
 /** Tek olay sayfası: modüller otomatik yüklenir + yenile */
@@ -25,9 +25,6 @@ export function ParticipantArea({eventId,title,orgName,startsAt,certificates}:{e
   const pendingGames=current?current.games.filter(x=>x.status==='OPEN'&&!x.responses.length):[];
   const unreadNotifications=current?current.notifications.filter((n:any)=>!n.readAt):[];
   const totalPending=pendingAssessments.length+pendingFeedback.length+pendingGames.length;
-  const totalTasks=current?(current.assessments.length+current.feedback.length+current.games.filter(x=>x.status==='OPEN').length):0;
-  const completedTasks=Math.max(0,totalTasks-totalPending);
-  const progressPct=totalTasks>0?Math.round((completedTasks/totalTasks)*100):0;
 
   // ilk bekleyen blok varsayılan açık olsun
   const firstOpenKey=pendingAssessments.length?'assessments':pendingFeedback.length?'feedback':pendingGames.length?'games':unreadNotifications.length?'notifications':'';
@@ -41,15 +38,8 @@ export function ParticipantArea({eventId,title,orgName,startsAt,certificates}:{e
         <small>{orgName}</small>
         <p>{fmtDate(startsAt)}</p>
       </div>
-      <button className="toolbar-btn" onClick={()=>setRefreshKey(k=>k+1)} disabled={busy} title="Yenile">{busy?'⏳':'🔄'}</button>
+      <button className="refresh-btn" onClick={()=>setRefreshKey(k=>k+1)} disabled={busy} title="Yenile">{busy?'⏳':'🔄'}</button>
     </div>
-
-    {totalTasks>0&&(
-      <div className="progress-rail-wrap">
-        <div className="progress-label"><span>İlerleme</span><span><b>{completedTasks}</b>/{totalTasks} tamamlandı{progressPct===100?' 🎉':''}</span></div>
-        <div className="progress-rail"><div className="progress-fill" style={{width:progressPct+'%'}}/></div>
-      </div>
-    )}
 
     {totalPending>0&&<p className="participant-summary"><b>{totalPending} bekleyen görevin</b> var. Tamamlamak için aşağıdaki kartları aç.</p>}
 
