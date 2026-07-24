@@ -23,7 +23,7 @@
 .event-hero>p{font-size:var(--fs-lg);color:var(--muted);max-width:44rem;line-height:1.6}
 .event-hero .eyebrow{color:var(--accent-dark)}
 .event-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem}
-.event-facts div{background:var(--glass-bg);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:1.125rem 1.25rem;box-shadow:var(--shadow-sm);transition:transform var(--transition),box-shadow var(--transition)}
+.event-facts div{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:1.125rem 1.25rem;box-shadow:var(--shadow-sm);transition:transform var(--transition),box-shadow var(--transition)}
 .event-facts div:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
 .event-facts small,.event-facts b{display:block}
 .event-facts small{color:var(--muted);font-size:var(--fs-xs);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
@@ -36,7 +36,7 @@
 .public-columns summary{font-weight:700;font-size:var(--fs-md)}
 
 /* Kayıt kartı (public etkinlik sağ tarafı) — .builder-grid form arka planını ezer */
-.public-columns .registration-card,.registration-card{align-self:start;background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);border:1px solid var(--glass-border);box-shadow:var(--shadow-md);position:sticky;top:1.5rem}
+.public-columns .registration-card,.registration-card{align-self:start;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-md);position:sticky;top:1.5rem}
 .registration-card>.primary{width:100%}
 .registration-card h2{font-family:var(--font-display);font-weight:700}
 

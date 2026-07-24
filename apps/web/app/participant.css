@@ -15,7 +15,7 @@
 .participant-date{color:var(--muted);font-size:var(--fs-sm);margin:.25rem 0}
 
 /* === Tek-olay: toolbar (başlık + yenile) === */
-.participant-event-toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;margin-bottom:1rem;padding:1.125rem 1.25rem;background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);border:1px solid var(--glass-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+.participant-event-toolbar{display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;margin-bottom:1rem;padding:1.125rem 1.25rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
 .participant-event-toolbar h3{font-family:var(--font-display);font-size:var(--fs-xl);font-weight:700;margin:0;letter-spacing:-.02em;color:var(--ink)}
 .participant-event-toolbar small{display:block;color:var(--muted);font-size:var(--fs-sm);margin-top:.125rem}
 .participant-event-toolbar p{color:var(--muted);font-size:var(--fs-sm);margin:.25rem 0 0}
@@ -26,14 +26,14 @@
 .refresh-btn:disabled{opacity:.6;cursor:wait}
 .refresh-btn:focus-visible{outline:0;box-shadow:0 0 0 3px var(--primary-100)}
 
-/* === Bekleyen görev şeridi (sadeleştirildi: cam kart + sol vurgu) === */
-.participant-summary{display:flex;align-items:center;gap:.625rem;background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);border:1px solid var(--glass-border);border-left:3px solid var(--primary);border-radius:var(--radius-md);padding:.875rem 1.125rem;font-size:var(--fs-sm);color:var(--ink-secondary);margin-bottom:1rem;box-shadow:var(--shadow-sm)}
+/* === Bekleyen görev şeridi (opak kart + sol vurgu) === */
+.participant-summary{display:flex;align-items:center;gap:.625rem;background:var(--primary-50);border:1px solid var(--primary-100);border-left:3px solid var(--primary);border-radius:var(--radius-md);padding:.875rem 1.125rem;font-size:var(--fs-sm);color:var(--ink-secondary);margin-bottom:1rem;box-shadow:var(--shadow-sm)}
 .participant-summary b{color:var(--primary);font-weight:700}
 
 /* === Modül blokları (akordiyon) === */
 .participant-modules{display:flex;flex-direction:column;gap:.625rem;padding:0;background:transparent;border:0}
-.module-block{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);transition:border-color var(--transition),box-shadow var(--transition),transform var(--transition),background var(--transition)}
-.module-block[open]{background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);border-color:transparent;border-left:3px solid;border-image:var(--grad-brand) 1;border-image-slice:1;box-shadow:var(--shadow-md)}
+.module-block{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);transition:border-color var(--transition),box-shadow var(--transition),transform var(--transition)}
+.module-block[open]{border-color:var(--primary-200);border-left:3px solid var(--primary);box-shadow:var(--shadow-md)}
 .module-block>summary{display:flex;align-items:center;gap:.75rem;padding:1.0625rem 1.25rem;cursor:pointer;list-style:none;font-weight:700;font-size:var(--fs-base);color:var(--ink);user-select:none;transition:background var(--transition)}
 .module-block>summary::-webkit-details-marker,.module-block>summary::marker{display:none}
 .module-block>summary:hover{background:var(--grad-brand-soft)}
@@ -109,7 +109,7 @@
 /* === Liste: etkinlik link kartları === */
 .participant-event-link{display:flex;align-items:center;gap:.75rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:.5rem;text-decoration:none;color:inherit;transition:all var(--transition);cursor:pointer;position:relative;overflow:hidden}
 .participant-event-link::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--grad-brand);background-size:200% 200%;opacity:0;transition:opacity var(--transition)}
-.participant-event-link:hover,.participant-event-link:focus-visible{background:var(--glass-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-color:transparent;box-shadow:var(--shadow);transform:translateY(-2px);outline:0}
+.participant-event-link:hover,.participant-event-link:focus-visible{background:var(--surface);border-color:var(--primary-200);box-shadow:var(--shadow);transform:translateY(-2px);outline:0}
 .participant-event-link:hover::before,.participant-event-link:focus-visible::before{opacity:1}
 .participant-event-link>div{flex:1;min-width:0}
 .participant-event-link h3{font-family:var(--font-display);font-size:var(--fs-md);margin:.25rem 0;font-weight:700}

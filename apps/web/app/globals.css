@@ -405,7 +405,7 @@ button{border-radius:var(--radius-sm)}
 .auth-brand h1 em{font-style:normal;background:var(--grad-text);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .auth-brand p{color:rgba(255,255,255,.85);line-height:1.65;max-width:28rem;font-size:var(--fs-md)}
 .auth-panel{display:grid;place-items:center;padding:2rem 1.5rem}
-.auth-card{width:min(440px,100%);background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);border:1px solid var(--glass-border);border-radius:var(--radius-xl);padding:2.25rem;box-shadow:var(--shadow-lg)}
+.auth-card{width:min(440px,100%);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);padding:2.25rem;box-shadow:var(--shadow-lg)}
 .auth-card h2{font-family:var(--font-display);font-size:1.75rem;margin:.5rem 0 1.75rem;font-weight:700;letter-spacing:-.02em}
 .auth-card label{display:block;font-size:var(--fs-sm);font-weight:600;margin:1rem 0 .375rem}
 .auth-card input,.auth-card textarea{display:block;width:100%;margin-top:0}
@@ -418,7 +418,7 @@ button{border-radius:var(--radius-sm)}
 .center-shell{min-height:100vh;display:grid;place-items:center;padding:2.5rem;background:var(--cream);position:relative;overflow:hidden}
 .center-shell::before{content:'';position:absolute;inset:-25%;background:var(--mesh);filter:blur(40px);opacity:.6;z-index:0;pointer-events:none;animation:gradientShift 16s ease infinite;background-size:200% 200%}
 .center-shell>*{position:relative;z-index:1}
-.onboarding-card{width:min(520px,100%);background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);border:1px solid var(--glass-border);border-radius:var(--radius-xl);padding:2.25rem;box-shadow:var(--shadow-lg)}
+.onboarding-card{width:min(520px,100%);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);padding:2.25rem;box-shadow:var(--shadow-lg)}
 .logo.dark{color:var(--primary);margin-bottom:2.25rem}
 .onboarding-card h1{font-family:var(--font-display);font-size:1.75rem;margin-bottom:.5rem;font-weight:700;letter-spacing:-.02em}
 .onboarding-card>p{color:var(--muted);font-size:var(--fs-sm)}
