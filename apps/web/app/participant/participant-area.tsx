@@ -1,5 +1,6 @@
 'use client';
 import{FormEvent,useEffect,useState}from'react';import Link from'next/link';
+import{formatDateLong,formatDateTime}from'@/lib/datetime';
 type History={id:string;title:string;startsAt:string;period:'CURRENT'|'UPCOMING'|'PAST';organization:{name:string}};type Certificate={id:string;verificationCode:string;downloadUrl:string;event:{title:string;organization:{name:string}}};type Modules={assessments:any[];feedback:any[];games:any[];resources:any[];notifications:any[]};
 const periodLabel={CURRENT:'Şimdi',UPCOMING:'Yaklaşan',PAST:'Geçmiş'},order={CURRENT:0,UPCOMING:1,PAST:2};
 function StarRating({value,onChange}:{value:number;onChange:(v:number)=>void}){const[hover,setHover]=useState(0);return <div className="star-rating" onMouseLeave={()=>setHover(0)}>{[1,2,3,4,5].map(n=><button type="button" key={n} className={`star ${(hover||value)>=n?'filled':''}`} onClick={()=>onChange(n)} onMouseEnter={()=>setHover(n)}>★</button>)}</div>}
@@ -7,7 +8,7 @@ function StarRating({value,onChange}:{value:number;onChange:(v:number)=>void}){c
 /** Liste sayfası: her etkinlik bir kart + link */
 export function ParticipantList({history,certificates}:{history:History[];certificates:Certificate[]}){
   if(!history.length&&!certificates.length)return <section className="empty-state participant-empty"><span className="empty-illustration">✦</span><h2>Henüz bir etkinliğiniz yok</h2><p>Bir etkinliğe kabul edildiğinizde bütün bilgiler burada görünecek.</p></section>;
-  return <><section className="participant-events"><div className="section-heading"><div><p className="eyebrow">ETKİNLİKLER</p><h2>Katılımlarınız</h2></div><span>{history.length} etkinlik</span></div>{[...history].sort((a,b)=>order[a.period]-order[b.period]).map(event=><Link href={'/participant/event/'+event.id} key={event.id} className="participant-event-link"><span className={'pill '+(event.period==='CURRENT'?'live':'')}>{periodLabel[event.period]}</span><div><h3>{event.title}</h3><small>{event.organization.name}</small><p>{new Intl.DateTimeFormat('tr-TR',{dateStyle:'long'}).format(new Date(event.startsAt))}</p></div><span className="event-arrow">→</span></Link>)}</section><section className="certificate-section"><div className="section-heading"><div><p className="eyebrow">BELGELER</p><h2>Sertifikalarım</h2></div></div>{certificates.length===0?<p className="friendly-status">Henüz sertifikanız yok.</p>:<div className="certificate-grid">{certificates.map(c=> <article key={c.id}><span>✓</span><div><b>{c.event.title}</b><p>{c.event.organization.name}</p><a href={c.downloadUrl}>PDF indir</a><a href={'/certificates/'+c.verificationCode}>Doğrula</a></div></article>)}</div>}</section></>;
+  return <><section className="participant-events"><div className="section-heading"><div><p className="eyebrow">ETKİNLİKLER</p><h2>Katılımlarınız</h2></div><span>{history.length} etkinlik</span></div>{[...history].sort((a,b)=>order[a.period]-order[b.period]).map(event=><Link href={'/participant/event/'+event.id} key={event.id} className="participant-event-link"><span className={'pill '+(event.period==='CURRENT'?'live':'')}>{periodLabel[event.period]}</span><div><h3>{event.title}</h3><small>{event.organization.name}</small><p>{formatDateLong(event.startsAt)}</p></div><span className="event-arrow">→</span></Link>)}</section><section className="certificate-section"><div className="section-heading"><div><p className="eyebrow">BELGELER</p><h2>Sertifikalarım</h2></div></div>{certificates.length===0?<p className="friendly-status">Henüz sertifikanız yok.</p>:<div className="certificate-grid">{certificates.map(c=> <article key={c.id}><span>✓</span><div><b>{c.event.title}</b><p>{c.event.organization.name}</p><a href={c.downloadUrl}>PDF indir</a><a href={'/certificates/'+c.verificationCode}>Doğrula</a></div></article>)}</div>}</section></>;
 }
 
 /** Tek olay sayfası: modüller otomatik yüklenir + yenile */
@@ -29,7 +30,7 @@ export function ParticipantArea({eventId,title,orgName,startsAt,certificates}:{e
   // ilk bekleyen blok varsayılan açık olsun
   const firstOpenKey=pendingAssessments.length?'assessments':pendingFeedback.length?'feedback':pendingGames.length?'games':unreadNotifications.length?'notifications':'';
 
-  const fmtDate=(iso:string)=>new Intl.DateTimeFormat('tr-TR',{dateStyle:'long',timeStyle:'short'}).format(new Date(iso));
+  const fmtDate=formatDateTime;
 
   return <>
     <div className="participant-event-toolbar">

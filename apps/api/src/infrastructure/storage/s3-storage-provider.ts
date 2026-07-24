@@ -31,5 +31,6 @@ export class S3StorageProvider implements StorageProvider, OnModuleInit {
   async createUploadGrant(key: string, contentType: string, expiresInSeconds: number): Promise<UploadGrant> { const safe = this.safeKey(key); return { key: safe, uploadUrl: await getSignedUrl(this.client, new PutObjectCommand({ Bucket: this.bucket, Key: safe, ContentType: contentType }), { expiresIn: expiresInSeconds }), expiresAt: new Date(Date.now() + expiresInSeconds * 1000) }; }
   createDownloadUrl(key: string, expiresInSeconds: number) { return getSignedUrl(this.client, new GetObjectCommand({ Bucket: this.bucket, Key: this.safeKey(key) }), { expiresIn: expiresInSeconds }); }
   async put(key:string,data:Buffer,contentType:string){await this.client.send(new PutObjectCommand({Bucket:this.bucket,Key:this.safeKey(key),Body:data,ContentType:contentType}));}
+  async get(key: string): Promise<Buffer | null> { try { const res = await this.client.send(new GetObjectCommand({ Bucket: this.bucket, Key: this.safeKey(key) })); if (!res.Body) return null; return Buffer.from(await res.Body.transformToByteArray()); } catch { return null; } }
   async delete(key: string) { await this.client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: this.safeKey(key) })); }
 }

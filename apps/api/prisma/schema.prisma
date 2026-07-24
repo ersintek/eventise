@@ -96,6 +96,7 @@ enum ScheduledNotificationStatus {
   SCHEDULED
   CANCELLED
   QUEUED
+  FAILED
 }
 
 enum AttendanceStatus {
@@ -402,6 +403,7 @@ model MediaAsset {
   checksum String?
   photos EventPhoto[]
   resources EventResource[]
+  certificateBackgrounds CertificateTemplate[] @relation("CertificateTemplateBackground")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([organizationId, status])
@@ -442,6 +444,12 @@ model CertificateTemplate {
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   name String
   bodyTemplate String
+  backgroundAssetId String?
+  backgroundAsset MediaAsset? @relation("CertificateTemplateBackground", fields: [backgroundAssetId], references: [id], onDelete: SetNull)
+  primaryColor String?
+  signatureLabel String?
+  includeQr Boolean @default(true)
+  orientation String @default("LANDSCAPE")
   certificates Certificate[]
   createdAt DateTime @default(now())
 }
@@ -764,6 +772,7 @@ model ScheduledNotification {
   template EmailTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
   sendAt DateTime
   status ScheduledNotificationStatus @default(SCHEDULED)
+  failureReason String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([eventId, status, sendAt])

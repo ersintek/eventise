@@ -246,6 +246,12 @@ button{border-radius:var(--radius-sm)}
 /* Form alanı yardımı — alanın altında */
 .field-help{display:block;font-size:var(--fs-xs);color:var(--muted);margin-top:.375rem;line-height:1.5}
 .field-help b{color:var(--ink-secondary);font-weight:600}
+.cert-design-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:.25rem 0}
+.cert-design-row>label{font-size:var(--fs-xs);font-weight:600;display:flex;flex-direction:column;gap:.375rem}
+.checkbox-row{flex-direction:row!important;align-items:center;gap:.5rem!important}
+.checkbox-row input{width:auto;margin:0}
+.certificate-template-form textarea{min-height:4.5rem}
+@media(max-width:640px){.cert-design-row{grid-template-columns:1fr}}
 
 /* Bölüm girişi — başlık + açıklama */
 .section-intro{margin-bottom:1rem}
@@ -324,6 +330,16 @@ button{border-radius:var(--radius-sm)}
 .template-editor{display:flex;flex-direction:column;gap:.625rem}
 .template-form{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius-md);padding:1rem;display:flex;flex-direction:column;gap:.4375rem}
 .template-form label{font-size:var(--fs-xs);font-weight:600}
+.var-chips{display:flex;flex-wrap:wrap;gap:.375rem;align-items:center}
+.var-chips small{width:100%;color:var(--muted);font-size:var(--fs-xs);margin-bottom:.125rem}
+.var-chip{font-family:var(--font-mono);font-size:var(--fs-xs);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:.25rem .625rem;cursor:pointer;transition:all var(--transition)}
+.var-chip:hover{background:var(--primary-50);border-color:var(--primary-200);color:var(--primary)}
+.template-preview-details{margin-top:.25rem}
+.template-preview-details summary{font-size:var(--fs-xs);color:var(--muted);cursor:pointer;padding:.25rem 0}
+.template-preview-box{margin-top:.5rem;padding:.75rem .875rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);font-size:var(--fs-sm);line-height:1.6}
+.template-preview-box b{display:block;font-weight:600;color:var(--ink);margin-bottom:.25rem}
+.template-preview-box p{margin:0;color:var(--ink-secondary)}
+.reminder-failure{display:block;color:var(--danger);background:var(--danger-bg,rgba(220,38,38,.08));border:1px solid var(--danger-border,rgba(220,38,38,.2));border-radius:var(--radius-sm);padding:.375rem .625rem;margin-top:.375rem;font-size:var(--fs-xs);line-height:1.5}
 
 /* Kayıt amaç seçimi (STK / Katılımcı) */
 .intent-choice h2{font-family:var(--font-display);margin:.5rem 0 .25rem}
