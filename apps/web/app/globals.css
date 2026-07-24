@@ -1,10 +1,8 @@
 /* ============================================================
    Eventise Design System
    Tek kaynak: tüm renkler, fontlar, boşluklar buradan yönetilir.
-   Renk paletini değiştirmek için yalnızca --primary* bloğunu düzenleyin.
+   Renk paletini değiştirmek için yalnızca --primary* / --accent* bloklarını düzenleyin.
    ============================================================ */
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
   /* --- Marka rengi (mavi) --- paleti değiştirmek için bu blok yeter */
@@ -15,6 +13,37 @@
   --primary-100:#dbeafe;
   --primary-200:#bfdbfe;
   --primary-600:#2563eb;
+
+  /* --- İkincil marka (indigo) — degrade vurgular için */
+  --accent:#6366f1;
+  --accent-dark:#4f46e5;
+  --accent-light:#818cf8;
+  --accent-50:#eef2ff;
+  --accent-100:#e0e7ff;
+
+  /* --- Üçüncül (violet) — degrade son durağı */
+  --violet:#7c3aed;
+  --violet-light:#a78bfa;
+  --violet-50:#f5f3ff;
+  --violet-100:#ede9fe;
+
+  /* --- Degrade durakları --- */
+  --grad-brand:linear-gradient(135deg,var(--primary),var(--accent),var(--violet));
+  --grad-brand-soft:linear-gradient(135deg,var(--primary-50),var(--accent-50),var(--violet-50));
+  --grad-text:linear-gradient(120deg,var(--primary),var(--accent),var(--violet));
+  --grad-horizontal:linear-gradient(90deg,var(--primary),var(--accent));
+
+  /* --- Cam (glassmorphism) --- */
+  --glass-bg:rgba(255,255,255,.72);
+  --glass-border:rgba(255,255,255,.6);
+  --glass-blur:18px;
+
+  /* --- Parlama (glow) --- */
+  --glow-primary:0 0 48px rgba(37,99,235,.22);
+  --glow-accent:0 0 48px rgba(99,102,241,.22);
+
+  /* --- Mesh arka plan (üç renk küresi) --- */
+  --mesh:radial-gradient(at 18% 18%,var(--primary-100) 0,transparent 45%),radial-gradient(at 82% 8%,var(--accent-100) 0,transparent 45%),radial-gradient(at 50% 92%,var(--violet-50) 0,transparent 50%);
 
   /* --- Nötr tonlar --- */
   --ink:#0f172a;
@@ -47,8 +76,9 @@
   --info-bg:#eff6ff;
 
   /* --- Tipografi ölçeği --- */
-  --font-sans:"Plus Jakarta Sans",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --font-sans:var(--font-sans-loaded),"Plus Jakarta Sans",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  --font-display:var(--font-display-loaded),"Space Grotesk",var(--font-sans-loaded),"Plus Jakarta Sans",sans-serif;
+  --font-mono:var(--font-mono-loaded),ui-monospace,SFMono-Regular,Menlo,monospace;
   --fs-xs:0.8125rem;    /* 13px — küçük etiketler */
   --fs-sm:0.875rem;     /* 14px — ikincil metin */
   --fs-base:0.9375rem;  /* 15px — gövde metni */
@@ -88,6 +118,28 @@
   /* --- Eski uyumluluk (component'ler bu adlarla referans veriyor) --- */
   --green:var(--primary);
   --soft:var(--primary-50);
+}
+
+/* ============================================================
+   Cam / degrade / mesh — global yardımcı sınıflar
+   ============================================================ */
+.glass-card{background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);border:1px solid var(--glass-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-md)}
+.gradient-text{background:var(--grad-text);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.mesh-bg{background-image:var(--mesh);background-color:var(--cream)}
+.hero-glow{position:relative}
+.hero-glow::before{content:'';position:absolute;inset:-20% -10%;background:var(--grad-brand);filter:blur(90px);opacity:.18;z-index:-1;pointer-events:none;animation:gradientShift 8s ease infinite;background-size:200% 200%}
+.display{font-family:var(--font-display);letter-spacing:-.02em}
+
+/* Keyframes (camin ve degrade'nin nefesi) */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseGlow{0%,100%{opacity:.18}50%{opacity:.3}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+/* Hareket hassasiyeti — kullanıcı kapalı istiyorsa saygı duy */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 }
 
 /* ============================================================
@@ -140,12 +192,13 @@ button:focus-visible,a:focus-visible{outline:3px solid rgba(37,99,235,.3);outlin
 button,.link-button{cursor:pointer;transition:all var(--transition);font-weight:600}
 button{border-radius:var(--radius-sm)}
 .primary{
-  background:var(--primary);color:#fff;border:0;
+  background-image:var(--grad-horizontal);background-color:var(--primary);background-size:150% 150%;color:#fff;border:0;
   border-radius:var(--radius-md);
-  padding:0.625rem 1.125rem;font-weight:700;font-size:var(--fs-sm);
-  box-shadow:0 2px 8px rgba(37,99,235,.25);
+  padding:0.6875rem 1.25rem;font-weight:700;font-size:var(--fs-sm);
+  box-shadow:0 4px 14px rgba(37,99,235,.32),inset 0 1px 0 rgba(255,255,255,.2);
+  transition:all var(--transition);cursor:pointer;
 }
-.primary:hover{background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 4px 14px rgba(37,99,235,.35)}
+.primary:hover{background-position:100% 50%;transform:translateY(-1px);box-shadow:0 8px 22px rgba(99,102,241,.4),inset 0 1px 0 rgba(255,255,255,.25)}
 .primary:active{transform:translateY(0)}
 .primary:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
 .secondary{
@@ -265,11 +318,14 @@ button{border-radius:var(--radius-sm)}
 .template-form label{font-size:var(--fs-xs);font-weight:600}
 
 /* Kayıt amaç seçimi (STK / Katılımcı) */
-.intent-choice h2{margin:.5rem 0 .25rem}
+.intent-choice h2{font-family:var(--font-display);margin:.5rem 0 .25rem}
 .intent-subtitle{color:var(--muted);font-size:var(--fs-sm);margin:0 0 1.5rem}
-.intent-card{display:flex;align-items:center;gap:.875rem;width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius-md);padding:1.125rem 1.25rem;margin-bottom:.75rem;cursor:pointer;transition:all var(--transition)}
-.intent-card:hover{border-color:var(--primary);background:var(--primary-50);transform:translateY(-1px);box-shadow:var(--shadow)}
-.intent-icon{flex:none;font-size:1.5rem;line-height:1;width:2.75rem;height:2.75rem;display:grid;place-items:center;background:var(--primary-50);border-radius:var(--radius-md)}
+.intent-card{display:flex;align-items:center;gap:.875rem;width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius-lg);padding:1.125rem 1.25rem;margin-bottom:.75rem;cursor:pointer;transition:all var(--transition);position:relative;overflow:hidden}
+.intent-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--grad-brand);background-size:200% 200%;opacity:0;transition:opacity var(--transition)}
+.intent-card:hover{border-color:transparent;background-image:var(--grad-brand-soft);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.intent-card:hover::before{opacity:1;animation:gradientShift 4s ease infinite}
+.intent-icon{flex:none;font-size:1.5rem;line-height:1;width:2.75rem;height:2.75rem;display:grid;place-items:center;background:var(--grad-brand-soft);border-radius:var(--radius-md);transition:transform var(--transition)}
+.intent-card:hover .intent-icon{transform:scale(1.08) rotate(-4deg)}
 .intent-card div{flex:1;min-width:0}
 .intent-card b{display:block;font-size:var(--fs-md);font-weight:700;margin-bottom:.1875rem}
 .intent-card small{display:block;font-size:var(--fs-sm);color:var(--muted);line-height:1.45}
@@ -329,32 +385,38 @@ button{border-radius:var(--radius-sm)}
 /* ============================================================
    Auth ekranları (login / register)
    ============================================================ */
-.auth-shell{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
-.auth-brand{background:linear-gradient(160deg,var(--primary-dark),var(--primary));color:#fff;padding:3rem 5vw;display:flex;flex-direction:column;justify-content:space-between}
-.logo{font-size:1.375rem;font-weight:800;display:flex;align-items:center;gap:.5rem;letter-spacing:-.02em}
-.logo b{display:grid;place-items:center;width:2rem;height:2rem;background:#fff;color:var(--primary);border-radius:var(--radius-md);font-size:1.125rem}
-.auth-brand span{font-size:var(--fs-xs);font-weight:800;letter-spacing:.1em;color:rgba(255,255,255,.7)}
-.auth-brand h1{font-size:2.75rem;line-height:1.15;margin:1rem 0;font-weight:800;letter-spacing:-.02em}
-.auth-brand h1 em{color:#fde68a;font-style:normal}
-.auth-brand p{color:rgba(255,255,255,.8);line-height:1.7;max-width:28rem;font-size:var(--fs-md)}
-.auth-panel{display:grid;place-items:center;padding:2rem}
-.auth-card{width:min(420px,100%)}
-.auth-card h2{font-size:1.625rem;margin:.5rem 0 1.75rem;font-weight:800;letter-spacing:-.02em}
-.auth-card label{display:block;font-size:var(--fs-sm);font-weight:600;margin:1rem 0}
-.auth-card input,.auth-card textarea{display:block;width:100%;margin-top:.375rem}
+.auth-shell{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr;position:relative;overflow:hidden}
+.auth-shell::before{content:'';position:absolute;inset:-30%;background:var(--mesh);filter:blur(40px);opacity:.5;z-index:0;pointer-events:none;animation:gradientShift 14s ease infinite;background-size:200% 200%}
+.auth-shell>*{position:relative;z-index:1}
+.auth-brand{color:#fff;padding:3rem 5vw 3.5rem;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.auth-brand::before{content:'';position:absolute;inset:0;background:var(--grad-brand);background-size:200% 200%;animation:gradientShift 12s ease infinite;z-index:-2}
+.auth-brand::after{content:'';position:absolute;top:-15%;right:-10%;width:24rem;height:24rem;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 65%);filter:blur(20px);z-index:-1;pointer-events:none}
+.logo{font-size:1.375rem;font-weight:800;display:flex;align-items:center;gap:.5rem;letter-spacing:-.02em;font-family:var(--font-display)}
+.logo b{display:grid;place-items:center;width:2.25rem;height:2.25rem;background:rgba(255,255,255,.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:var(--radius-md);font-size:1.125rem;animation:float 6s ease-in-out infinite}
+.auth-brand span{font-size:var(--fs-xs);font-weight:800;letter-spacing:.14em;color:rgba(255,255,255,.78);text-transform:uppercase}
+.auth-brand h1{font-size:clamp(2.25rem,4vw,3rem);line-height:1.1;margin:1rem 0;font-family:var(--font-display);font-weight:700;letter-spacing:-.025em}
+.auth-brand h1 em{font-style:normal;background:linear-gradient(120deg,#fde68a,#fca5a5,#f0abfc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.auth-brand p{color:rgba(255,255,255,.85);line-height:1.65;max-width:28rem;font-size:var(--fs-md)}
+.auth-panel{display:grid;place-items:center;padding:2rem 1.5rem}
+.auth-card{width:min(440px,100%);background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);border:1px solid var(--glass-border);border-radius:var(--radius-xl);padding:2.25rem;box-shadow:var(--shadow-lg)}
+.auth-card h2{font-family:var(--font-display);font-size:1.75rem;margin:.5rem 0 1.75rem;font-weight:700;letter-spacing:-.02em}
+.auth-card label{display:block;font-size:var(--fs-sm);font-weight:600;margin:1rem 0 .375rem}
+.auth-card input,.auth-card textarea{display:block;width:100%;margin-top:0}
 .auth-card small{display:block;color:var(--muted);margin-top:.375rem}
-.auth-card>.primary{width:100%;margin-top:.75rem}
+.auth-card>.primary{width:100%;margin-top:1.25rem}
 .auth-link{text-align:center;font-size:var(--fs-sm);color:var(--muted);margin-top:1.5rem}
 .auth-link a{color:var(--primary);font-weight:700}
 
 /* Onboarding (kurum oluşturma) */
-.center-shell{min-height:100vh;display:grid;place-items:center;padding:2.5rem;background:linear-gradient(135deg,var(--primary-50),var(--cream))}
-.onboarding-card{width:min(520px,100%);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);padding:2.25rem;box-shadow:var(--shadow-lg)}
+.center-shell{min-height:100vh;display:grid;place-items:center;padding:2.5rem;background:var(--cream);position:relative;overflow:hidden}
+.center-shell::before{content:'';position:absolute;inset:-25%;background:var(--mesh);filter:blur(40px);opacity:.6;z-index:0;pointer-events:none;animation:gradientShift 16s ease infinite;background-size:200% 200%}
+.center-shell>*{position:relative;z-index:1}
+.onboarding-card{width:min(520px,100%);background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur)) saturate(140%);-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);border:1px solid var(--glass-border);border-radius:var(--radius-xl);padding:2.25rem;box-shadow:var(--shadow-lg)}
 .logo.dark{color:var(--primary);margin-bottom:2.25rem}
-.onboarding-card h1{font-size:1.625rem;margin-bottom:.5rem;font-weight:800;letter-spacing:-.02em}
+.onboarding-card h1{font-family:var(--font-display);font-size:1.75rem;margin-bottom:.5rem;font-weight:700;letter-spacing:-.02em}
 .onboarding-card>p{color:var(--muted);font-size:var(--fs-sm)}
-.onboarding-card label{display:block;font-size:var(--fs-sm);font-weight:600;margin:1rem 0}
-.onboarding-card input,.onboarding-card textarea{display:block;width:100%;margin-top:.375rem}
+.onboarding-card label{display:block;font-size:var(--fs-sm);font-weight:600;margin:1rem 0 .375rem}
+.onboarding-card input,.onboarding-card textarea{display:block;width:100%;margin-top:0}
 .onboarding-card small{display:block;color:var(--muted);margin-top:.375rem}
 .onboarding-card textarea{height:5.5rem;resize:vertical}
 .onboarding-card>.primary{width:100%;margin-top:.75rem}
@@ -365,7 +427,7 @@ button{border-radius:var(--radius-sm)}
 .app-shell{min-height:100vh;display:grid;grid-template-columns:260px minmax(0,1fr)}
 .app-nav{position:sticky;top:0;height:100vh;background:var(--surface);color:var(--ink);padding:1.5rem 1.125rem;border-right:1px solid var(--line);z-index:10;display:flex;flex-direction:column}
 .brand{display:flex;align-items:center;gap:.5rem;font-size:1.25rem;font-weight:800;letter-spacing:-.02em}
-.brand span{display:grid;place-items:center;width:2.125rem;height:2.125rem;border-radius:var(--radius-md);background:linear-gradient(135deg,var(--primary),#6366f1);color:#fff}
+.brand span{display:grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:var(--radius-md);background:var(--grad-brand);background-size:150% 150%;color:#fff;box-shadow:0 4px 14px rgba(99,102,241,.35);animation:gradientShift 8s ease infinite}
 .org-chip{display:flex;align-items:center;gap:.625rem;border:1px solid var(--line);background:var(--cream);border-radius:var(--radius-md);padding:.625rem;margin-top:1.5rem}
 .org-chip>span{width:2rem;height:2rem;border-radius:var(--radius-sm);background:var(--primary-100);color:var(--primary);display:grid;place-items:center;font-size:var(--fs-xs);font-weight:800}
 .org-chip div{min-width:0}
@@ -407,8 +469,13 @@ button{border-radius:var(--radius-sm)}
    Responsive
    ============================================================ */
 @media(max-width:800px){
-  .auth-shell{grid-template-columns:1fr}
-  .auth-brand{display:none}
+  .auth-shell{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .auth-brand{padding:1.5rem;min-height:auto}
+  .auth-brand .logo{margin-bottom:0}
+  .auth-brand h1{font-size:1.625rem;margin:.5rem 0}
+  .auth-brand p{display:none}
+  .auth-brand span{display:none}
+  .auth-brand .auth-brand-foot{display:none}
   .app-shell{display:block}
   .app-nav{display:none}
   .dashboard{padding:1.5rem 1rem}

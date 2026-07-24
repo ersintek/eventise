@@ -25,6 +25,9 @@ export function ParticipantArea({eventId,title,orgName,startsAt,certificates}:{e
   const pendingGames=current?current.games.filter(x=>x.status==='OPEN'&&!x.responses.length):[];
   const unreadNotifications=current?current.notifications.filter((n:any)=>!n.readAt):[];
   const totalPending=pendingAssessments.length+pendingFeedback.length+pendingGames.length;
+  const totalTasks=current?(current.assessments.length+current.feedback.length+current.games.filter(x=>x.status==='OPEN').length):0;
+  const completedTasks=Math.max(0,totalTasks-totalPending);
+  const progressPct=totalTasks>0?Math.round((completedTasks/totalTasks)*100):0;
 
   // ilk bekleyen blok varsayılan açık olsun
   const firstOpenKey=pendingAssessments.length?'assessments':pendingFeedback.length?'feedback':pendingGames.length?'games':unreadNotifications.length?'notifications':'';
@@ -41,7 +44,14 @@ export function ParticipantArea({eventId,title,orgName,startsAt,certificates}:{e
       <button className="toolbar-btn" onClick={()=>setRefreshKey(k=>k+1)} disabled={busy} title="Yenile">{busy?'⏳':'🔄'}</button>
     </div>
 
-    {totalPending>0&&<p className="participant-summary">📋 <b>{totalPending} bekleyen görevin</b> var. Tamamlamak için aşağıdaki kartları aç.</p>}
+    {totalTasks>0&&(
+      <div className="progress-rail-wrap">
+        <div className="progress-label"><span>İlerleme</span><span><b>{completedTasks}</b>/{totalTasks} tamamlandı{progressPct===100?' 🎉':''}</span></div>
+        <div className="progress-rail"><div className="progress-fill" style={{width:progressPct+'%'}}/></div>
+      </div>
+    )}
+
+    {totalPending>0&&<p className="participant-summary"><b>{totalPending} bekleyen görevin</b> var. Tamamlamak için aşağıdaki kartları aç.</p>}
 
     {message&&<p className="notice">{message}</p>}
 
