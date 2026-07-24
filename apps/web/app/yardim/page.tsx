@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 
 export const metadata: Metadata = {
   title: 'STK Rehberi — Eventise',
@@ -163,12 +164,15 @@ const sections: Section[] = [
   },
 ];
 
-export default function YardimPage() {
+export default async function YardimPage() {
+  const token = (await cookies()).get('eventise_session')?.value;
+  const backHref = token ? '/dashboard' : '/login';
+  const backLabel = token ? 'Panele dön' : 'Giriş yap';
   return (
     <main className="help-page">
       <header className="help-header">
         <Link href="/" className="logo dark"><b>e</b>eventise</Link>
-        <Link href="/login" className="help-back">← Giriş yap</Link>
+        <Link href={backHref} className="help-back">← {backLabel}</Link>
       </header>
 
       <section className="help-hero">
@@ -196,10 +200,10 @@ export default function YardimPage() {
 
       <section className="help-cta">
         <div>
-          <h2>Hazırsanız başlayın</h2>
-          <p>Ücretsiz bir STK hesabı oluşturun ve ilk etkinliğinizi dakikalar içinde yayınlayın.</p>
+          <h2>{token ? 'İlk etkinliğinizi oluşturun' : 'Hazırsanız başlayın'}</h2>
+          <p>{token ? 'Panel üzerinden yeni bir etkinlik oluşturup dakikalar içinde yayınlayabilirsiniz.' : 'Ücretsiz bir STK hesabı oluşturun ve ilk etkinliğinizi dakikalar içinde yayınlayın.'}</p>
         </div>
-        <Link className="primary" href="/register">Ücretsiz başla →</Link>
+        <Link className="primary" href={token ? '/dashboard/events/new' : '/register'}>{token ? 'Yeni etkinlik →' : 'Ücretsiz başla →'}</Link>
       </section>
     </main>
   );
