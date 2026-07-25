@@ -415,9 +415,17 @@ button{border-radius:var(--radius-sm)}
 .prose ul,.prose ol{margin:.75rem 0;padding-left:1.5rem}
 .prose li{margin:.375rem 0}
 .prose strong{color:var(--ink);font-weight:700}
+.prose em{font-style:italic}
 .prose a{color:var(--primary);font-weight:600}
 .prose blockquote{border-left:3px solid var(--primary);padding-left:1rem;margin:1rem 0;color:var(--muted)}
 .prose code{background:var(--cream);padding:.125rem .375rem;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:var(--fs-xs)}
+.prose pre{overflow-x:auto;background:var(--cream);padding:1rem;border-radius:var(--radius-sm)}
+.prose pre code{padding:0;background:transparent}
+.prose table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:1rem 0}
+.prose th,.prose td{border:1px solid var(--line);padding:.5rem .75rem;text-align:left}
+.prose th{color:var(--ink);background:var(--cream);font-weight:700}
+.prose hr{border:0;border-top:1px solid var(--line);margin:1.5rem 0}
+.prose input[type="checkbox"]{width:auto;margin-right:.4rem}
 
 @media(max-width:800px){
   .workspace-grid{grid-template-columns:1fr}
