@@ -27,6 +27,11 @@ export class CertificatesService implements OnModuleInit {
     return this.prisma.certificateTemplate.create({ data: { eventId, name, bodyTemplate, backgroundAssetId: design?.backgroundAssetId ?? null, primaryColor: design?.primaryColor ?? null, signatureLabel: design?.signatureLabel ?? null, includeQr: design?.includeQr ?? true, orientation: design?.orientation ?? 'LANDSCAPE' } });
   }
 
+  async listTemplates(userId: string, organizationId: string, eventId: string) {
+    await this.access.requireEventAccess(userId, organizationId, eventId, ['ORGANIZATION_ADMIN', 'EVENT_MANAGER']);
+    return this.prisma.certificateTemplate.findMany({ where: { eventId }, include: { _count: { select: { certificates: true } } }, orderBy: { createdAt: 'desc' } });
+  }
+
   async updateTemplate(userId: string, organizationId: string, eventId: string, templateId: string, data: { name?: string; bodyTemplate?: string; primaryColor?: string | null; signatureLabel?: string | null; includeQr?: boolean; orientation?: string; backgroundAssetId?: string | null }) {
     await this.access.requireEventAccess(userId, organizationId, eventId, ['ORGANIZATION_ADMIN', 'EVENT_MANAGER']);
     const found = await this.prisma.certificateTemplate.findFirst({ where: { id: templateId, eventId } });

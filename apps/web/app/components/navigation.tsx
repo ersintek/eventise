@@ -44,6 +44,7 @@ export function EventNav({ eventId, active, enabled = {} }: { eventId: string; a
       {item(`${base}/communication`, 'İletişim', 'communication')}
       {item(`${base}/day`, 'Etkinlik Günü', 'day', true)}
       {item(`${base}/post-event`, 'Etkinlik Sonrası', 'post')}
+      {item(`${base}/certificates`, 'Sertifikalar', 'certificates')}
     </div>
   </nav>;
 }

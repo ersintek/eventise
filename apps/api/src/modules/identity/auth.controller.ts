@@ -8,6 +8,7 @@ import { AuthenticatedUser, CurrentUser } from './policies/current-user.decorato
 import { Public } from './policies/public.decorator';
 
 class ProfileDto{@IsString()@MinLength(2)firstName!:string;@IsString()@MinLength(2)lastName!:string;@IsIn(['tr','en'])preferredLanguage!:string;@IsBoolean()emailNotifications!:boolean;@IsBoolean()partnerEventEmails!:boolean}
+class GoogleLoginDto{@IsString()@MinLength(20)idToken!:string}
 
 @ApiTags('identity')
 @Controller('auth')
@@ -15,6 +16,7 @@ export class AuthController {
   constructor(@Inject(AuthService) private readonly auth: AuthService) {}
   @Public() @Post('register') register(@Body() dto: RegisterDto) { return this.auth.register(dto); }
   @Public() @Post('login') login(@Body() dto: LoginDto) { return this.auth.login(dto); }
+  @Public() @Post('google') google(@Body() dto: GoogleLoginDto) { return this.auth.google(dto.idToken); }
   @ApiBearerAuth() @Get('me') me(@CurrentUser() user: AuthenticatedUser) { return this.auth.me(user.id); }
   @ApiBearerAuth() @Patch('me') update(@CurrentUser() user:AuthenticatedUser,@Body() dto:ProfileDto){return this.auth.update(user.id,dto)}
 }

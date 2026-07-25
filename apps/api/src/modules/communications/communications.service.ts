@@ -4,7 +4,7 @@ import { JobQueue } from '../../infrastructure/jobs/job-queue.port';
 import { JobRunnerService } from '../../infrastructure/jobs/job-runner.service';
 import { EmailProvider } from '../../infrastructure/email/email-provider.port';
 import { OrganizationAccessService } from '../organizations/policies/organization-access.service';
-import { emailVariables, renderTemplate, validateTemplate } from './template-engine';
+import { emailVariables, renderEmailBody, renderTemplate, validateTemplate } from './template-engine';
 
 @Injectable()
 export class CommunicationsService implements OnModuleInit {
@@ -17,7 +17,7 @@ export class CommunicationsService implements OnModuleInit {
     const startTime = new Intl.DateTimeFormat('tr-TR', { timeStyle: 'short' }).format(input.eventStart);
     const variables = { 'participant.first_name':input.participantFirstName, 'participant.full_name':input.participantFullName, 'organization.name':input.organizationName, 'event.name':input.eventName, 'event.start_date':longDate, 'event.start_datetime':longDateTime, 'event.start_time':startTime, 'event.end_date':input.eventEnd ? new Intl.DateTimeFormat('tr-TR', { dateStyle: 'long' }).format(input.eventEnd) : longDate, 'event.end_time':input.eventEnd ? new Intl.DateTimeFormat('tr-TR', { timeStyle: 'short' }).format(input.eventEnd) : startTime, 'event.location':input.eventLocation ?? '', 'event.public_url':input.eventPublicUrl, 'event.participant_url':input.eventPublicUrl, 'certificate.url':input.certificateUrl ?? '' };
     validateTemplate(template.subject, emailVariables); validateTemplate(template.body, emailVariables);
-    const message = await this.prisma.emailMessage.create({ data: { templateId:template.id, recipient:input.recipient, subject:renderTemplate(template.subject, variables), body:renderTemplate(template.body, variables) } });
+    const message = await this.prisma.emailMessage.create({ data: { templateId:template.id, recipient:input.recipient, subject:renderTemplate(template.subject, variables), body:renderEmailBody(template.body, variables) } });
     await this.jobs.enqueue({ type:'email.send', payload:{ messageId:message.id }, idempotencyKey:`email:${message.id}` }); return message;
   }
   async listTemplates(userId:string, organizationId:string) { await this.access.requireMembership(userId, organizationId); return this.prisma.emailTemplate.findMany({ where:{organizationId}, orderBy:{key:'asc'} }); }

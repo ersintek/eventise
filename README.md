@@ -39,3 +39,14 @@ Dokploy’da repository içindeki `compose.yaml` dosyasını Compose kaynağı o
 API container’ı migration ve idempotent seed işlemini uygular. Ayrı worker container’ı e-posta, hatırlatma, sertifika, rapor, kapanış ve silme job’larını yürütür. PostgreSQL verisi named volume’da kalır. API yalnız `/api/health` başarılı olduğunda web servisi başlatılır.
 
 İlk admin, `SYSTEM_ADMIN_EMAILS` içindeki adresle hesap oluşturduğunda `SYSTEM_ADMIN` rolünü alır. Bootstrap sonrası bu ortam değişkenini yalnız kontrollü adreslerle sınırlandırın.
+# Google ile giriş
+
+Eventise, mevcut e-posta/şifre girişine ek olarak Google OAuth 2.0 ile girişi destekler.
+
+1. Google Cloud Console'da **Web application** türünde bir OAuth istemcisi oluşturun.
+2. Yetkili yönlendirme URI'si olarak yerel ortamda `http://localhost:8080/api/session/google/callback`, canlı ortamda ise `https://ALAN-ADINIZ/api/session/google/callback` ekleyin.
+3. İstemci değerlerini `.env` dosyasına `GOOGLE_CLIENT_ID` ve `GOOGLE_CLIENT_SECRET` olarak yazın.
+4. `PUBLIC_APP_URL` değerinin tarayıcıdan açılan tam Eventise adresiyle aynı olduğundan emin olun.
+5. Uygulamayı yeniden başlatın. Veritabanı migration'ı Docker açılışında otomatik uygulanır.
+
+Google yalnızca doğrulanmış e-posta adreslerini kabul eder. Aynı e-posta ile önceden açılmış bir Eventise hesabı varsa Google hesabı güvenli biçimde mevcut hesaba bağlanır.

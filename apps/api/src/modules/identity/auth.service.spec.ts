@@ -4,10 +4,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { AuthService } from './auth.service';
 
 function setup(user: unknown = null) {
-  const prisma = { user: { findUnique: vi.fn().mockResolvedValue(user), create: vi.fn() } };
+  const prisma = { user: { findUnique: vi.fn().mockResolvedValue(user), create: vi.fn(), update: vi.fn() } };
   const jwt = { signAsync: vi.fn().mockResolvedValue('signed-token') };
   const audit = { record: vi.fn().mockResolvedValue({}) };
-  return { service: new AuthService(prisma as never, jwt as never, audit as never), prisma, jwt, audit };
+  const googleIdentity = { verify: vi.fn() };
+  return { service: new AuthService(prisma as never, jwt as never, audit as never, googleIdentity as never), prisma, jwt, audit, googleIdentity };
 }
 describe('AuthService', () => {
   it('does not reveal whether a login email exists', async () => {
@@ -23,5 +24,14 @@ describe('AuthService', () => {
     const { service, audit } = setup(user);
     await expect(service.login({ email: user.email, password: 'SecurePassword1' })).resolves.toMatchObject({ accessToken: 'signed-token', user: { id: 'u1' } });
     expect(audit.record).toHaveBeenCalledOnce();
+  });
+  it('creates an account for a verified Google identity', async () => {
+    const { service, prisma, googleIdentity, audit } = setup();
+    googleIdentity.verify.mockResolvedValue({ subject: 'google-1', email: 'ada@example.org', firstName: 'Ada', lastName: 'Lovelace' });
+    const created = { id: 'u2', email: 'ada@example.org', firstName: 'Ada', lastName: 'Lovelace', status: 'ACTIVE', systemRole: 'USER' };
+    prisma.user.create.mockResolvedValue(created);
+    await expect(service.google('valid-google-id-token')).resolves.toMatchObject({ accessToken: 'signed-token', user: { id: 'u2' } });
+    expect(prisma.user.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ googleSubject: 'google-1', emailVerifiedAt: expect.any(Date) }) }));
+    expect(audit.record).toHaveBeenCalledWith(expect.objectContaining({ action: 'identity.user_logged_in_google' }));
   });
 });
