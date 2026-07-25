@@ -2,6 +2,7 @@
 import { useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeSanitize from 'rehype-sanitize';
 
 export function MarkdownEditor({ value, onChange, placeholder, rows = 5 }: { value: string; onChange: (v: string) => void; placeholder?: string; rows?: number }) {
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -33,7 +34,7 @@ export function MarkdownEditor({ value, onChange, placeholder, rows = 5 }: { val
     </div>
     {showPreview
       ? <div className="md-preview prose">{value
-        ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{value}</ReactMarkdown>
+        ? <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>{String(value)}</ReactMarkdown>
         : <span style={{color:'var(--muted-light)'}}>Önizleme burada görünür…</span>}</div>
       : <textarea ref={ref} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={rows}/>
     }

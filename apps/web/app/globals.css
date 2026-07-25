@@ -76,9 +76,9 @@
   --info-bg:#eff6ff;
 
   /* --- Tipografi ölçeği --- */
-  --font-sans:var(--font-sans-loaded),"Plus Jakarta Sans",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-  --font-display:var(--font-display-loaded),"Space Grotesk",var(--font-sans-loaded),"Plus Jakarta Sans",sans-serif;
-  --font-mono:var(--font-mono-loaded),ui-monospace,SFMono-Regular,Menlo,monospace;
+  --font-sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  --font-display:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --fs-xs:0.8125rem;    /* 13px — küçük etiketler */
   --fs-sm:0.875rem;     /* 14px — ikincil metin */
   --fs-base:0.9375rem;  /* 15px — gövde metni */

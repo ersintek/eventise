@@ -755,6 +755,7 @@ model EmailTemplate {
   organizationId String
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   key String
+  category String @default("NOTIFICATION")
   subject String
   body String
   messages EmailMessage[]
