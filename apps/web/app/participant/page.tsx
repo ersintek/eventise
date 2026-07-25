@@ -1,2 +1,30 @@
-import Link from'next/link';import{cookies}from'next/headers';import{redirect}from'next/navigation';import{AppNav,MobileTopBar}from'../components/navigation';import{ParticipantList}from'./participant-area';
-export default async function ParticipantPage(){const token=(await cookies()).get('eventise_session')?.value;if(!token)redirect('/login');const headers={authorization:`Bearer ${token}`},base=`${process.env.API_INTERNAL_URL}/api`,[historyResponse,certificatesResponse,organizationsResponse,meResponse]=await Promise.all([fetch(`${base}/participant/history`,{headers,cache:'no-store'}),fetch(`${base}/participant/certificates`,{headers,cache:'no-store'}),fetch(`${base}/organizations`,{headers,cache:'no-store'}),fetch(`${base}/auth/me`,{headers,cache:'no-store'})]);if(historyResponse.status===401)redirect('/login');const organizations=organizationsResponse.ok?await organizationsResponse.json():[],me=meResponse.ok?await meResponse.json():{};const content=<section className={organizations.length?'dashboard':'participant-standalone'}><MobileTopBar backHref={organizations.length?'/dashboard':'/'} backLabel={organizations.length?'Ana sayfa':'Başlangıç'}/><header className="page-heading"><div><p className="eyebrow">KATILIMCI ALANI</p><h1>Etkinliklerim</h1><p>Katıldığınız etkinliklerin içeriklerini buradan görüntüleyin.</p></div></header><ParticipantList history={historyResponse.ok?await historyResponse.json():[]} certificates={certificatesResponse.ok?await certificatesResponse.json():[]}/></section>;return organizations.length?<main className="app-shell"><AppNav organization={organizations[0]} active="participant" systemAdmin={me.systemRole==='SYSTEM_ADMIN'}/>{content}</main>:<main>{content}<Link className="participant-home-link" href="/">← Eventise ana sayfası</Link></main>}
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { AppNav, MobileTopBar } from '../components/navigation';
+import { ParticipantHub } from './participant-hub';
+
+async function fetchJson(path: string, token: string) {
+  const response = await fetch(`${process.env.API_INTERNAL_URL}/api/${path}`, { headers: { authorization: `Bearer ${token}` }, cache: 'no-store' });
+  if (response.status === 401) redirect('/login');
+  return response.ok ? response.json() : [];
+}
+
+export default async function ParticipantPage() {
+  const token = (await cookies()).get('eventise_session')?.value;
+  if (!token) redirect('/login');
+  const [history, certificates, organizations, me, follows, followingEvents] = await Promise.all([
+    fetchJson('participant/history', token),
+    fetchJson('participant/certificates', token),
+    fetchJson('organizations', token),
+    fetchJson('auth/me', token),
+    fetchJson('participant/follows', token),
+    fetchJson('participant/following-events', token),
+  ]);
+  const content = <section className={organizations.length ? 'dashboard participant-dashboard' : 'participant-shell'}>
+    <MobileTopBar backHref="/participant" backLabel="Etkinliklerim"/>
+    <ParticipantHub me={me} history={history} certificates={certificates} initialFollows={follows} initialFollowingEvents={followingEvents}/>
+  </section>;
+  return organizations.length
+    ? <main className="app-shell"><AppNav organization={organizations[0]} active="participant" systemAdmin={me.systemRole === 'SYSTEM_ADMIN'}/>{content}</main>
+    : <main>{content}</main>;
+}
