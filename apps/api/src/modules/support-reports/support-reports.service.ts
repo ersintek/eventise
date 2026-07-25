@@ -27,7 +27,9 @@ export class SupportReportsService {
       this.prisma.organization.findUniqueOrThrow({ where: { id: organizationId }, select: { name: true } }),
     ]);
     const reportedAt = new Date();
-    const destination = this.config.get<string>('SUPPORT_REPORT_EMAIL') ?? this.config.getOrThrow<string>('SMTP_USER');
+    const destination = this.config.get<string>('SUPPORT_REPORT_EMAIL')
+      || this.config.get<string>('SYSTEM_ADMIN_EMAILS')?.split(',').map(value => value.trim()).find(Boolean)
+      || this.config.getOrThrow<string>('SMTP_USER');
     const reportId = randomUUID();
     const name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || 'İsimsiz kullanıcı';
 
