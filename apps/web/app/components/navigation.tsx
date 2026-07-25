@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { LogoutButton } from '../dashboard/logout-button';
+import { BetaNotice } from './beta-notice';
 
 type Organization = { name: string; memberships?: Array<{ role?: string }> };
 
@@ -13,7 +14,7 @@ export function AppNav({ organization, active, systemAdmin = false }: { organiza
   const item = (href: string, label: string, key: string) => <Link className={active === key ? 'active' : ''} href={href}>{label}</Link>;
   const role = organization.memberships?.[0]?.role ?? 'MEMBER';
   return <aside className="app-nav">
-    <Mark />
+    <div className="brand-row"><Mark /><BetaNotice /></div>
     <div className="org-chip"><span>{organization.name.slice(0, 2).toUpperCase()}</span><div><b>{organization.name}</b><small>{roleNames[role] ?? role}</small></div></div>
     <nav aria-label="Ana menü">
       <div className="nav-group"><small>GENEL</small>{item('/dashboard', 'Ana sayfa', 'home')}</div>

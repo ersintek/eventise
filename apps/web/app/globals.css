@@ -231,6 +231,25 @@ button{border-radius:var(--radius-sm)}
 .notice{padding:.75rem 1rem;background:var(--info-bg);border:1px solid var(--primary-100);border-radius:var(--radius-md);color:var(--primary-dark);font-size:var(--fs-sm)}
 .error{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);border-radius:var(--radius-md);padding:.75rem 1rem;font-size:var(--fs-sm)}
 
+/* Beta bilgisi ve STK sorun bildirimi */
+.brand-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.beta-badge{display:inline-flex;align-items:center;gap:.25rem;border:1px solid var(--accent-100);background:linear-gradient(135deg,var(--accent-50),var(--violet-50));color:var(--accent-dark);padding:.22rem .48rem;border-radius:var(--radius-full);font-size:.68rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;box-shadow:none}
+.beta-badge:hover{border-color:var(--accent-light);transform:translateY(-1px)}
+.compact-dialog{position:fixed;border:1px solid var(--line);border-radius:var(--radius-xl);padding:1.35rem;width:min(92vw,420px);color:var(--ink);background:var(--surface);box-shadow:var(--shadow-lg)}
+.compact-dialog::backdrop{background:rgba(15,23,42,.38);backdrop-filter:blur(2px)}
+.compact-dialog h2{font-size:1.18rem;margin:.15rem 0 .45rem}
+.compact-dialog p{font-size:var(--fs-sm);color:var(--muted);line-height:1.65;margin:.25rem 0}
+.compact-dialog .eyebrow{color:var(--accent-dark);font-size:.68rem}
+.dialog-close{position:absolute;right:.7rem;top:.6rem;border:0;background:transparent;color:var(--muted);font-size:1.45rem;line-height:1;padding:.25rem .45rem}
+.dialog-icon{display:grid;place-items:center;width:2.25rem;height:2.25rem;margin-bottom:.65rem;border-radius:.7rem;background:var(--grad-brand);color:white;box-shadow:var(--shadow-primary)}
+.problem-report-trigger{position:fixed;right:1rem;bottom:1rem;z-index:40;display:flex;align-items:center;gap:.4rem;border:1px solid var(--line);background:rgba(255,255,255,.94);color:var(--ink-secondary);padding:.48rem .72rem;border-radius:var(--radius-full);font-size:.75rem;font-weight:700;box-shadow:var(--shadow-md);backdrop-filter:blur(8px)}
+.problem-report-trigger span{display:grid;place-items:center;width:1.05rem;height:1.05rem;border-radius:50%;background:var(--primary);color:white;font-size:.7rem}
+.problem-report-trigger:hover{color:var(--primary);border-color:var(--primary-200);transform:translateY(-1px)}
+.report-dialog form{display:grid;gap:.6rem;margin-top:.9rem}
+.report-dialog textarea{resize:vertical;min-height:7rem}
+.report-dialog .primary{justify-self:end}
+.report-status{padding:.55rem .7rem!important;margin-top:.7rem!important;border-radius:var(--radius-sm);background:var(--primary-50);color:var(--primary-dark)!important}
+
 /* ============================================================
    Tooltip — üzerine gelince açıklama (pure CSS, JS gerekmez)
    Kullanım: <span className="tooltip" data-tip="Açıklama metni">terim</span>
