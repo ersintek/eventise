@@ -6,6 +6,8 @@ import { PrismaService } from '../../shared/persistence/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { OrganizationAccessService } from '../organizations/policies/organization-access.service';
 
+const DEFAULT_SUPPORT_REPORT_EMAIL = 'ersintek@gmail.com';
+
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, character => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;',
 }[character] as string));
@@ -28,8 +30,7 @@ export class SupportReportsService {
     ]);
     const reportedAt = new Date();
     const destination = this.config.get<string>('SUPPORT_REPORT_EMAIL')
-      || this.config.get<string>('SYSTEM_ADMIN_EMAILS')?.split(',').map(value => value.trim()).find(Boolean)
-      || this.config.getOrThrow<string>('SMTP_USER');
+      ?.trim() || DEFAULT_SUPPORT_REPORT_EMAIL;
     const reportId = randomUUID();
     const name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || 'İsimsiz kullanıcı';
 
