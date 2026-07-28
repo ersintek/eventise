@@ -41,4 +41,27 @@ describe('SupportReportsService', () => {
 
     expect(email.send).toHaveBeenCalledWith(expect.objectContaining({ to: 'support@example.org' }));
   });
+
+  it('always sends contact messages to the public contact address', async () => {
+    const { service, email } = createService('support@example.org');
+
+    await service.create('user-1', 'organization-1', 'Merhaba Eventise.', '/dashboard/about', 'CONTACT');
+
+    expect(email.send).toHaveBeenCalledWith(expect.objectContaining({
+      to: 'ersintek@gmail.com',
+      replyTo: 'reporter@example.org',
+      subject: '[Eventise İletişim Formu] Eventise',
+    }));
+  });
+
+  it('lets a signed-in system administrator send a contact message without an organization', async () => {
+    const { service, email } = createService();
+
+    await service.create('admin-1', undefined, 'Bir önerim var.', '/dashboard/about', 'CONTACT');
+
+    expect(email.send).toHaveBeenCalledWith(expect.objectContaining({
+      to: 'ersintek@gmail.com',
+      subject: '[Eventise İletişim Formu] Sistem yöneticisi',
+    }));
+  });
 });

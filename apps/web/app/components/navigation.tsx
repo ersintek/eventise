@@ -22,7 +22,7 @@ export function AppNav({ organization, active, systemAdmin = false }: { organiza
       <div className="nav-group"><small>KATILIM</small>{item('/participant', 'Katılımcı alanım', 'participant')}</div>
       <div className="nav-group"><small>KURUM</small>{item('/dashboard/settings', 'Ekip ve ayarlar', 'settings')}{item('/dashboard/quota', 'Kullanım ve plan', 'quota')}</div>
       {systemAdmin && <div className="nav-group"><small>YÖNETİM</small>{item('/admin', 'Sistem yönetimi', 'admin')}</div>}
-      <div className="nav-group"><small>DESTEK</small>{item('/yardim', 'STK rehberi', 'help')}</div>
+      <div className="nav-group"><small>DESTEK</small>{item('/yardim', 'STK Rehberi', 'help')}{item('/dashboard/about', 'Eventise Hakkında', 'about')}</div>
     </nav>
     <LogoutButton />
   </aside>;
