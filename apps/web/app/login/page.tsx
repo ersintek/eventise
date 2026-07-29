@@ -31,8 +31,12 @@ export default function LoginPage() {
       setError((await response.json()).message ?? 'Giriş yapılamadı.');
       return;
     }
-    const organizations = await fetch('/api/backend/organizations').then((result) => result.ok ? result.json() : []).catch(() => []);
-    router.push(organizations.length ? '/dashboard' : '/participant');
+    const legal = await fetch('/api/backend/legal/status').then((result) => result.ok ? result.json() : null).catch(() => null);
+    if (!legal?.userTermsAccepted) router.push('/legal/accept');
+    else {
+      const organizations = await fetch('/api/backend/organizations').then((result) => result.ok ? result.json() : []).catch(() => []);
+      router.push(organizations.length ? '/dashboard' : '/participant');
+    }
     router.refresh();
   }
 

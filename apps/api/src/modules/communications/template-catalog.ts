@@ -6,7 +6,7 @@
 export const emailTemplateCatalog: ReadonlyArray<readonly [string, string, string, string]> = [
   // === DURUM BİLDİRİMLERİ (kayıt sürecinde otomatik gider) ===
   ['application_received', 'NOTIFICATION',
-    'Başvurunuz alındı — {{event.name}}',
+    'Başvurunuzu aldık — {{event.name}}',
     'Merhaba {{participant.first_name}},\n\n{{event.name}} etkinliği için başvurunuzu aldık.\n\nEtkinlik ekibi başvurunuzu değerlendirecek. Sonuç belli olduğunda size yine e-posta ile bilgi vereceğiz.\n\nİlginiz için teşekkür ederiz.\n{{organization.name}}'],
   ['registration_confirmed', 'NOTIFICATION',
     'Kaydınız tamamlandı — {{event.name}}',

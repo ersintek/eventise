@@ -14,6 +14,7 @@ class CopyDto {
 export class EventCopyController {
   constructor(@Inject(EventCopyService) private service: EventCopyService) {}
   @Get('participant/history') history(@CurrentUser() user: AuthenticatedUser) { return this.service.history(user.id); }
+  @Get('participant/upcoming-events') upcomingEvents(@CurrentUser() user: AuthenticatedUser) { return this.service.upcomingEvents(user.id); }
   @Get('participant/follows') follows(@CurrentUser() user: AuthenticatedUser) { return this.service.follows(user.id); }
   @Get('participant/following-events') followingEvents(@CurrentUser() user: AuthenticatedUser) { return this.service.followingEvents(user.id); }
   @Post('participant/organizations/:organizationId/follow') follow(@CurrentUser() user: AuthenticatedUser, @Param('organizationId') organizationId: string) { return this.service.follow(user.id, organizationId); }

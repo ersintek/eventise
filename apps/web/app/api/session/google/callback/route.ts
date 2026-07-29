@@ -45,7 +45,11 @@ export async function GET(request: NextRequest) {
     const data = await apiResponse.json() as { accessToken?: string };
     if (!apiResponse.ok || !data.accessToken) return loginError(request, 'account');
 
-    let target = destinations[destination];
+    const legalStatus = await fetch(`${process.env.API_INTERNAL_URL}/api/legal/status`, {
+      headers: { authorization: `Bearer ${data.accessToken}` },
+      cache: 'no-store',
+    }).then((response) => response.ok ? response.json() as Promise<{ userTermsAccepted: boolean }> : null);
+    let target = legalStatus?.userTermsAccepted ? destinations[destination] : `/legal/accept?destination=${destination === 'onboarding' ? 'onboarding' : 'participant'}`;
     if (!target) {
       const organizations = await fetch(`${process.env.API_INTERNAL_URL}/api/organizations`, {
         headers: { authorization: `Bearer ${data.accessToken}` },

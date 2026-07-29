@@ -12,17 +12,19 @@ async function fetchJson(path: string, token: string) {
 export default async function ParticipantPage() {
   const token = (await cookies()).get('eventise_session')?.value;
   if (!token) redirect('/login');
-  const [history, certificates, organizations, me, follows, followingEvents] = await Promise.all([
+  const [history, upcomingEvents, certificates, organizations, me, follows, followingEvents, legal] = await Promise.all([
     fetchJson('participant/history', token),
+    fetchJson('participant/upcoming-events', token),
     fetchJson('participant/certificates', token),
     fetchJson('organizations', token),
     fetchJson('auth/me', token),
     fetchJson('participant/follows', token),
     fetchJson('participant/following-events', token),
+    fetchJson('legal/status', token),
   ]);
   const content = <section className={organizations.length ? 'dashboard participant-dashboard' : 'participant-shell'}>
     <MobileTopBar backHref="/participant" backLabel="Etkinliklerim"/>
-    <ParticipantHub me={me} history={history} certificates={certificates} initialFollows={follows} initialFollowingEvents={followingEvents}/>
+    <ParticipantHub me={me} history={history} upcomingEvents={upcomingEvents} certificates={certificates} initialFollows={follows} initialFollowingEvents={followingEvents} legal={legal}/>
   </section>;
   return organizations.length
     ? <main className="app-shell"><AppNav organization={organizations[0]} active="participant" systemAdmin={me.systemRole === 'SYSTEM_ADMIN'}/>{content}</main>

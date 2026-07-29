@@ -22,7 +22,7 @@ export default function RegisterPage() {
       setError((await response.json()).message ?? 'Hesap oluşturulamadı.');
       return;
     }
-    router.push(intent === 'participant' ? '/participant' : '/onboarding');
+    router.push(`/legal/accept?destination=${intent === 'participant' ? 'participant' : 'onboarding'}`);
     router.refresh();
   }
 

@@ -1,5 +1,20 @@
 export const updates = [
   {
+    version: '0.10.0',
+    title: 'Etkinlik keşfi ve sadeleştirilmiş yönetim',
+    changes: [
+      ['Katılımcı alanına herkese açık etkinliklerin listelendiği “Yaklaşan Etkinlikler” ekranı eklendi.', 'Yeni etkinlikleri daha kolay keşfetme'],
+      ['Etkinlik kartlarında başvuru ve kayıt durumu gösterilmeye başlandı.', 'Katılım durumunu tek bakışta görme'],
+      ['Katılımcının yaklaşan, devam eden ve geçmiş etkinlikleri birbirinden ayrıldı.', 'Daha düzenli kişisel etkinlik alanı'],
+      ['Takip edilen STK’ların etkinlikleri için filtre ve takip yönetimi eklendi.', 'İlgilenilen etkinliklere daha hızlı ulaşma'],
+      ['Etkinlik tanıtım ve kayıt sayfası yenilendi; mobil kayıt işlemi kolaylaştırıldı.', 'Daha anlaşılır ve akıcı kayıt deneyimi'],
+      ['Yeni etkinlikler varsayılan olarak herkese açık oluşturulmaya başlandı.', 'Etkinliklerin daha kolay keşfedilmesi'],
+      ['Etkinlik yönetimindeki manuel “Canlıya al” adımı kaldırıldı; dönem bilgisi tarihe göre otomatik gösteriliyor.', 'Daha az işlem ve daha açık yönetim'],
+      ['Etkinlik günü araçları etkinlikten önce denenebilir hâle getirildi ve otomatik kapatma kaldırıldı.', 'Daha rahat hazırlık ve prova imkânı'],
+      ['Yeni etkinlik oluşturma akışındaki kullanılmayan şablon adımları temizlendi.', 'Daha kısa ve sade etkinlik oluşturma'],
+    ],
+  },
+  {
     version: '0.9.0',
     title: 'Daha kolay erişim ve geri bildirim',
     changes: [

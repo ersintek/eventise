@@ -36,6 +36,59 @@ export class EventCopyService {
     });
   }
 
+  async upcomingEvents(userId: string) {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { email: true },
+    });
+    const events = await this.prisma.event.findMany({
+      where: {
+        publicationStatus: 'PUBLISHED',
+        visibility: 'PUBLIC',
+        endsAt: { gte: new Date() },
+        organization: { status: 'ACTIVE' },
+      },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        summary: true,
+        startsAt: true,
+        endsAt: true,
+        format: true,
+        venueName: true,
+        capacity: true,
+        registrationStatus: true,
+        registrationMode: true,
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            followers: { where: { userId }, select: { id: true }, take: 1 },
+          },
+        },
+        registrations: {
+          where: { email: user.email.trim().toLowerCase() },
+          select: { id: true, applicationStatus: true },
+          take: 1,
+        },
+      },
+      orderBy: { startsAt: 'asc' },
+      take: 100,
+    });
+    return events.map(({ registrations, organization, ...event }) => ({
+      ...event,
+      organization: {
+        id: organization.id,
+        name: organization.name,
+        slug: organization.slug,
+      },
+      followed: organization.followers.length > 0,
+      registration: registrations[0] ?? null,
+    }));
+  }
+
   async follow(userId: string, organizationId: string) {
     const organization = await this.prisma.organization.findFirst({ where: { id: organizationId, status: 'ACTIVE' }, select: { id: true } });
     if (!organization) throw new NotFoundException('Kurum bulunamadı.');

@@ -701,6 +701,7 @@ button{border-radius:var(--radius-sm)}
 .event-toolbar{display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;padding:.875rem 1rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);margin-bottom:1rem;box-shadow:var(--shadow-sm)}
 .event-toolbar-group{display:flex;align-items:center;gap:.625rem}
 .event-toolbar-spacer{flex:1}
+.event-period{display:inline-flex;padding:.45rem .7rem;border-radius:var(--radius-full);background:var(--line-soft);color:var(--muted);font-size:var(--fs-xs);font-weight:800}.event-period.current{background:var(--success-bg);color:var(--success)}.event-period.upcoming{background:var(--primary-50);color:var(--primary)}
 
 /* Aç/kapa düğmesi (slide toggle) */
 .toggle-switch{position:relative;display:inline-flex;align-items:center;gap:.5rem;cursor:pointer;user-select:none}

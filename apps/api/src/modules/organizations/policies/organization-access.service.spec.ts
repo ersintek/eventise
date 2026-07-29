@@ -15,8 +15,14 @@ describe('OrganizationAccessService', () => {
   });
   it('returns a valid scoped membership', async () => {
     const membership = { role: 'EVENT_MANAGER', organization: { status: 'ACTIVE' } };
-    const prisma = { organizationMembership: { findUnique: vi.fn().mockResolvedValue(membership) } };
+    const prisma = { organizationMembership: { findUnique: vi.fn().mockResolvedValue(membership) }, legalAcceptance: { findFirst: vi.fn().mockResolvedValue({ id: 'acceptance-1' }) } };
     const service = new OrganizationAccessService(prisma as never);
     await expect(service.requireMembership('user-a', 'organization-a', ['EVENT_MANAGER'])).resolves.toBe(membership);
+  });
+  it('requires current organization terms for managers', async () => {
+    const membership = { role: 'EVENT_MANAGER', organization: { status: 'ACTIVE' } };
+    const prisma = { organizationMembership: { findUnique: vi.fn().mockResolvedValue(membership) }, legalAcceptance: { findFirst: vi.fn().mockResolvedValue(null) } };
+    const service = new OrganizationAccessService(prisma as never);
+    await expect(service.requireMembership('user-a', 'organization-a', ['EVENT_MANAGER'])).rejects.toBeInstanceOf(ForbiddenException);
   });
 });
