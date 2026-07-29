@@ -39,6 +39,11 @@ export class CertificatesController {
     return this.c.createTemplate(u.id, o, e, d.name, d.bodyTemplate, { primaryColor: d.primaryColor, signatureLabel: d.signatureLabel, includeQr: d.includeQr, orientation: d.orientation, backgroundAssetId: d.backgroundAssetId });
   }
 
+  @Get('organizations/:organizationId/events/:eventId/certificate-templates')
+  templates(@CurrentUser() u: AuthenticatedUser, @Param('organizationId') o: string, @Param('eventId') e: string) {
+    return this.c.listTemplates(u.id, o, e);
+  }
+
   @Post('organizations/:organizationId/events/:eventId/certificate-templates/:templateId')
   updateTemplate(@CurrentUser() u: AuthenticatedUser, @Param('organizationId') o: string, @Param('eventId') e: string, @Param('templateId') t: string, @Body() d: UpdateTemplateDto) {
     return this.c.updateTemplate(u.id, o, e, t, d);

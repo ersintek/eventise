@@ -157,6 +157,7 @@ enum ReportExportStatus {
 model User {
   id                String   @id @default(cuid())
   email             String   @unique
+  googleSubject     String?  @unique
   passwordHash      String
   firstName         String
   lastName          String
@@ -175,6 +176,8 @@ model User {
   promotionReviews PromotionRequest[] @relation("PromotionReviewer")
   supportGrants SupportAccessGrant[] @relation("SupportAdmin")
   accountSetupTokens AccountSetupToken[]
+  organizationFollows OrganizationFollow[]
+  legalAcceptances LegalAcceptance[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
@@ -205,6 +208,7 @@ model Organization {
   description     String?
   contactEmail    String
   website         String?
+  organizationType String @default("DERNEK")
   defaultLanguage String @default("tr")
   status          OrganizationStatus @default(ACTIVE)
   announcementApproved Boolean @default(false)
@@ -225,8 +229,40 @@ model Organization {
   quotaReservations QuotaReservation[]
   promotionRequests PromotionRequest[]
   supportAccessGrants SupportAccessGrant[]
+  followers OrganizationFollow[]
+  legalAcceptances LegalAcceptance[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model LegalAcceptance {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String?
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  documentKey String
+  documentVersion String
+  representativeRole String?
+  authorityDeclared Boolean @default(false)
+  acceptedAt DateTime @default(now())
+  withdrawnAt DateTime?
+  @@unique([userId, organizationId, documentKey, documentVersion])
+  @@index([userId, documentKey, withdrawnAt])
+  @@index([organizationId, documentKey, withdrawnAt])
+}
+
+model OrganizationFollow {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  emailNotifications Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([userId, organizationId])
+  @@index([organizationId])
 }
 
 model Event {
@@ -755,6 +791,7 @@ model EmailTemplate {
   organizationId String
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   key String
+  category String @default("NOTIFICATION")
   subject String
   body String
   messages EmailMessage[]

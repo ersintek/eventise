@@ -28,9 +28,9 @@ export class DevelopmentStorageController {
   }
 
   @Get()
-  get(@Query('key') key: string, @Res() res: Response) {
+  async get(@Query('key') key: string, @Res() res: Response) {
     if (!this.enabled() || !key) return res.sendStatus(404);
-    const data = this.storage.get(key);
+    const data = await this.storage.get(key);
     if (!data) return res.sendStatus(404);
     return res.send(data);
   }

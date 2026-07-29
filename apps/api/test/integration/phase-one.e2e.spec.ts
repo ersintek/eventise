@@ -25,8 +25,11 @@ describe('Phase 1 identity, organization and tenant isolation', () => {
     const register = (email: string, firstName: string) => request(app.getHttpServer()).post('/api/auth/register').send({ email, firstName, lastName: 'Test', password: 'SecurePassword1' }).expect(201);
     const userA = (await register('tenant-a@example.org', 'TenantA')).body as { accessToken: string };
     const userB = (await register('tenant-b@example.org', 'TenantB')).body as { accessToken: string };
-    const orgA = (await request(app.getHttpServer()).post('/api/organizations').set('Authorization', `Bearer ${userA.accessToken}`).send({ name: 'Kurum A', slug: 'kurum-a', contactEmail: 'a@example.org' }).expect(201)).body as { id: string };
-    const orgB = (await request(app.getHttpServer()).post('/api/organizations').set('Authorization', `Bearer ${userB.accessToken}`).send({ name: 'Kurum B', slug: 'kurum-b', contactEmail: 'b@example.org' }).expect(201)).body as { id: string };
+    await request(app.getHttpServer()).post('/api/legal/accept-user-terms').set('Authorization', `Bearer ${userA.accessToken}`).send({ version: '1.0' }).expect(201);
+    await request(app.getHttpServer()).post('/api/legal/accept-user-terms').set('Authorization', `Bearer ${userB.accessToken}`).send({ version: '1.0' }).expect(201);
+    const legal = { organizationType: 'DERNEK', representativeRole: 'Koordinatör', authorityDeclared: true, organizationTermsAccepted: true, organizationTermsVersion: '1.0' };
+    const orgA = (await request(app.getHttpServer()).post('/api/organizations').set('Authorization', `Bearer ${userA.accessToken}`).send({ name: 'Kurum A', slug: 'kurum-a', contactEmail: 'a@example.org', ...legal }).expect(201)).body as { id: string };
+    const orgB = (await request(app.getHttpServer()).post('/api/organizations').set('Authorization', `Bearer ${userB.accessToken}`).send({ name: 'Kurum B', slug: 'kurum-b', contactEmail: 'b@example.org', ...legal }).expect(201)).body as { id: string };
     await request(app.getHttpServer()).get(`/api/organizations/${orgA.id}`).set('Authorization', `Bearer ${userA.accessToken}`).expect(200);
     await request(app.getHttpServer()).get(`/api/organizations/${orgB.id}`).set('Authorization', `Bearer ${userA.accessToken}`).expect(404);
     const organizations = (await request(app.getHttpServer()).get('/api/organizations').set('Authorization', `Bearer ${userA.accessToken}`).expect(200)).body as Array<{ id: string }>;

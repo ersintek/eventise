@@ -1,11 +1,10 @@
 import { notFound } from 'next/navigation';
 import { cookies } from 'next/headers';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { RegistrationField, RegistrationForm } from './registration-form';
 import { formatDateFull } from '@/lib/datetime';
+import { MarkdownContent } from '../../../components/markdown-content';
 
-interface EventData { id: string; title: string; summary: string | null; description: string | null; startsAt: string; venueName: string | null; capacity: number; registrationStatus: string; organization: { name: string }; faqs: Array<{ id: string; question: string; answer: string }> }
+interface EventData { id:string; title:string; summary:string|null; description:string|null; startsAt:string; endsAt:string; format:'OFFLINE'|'ONLINE'|'HYBRID'; venueName:string|null; venueAddress:string|null; capacity:number; registrationStatus:string; registrationMode:string; organization:{name:string}; faqs:Array<{id:string;question:string;answer:string}> }
 
 export default async function PublicEvent({ params }: { params: Promise<{ orgSlug: string; eventSlug: string }> }) {
   const { orgSlug, eventSlug } = await params;
@@ -26,5 +25,17 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
   if (token) {
     try { const r = await fetch(`${base}/participant/events/${event.id}/registration`, { headers: { authorization: `Bearer ${token}` }, cache: 'no-store' }); if (r.ok) session = await r.json(); } catch {}
   }
-  return <main className="public-event"><header><div className="logo dark"><b>e</b>eventise</div><span>{event.organization.name}</span></header><section className="event-hero"><p className="eyebrow">ETKİNLİK</p><h1>{event.title}</h1><p>{event.summary ?? ''}</p><div className="event-facts"><div><small>Tarih</small><b>{formatDateFull(event.startsAt)}</b></div><div><small>{(event as any).format === 'ONLINE' ? 'Etkinlik türü' : 'Mekân'}</small><b>{(event as any).format === 'ONLINE' ? 'Çevrim içi' : event.venueName ?? 'Daha sonra duyurulacak'}</b></div><div><small>Kontenjan</small><b>{event.capacity} kişi</b></div></div></section><div className="public-columns"><section><h2>Etkinlik hakkında</h2>{event.description ? <div className="prose"><ReactMarkdown remarkPlugins={[remarkGfm]}>{event.description}</ReactMarkdown></div> : <p>{event.summary ?? 'Etkinlik ayrıntıları kurum tarafından paylaşılacaktır.'}</p>}{event.faqs.length > 0 && <><h2>Sık sorulan sorular</h2>{event.faqs.map(item => <details key={item.id}><summary>{item.question}</summary><p>{item.answer}</p></details>)}</>}</section><RegistrationForm orgSlug={orgSlug} eventSlug={eventSlug} open={event.registrationStatus === 'OPEN'} consents={consents} fields={form.schema.fields ?? []} session={session} /></div></main>;
+  const registrationOpen=event.registrationStatus==='OPEN';
+  const formatLabel=event.format==='ONLINE'?'Çevrim içi':event.format==='HYBRID'?'Hibrit':'Yüz yüze';
+  return <main className="public-event">
+    <header><div className="logo dark"><b>e</b>eventise</div><span className="organizer-name">{event.organization.name}</span></header>
+    <section className="event-hero">
+      <div className="event-hero-status"><span>{formatLabel}</span><span className={registrationOpen?'open':'closed'}>{registrationOpen?'Kayıt açık':'Kayıt kapalı'}</span></div>
+      <p className="eyebrow">{event.organization.name}</p><h1>{event.title}</h1><p>{event.summary??''}</p>
+      {registrationOpen&&<a className="primary event-primary-cta" href="#registration">Kayıt ol</a>}
+      <div className="event-facts"><div><small>Tarih</small><b>{formatDateFull(event.startsAt)}</b></div><div><small>{event.format==='ONLINE'?'Etkinlik türü':'Mekân'}</small><b>{event.format==='ONLINE'?'Çevrim içi':event.venueName??'Daha sonra duyurulacak'}</b></div><div><small>Kontenjan</small><b>{event.capacity} kişi</b></div></div>
+    </section>
+    <div className="public-columns"><section className="event-content"><div className="event-content-block"><p className="eyebrow">ETKİNLİK</p><h2>Etkinlik hakkında</h2>{event.description?<MarkdownContent>{String(event.description)}</MarkdownContent>:<p>{event.summary??'Etkinlik ayrıntıları kurum tarafından paylaşılacaktır.'}</p>}</div>{event.venueAddress&&event.format!=='ONLINE'&&<div className="event-content-block"><p className="eyebrow">KONUM</p><h2>Nasıl katılacaksınız?</h2><p><b>{event.venueName}</b><br/>{event.venueAddress}</p></div>}{event.faqs.length>0&&<div className="event-content-block"><p className="eyebrow">MERAK EDİLENLER</p><h2>Sık sorulan sorular</h2>{event.faqs.map(item=><details key={item.id}><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>}</section><RegistrationForm orgSlug={orgSlug} eventSlug={eventSlug} open={registrationOpen} consents={consents} fields={form.schema.fields??[]} session={session}/></div>
+    {registrationOpen&&<a className="mobile-registration-cta" href="#registration">Kayıt ol</a>}
+  </main>;
 }

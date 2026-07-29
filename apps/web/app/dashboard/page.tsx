@@ -16,7 +16,7 @@ export default async function Dashboard() {
   const token = (await cookies()).get('eventise_session')?.value;
   if (!token) redirect('/login');
   const [organizations, me] = await Promise.all([api<any[]>('organizations', token), api<any>('auth/me', token)]);
-  if (!organizations.length) return <main className="center-shell"><section className="onboarding-card"><div className="logo dark"><b>e</b>eventise</div><p className="eyebrow">STK HESABI</p><h1>Henüz bir kurumunuz yok</h1><p>Kurum oluşturduğunuzda etkinlik yönetmeye başlayabilirsiniz. Katılımcı olarak da etkinliklere katılabilirsiniz.</p><div className="action-links"><Link className="primary link-button" href="/onboarding">Kurumumu oluştur</Link><Link className="secondary link-button" href="/participant">Katılımcı alanına git</Link></div></section></main>;
+  if (!organizations.length) redirect('/participant');
   const organization = organizations[0], events = await api<any[]>(`organizations/${organization.id}/events`, token), now = Date.now();
   const upcoming = events.filter(event => new Date(event.endsAt).getTime() >= now);
   const registrations = events.reduce((total, event) => total + (event._count?.registrations ?? 0), 0);

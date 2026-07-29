@@ -1,4 +1,33 @@
 'use client';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
-export default function OnboardingPage(){const router=useRouter(),[error,setError]=useState(''),[busy,setBusy]=useState(false);async function submit(event:FormEvent<HTMLFormElement>){event.preventDefault();setBusy(true);const response=await fetch('/api/backend/organizations',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(event.currentTarget)))});setBusy(false);if(!response.ok){const data=await response.json();setError(data.message??'Kurum oluşturulamadı.');return}router.push('/dashboard');router.refresh()}return <main className="center-shell"><form className="onboarding-card" onSubmit={submit}><div className="logo dark"><b>e</b>eventise</div><p className="eyebrow">1 / 1 · KURUM BİLGİLERİ</p><h1>Çalışma alanınızı oluşturalım</h1><p>Kurumunuzu daha sonra ekip üyeleriyle paylaşabilirsiniz.</p><label>Kurum adı<input name="name" required minLength={2}/></label><label>Kısa ad<input name="slug" required pattern="[a-z0-9-]+" placeholder="ornek-dernek"/><small>Yalnızca küçük harf, rakam ve tire.</small></label><label>İletişim e-postası<input name="contactEmail" type="email" required/></label><label>Kısa açıklama<textarea name="description" maxLength={500}/></label>{error&&<p className="error">{error}</p>}<button className="primary" disabled={busy}>{busy?'Oluşturuluyor…':'Kurumumu oluştur'}</button></form></main>}
+
+export default function OnboardingPage() {
+  const router = useRouter();
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setBusy(true); setError('');
+    const values = Object.fromEntries(new FormData(event.currentTarget));
+    const response = await fetch('/api/backend/organizations', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ...values, authorityDeclared: values.authorityDeclared === 'on', organizationTermsAccepted: values.organizationTermsAccepted === 'on', organizationTermsVersion: '1.0' }),
+    });
+    setBusy(false);
+    if (!response.ok) { const data = await response.json(); setError(Array.isArray(data.message) ? data.message.join(' ') : data.message ?? 'Kurum oluşturulamadı.'); return; }
+    router.push('/dashboard'); router.refresh();
+  }
+  return <main className="center-shell"><form className="onboarding-card" onSubmit={submit}>
+    <div className="logo dark"><b>e</b>eventise</div><p className="eyebrow">KURUM BİLGİLERİ</p><h1>Çalışma alanınızı oluşturalım</h1>
+    <label>Kurum adı<input name="name" required minLength={2}/></label>
+    <label>Kurum türü<select name="organizationType" defaultValue="DERNEK"><option value="DERNEK">Dernek</option><option value="VAKIF">Vakıf</option><option value="TOPLULUK">Topluluk / inisiyatif</option><option value="KOOPERATIF">Kooperatif</option><option value="DIGER">Diğer</option></select></label>
+    <label>Kurumdaki göreviniz<input name="representativeRole" required minLength={2} placeholder="Başkan, yönetim kurulu üyesi, koordinatör…"/></label>
+    <label>Kısa ad<input name="slug" required pattern="[a-z0-9-]+" placeholder="ornek-dernek"/><small>Yalnızca küçük harf, rakam ve tire.</small></label>
+    <label>İletişim e-postası<input name="contactEmail" type="email" required/></label>
+    <label>İnternet sitesi<input name="website" type="url" placeholder="https://"/></label>
+    <label>Kısa açıklama<textarea name="description" maxLength={500}/></label>
+    <label className="consent"><input name="authorityDeclared" type="checkbox" required/><span>Bu kurum adına Eventise üzerinde işlem yapmaya yetkili olduğumu ve verdiğim bilgilerin doğru olduğunu beyan ederim.</span></label>
+    <label className="consent"><input name="organizationTermsAccepted" type="checkbox" required/><span><a href="/legal/kurumsal-kullanim" target="_blank">Kurumsal Kullanım Sözleşmesi</a>&apos;ni kurum adına okudum ve kabul ediyorum.</span></label>
+    {error&&<p className="error">{error}</p>}<button className="primary" disabled={busy}>{busy?'Oluşturuluyor…':'Kurumumu oluştur'}</button>
+  </form></main>;
+}

@@ -1,7 +1,6 @@
 'use client';
 import { useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { MarkdownContent } from '../../../components/markdown-content';
 
 export function MarkdownEditor({ value, onChange, placeholder, rows = 5 }: { value: string; onChange: (v: string) => void; placeholder?: string; rows?: number }) {
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -24,16 +23,16 @@ export function MarkdownEditor({ value, onChange, placeholder, rows = 5 }: { val
   };
   return <div className="md-editor">
     <div className="md-toolbar">
-      <button type="button" title="Kalın" onClick={() => wrap('**')}>B</button>
-      <button type="button" title="İtalik" onClick={() => wrap('*')}><i>I</i></button>
-      <button type="button" title="Başlık" onClick={() => insertLine('## ')}>H</button>
-      <button type="button" title="Madde" onClick={() => insertLine('- ')}>•</button>
-      <button type="button" title="Bağlantı" onClick={() => wrap('[', '](https://)')}>🔗</button>
+      <button type="button" title="Kalın" aria-label="Kalın" onClick={() => wrap('**')}><strong>B</strong></button>
+      <button type="button" title="İtalik" aria-label="İtalik" onClick={() => wrap('*')}><i>I</i></button>
+      <button type="button" title="Başlık" aria-label="Başlık" onClick={() => insertLine('## ')}>H</button>
+      <button type="button" title="Madde" aria-label="Madde işareti" onClick={() => insertLine('- ')}>•</button>
+      <button type="button" title="Bağlantı" aria-label="Bağlantı" onClick={() => wrap('[', '](https://)')}>🔗</button>
       <button type="button" className={showPreview?'active':''} onClick={() => setShowPreview(!showPreview)}>{showPreview?'Düzenle':'Önizle'}</button>
     </div>
     {showPreview
-      ? <div className="md-preview prose">{value
-        ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{value}</ReactMarkdown>
+      ? <div className="md-preview">{value
+        ? <MarkdownContent>{String(value)}</MarkdownContent>
         : <span style={{color:'var(--muted-light)'}}>Önizleme burada görünür…</span>}</div>
       : <textarea ref={ref} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} rows={rows}/>
     }
