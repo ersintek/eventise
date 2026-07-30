@@ -43,6 +43,56 @@ describe('Phase 1 identity, organization and tenant isolation', () => {
     expect(await prisma.user.count({ where: { email: 'bad' } })).toBe(0);
   });
 
+  it('prevents simultaneous duplicate organizations and lets the other user request access', async () => {
+    const register = async (email: string) => (await request(app.getHttpServer())
+      .post('/api/auth/register')
+      .send({ email, firstName: 'Ekip', lastName: 'Üyesi', password: 'SecurePassword1' })
+      .expect(201)).body.accessToken as string;
+    const adminToken = await register('duplicate-admin@example.org');
+    const memberToken = await register('duplicate-member@example.org');
+    const create = (token: string, slug: string) => request(app.getHttpServer())
+      .post('/api/organizations')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: '  İyilik   Derneği ', slug, contactEmail: `${slug}@example.org` });
+
+    const attempts = await Promise.all([
+      create(adminToken, 'iyilik-dernegi-a'),
+      create(memberToken, 'iyilik-dernegi-b'),
+    ]);
+    expect(attempts.map(item => item.status).sort()).toEqual([201, 409]);
+
+    const created = attempts.find(item => item.status === 201)!;
+    const duplicate = attempts.find(item => item.status === 409)!;
+    expect(duplicate.body).toMatchObject({
+      code: 'ORGANIZATION_EXISTS',
+      organization: { id: created.body.id, name: 'İyilik   Derneği' },
+    });
+    expect(await prisma.organization.count({ where: { normalizedName: 'iyilik dernegi' } })).toBe(1);
+
+    const requesterToken = duplicate === attempts[0] ? adminToken : memberToken;
+    const organizationAdminToken = created === attempts[0] ? adminToken : memberToken;
+    const joinRequest = (await request(app.getHttpServer())
+      .post(`/api/organizations/${created.body.id}/join-requests`)
+      .set('Authorization', `Bearer ${requesterToken}`)
+      .send({})
+      .expect(201)).body;
+
+    const pending = (await request(app.getHttpServer())
+      .get(`/api/organizations/${created.body.id}/join-requests`)
+      .set('Authorization', `Bearer ${organizationAdminToken}`)
+      .expect(200)).body;
+    expect(pending).toHaveLength(1);
+    expect(pending[0].id).toBe(joinRequest.id);
+
+    const review = (await request(app.getHttpServer())
+      .patch(`/api/organizations/${created.body.id}/join-requests/${joinRequest.id}`)
+      .set('Authorization', `Bearer ${organizationAdminToken}`)
+      .send({ approved: true })
+      .expect(200)).body;
+    expect(review).toMatchObject({ approved: true, membership: { role: 'EVENT_MANAGER' } });
+    expect(await prisma.organizationMembership.count({ where: { organizationId: created.body.id } })).toBe(2);
+  });
+
   it('creates the default form atomically and rejects duplicate event slugs', async () => {
     const registration = await request(app.getHttpServer())
       .post('/api/auth/register')

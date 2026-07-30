@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
+import { AppNav } from '../components/navigation';
 
 export const metadata: Metadata = {
   title: 'STK Rehberi — Eventise',
@@ -166,9 +167,22 @@ const sections: Section[] = [
 
 export default async function YardimPage() {
   const token = (await cookies()).get('eventise_session')?.value;
+  let organization: { name: string; memberships?: Array<{ role?: string }> } | undefined;
+  let systemAdmin = false;
+  if (token) {
+    const headers = { authorization: `Bearer ${token}` };
+    const [organizationsResponse, meResponse] = await Promise.all([
+      fetch(`${process.env.API_INTERNAL_URL}/api/organizations`, { headers, cache: 'no-store' }).catch(() => null),
+      fetch(`${process.env.API_INTERNAL_URL}/api/auth/me`, { headers, cache: 'no-store' }).catch(() => null),
+    ]);
+    if (organizationsResponse?.ok) organization = (await organizationsResponse.json())[0];
+    if (meResponse?.ok) systemAdmin = (await meResponse.json()).systemRole === 'SYSTEM_ADMIN';
+  }
   const backHref = token ? '/dashboard' : '/login';
   const backLabel = token ? 'Panele dön' : 'Giriş yap';
   return (
+    <div className={organization ? 'app-shell' : undefined}>
+      {organization && <AppNav organization={organization} active="help" systemAdmin={systemAdmin}/>}
     <main className="help-page">
       <header className="help-header">
         <Link href="/" className="logo dark"><b>e</b>eventise</Link>
@@ -206,5 +220,6 @@ export default async function YardimPage() {
         <Link className="primary" href={token ? '/dashboard/events/new' : '/register'}>{token ? 'Yeni etkinlik →' : 'Ücretsiz başla →'}</Link>
       </section>
     </main>
+    </div>
   );
 }

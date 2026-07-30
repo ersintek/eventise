@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Put } from '@nestjs/common';
-import { IsEmail, IsEnum, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsBoolean, IsEmail, IsEnum, IsOptional, IsString, IsUrl } from 'class-validator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthenticatedUser, CurrentUser } from '../identity/policies/current-user.decorator';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { OrganizationsService } from './organizations.service';
 class MemberDto { @IsEmail() email!:string; @IsEnum(['EVENT_MANAGER','FIELD_STAFF']) role!:'EVENT_MANAGER'|'FIELD_STAFF'; } class AssignmentDto { @IsString() membershipId!:string; }
+class ReviewJoinRequestDto { @IsBoolean() approved!: boolean; }
 class UpdateOrganizationDto{@IsString()name!:string;@IsOptional()@IsString()description?:string;@IsEmail()contactEmail!:string;@IsOptional()@IsUrl({protocols:['http','https'],require_protocol:true})website?:string}
 
 @ApiTags('organizations') @ApiBearerAuth() @Controller('organizations')
@@ -16,6 +17,9 @@ export class OrganizationsController {
   @Patch(':organizationId') update(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Body()d:UpdateOrganizationDto){return this.organizations.update(u.id,o,d)}
   @Get(':organizationId/members') members(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string){return this.organizations.listMembers(u.id,o)}
   @Post(':organizationId/members') addMember(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Body()d:MemberDto){return this.organizations.addMember(u.id,o,d.email,d.role)}
+  @Post(':organizationId/join-requests') requestJoin(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string){return this.organizations.requestJoin(u.id,o)}
+  @Get(':organizationId/join-requests') joinRequests(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string){return this.organizations.listJoinRequests(u.id,o)}
+  @Patch(':organizationId/join-requests/:requestId') reviewJoinRequest(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('requestId')r:string,@Body()d:ReviewJoinRequestDto){return this.organizations.reviewJoinRequest(u.id,o,r,d.approved)}
   @Delete(':organizationId/members/:membershipId') removeMember(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('membershipId')m:string){return this.organizations.removeMember(u.id,o,m)}
   @Put(':organizationId/events/:eventId/staff') assign(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('eventId')e:string,@Body()d:AssignmentDto){return this.organizations.assignToEvent(u.id,o,e,d.membershipId)}
 }

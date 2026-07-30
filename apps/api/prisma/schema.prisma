@@ -171,6 +171,7 @@ model User {
   supportGrants SupportAccessGrant[] @relation("SupportAdmin")
   accountSetupTokens AccountSetupToken[]
   organizationFollows OrganizationFollow[]
+  organizationJoinRequests OrganizationJoinRequest[]
   legalAcceptances LegalAcceptance[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -198,6 +199,7 @@ model Tier {
 model Organization {
   id              String @id @default(cuid())
   name            String
+  normalizedName  String @unique
   slug            String @unique
   description     String?
   contactEmail    String
@@ -225,8 +227,30 @@ model Organization {
   supportAccessGrants SupportAccessGrant[]
   followers OrganizationFollow[]
   legalAcceptances LegalAcceptance[]
+  joinRequests    OrganizationJoinRequest[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+enum OrganizationJoinRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model OrganizationJoinRequest {
+  id             String @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status         OrganizationJoinRequestStatus @default(PENDING)
+  reviewedById   String?
+  reviewedAt     DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  @@unique([organizationId, userId])
+  @@index([organizationId, status, createdAt])
 }
 
 model LegalAcceptance {
