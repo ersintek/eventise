@@ -23,17 +23,26 @@ export class MediaService {
     const reservation = await this.tiers.reserveStorage(event.organizationId, 'photo_storage', sizeBytes);
     const extension = contentType.split('/')[1].replace('jpeg', 'jpg');
     const key = `organizations/${event.organizationId}/events/${eventId}/photos/${randomUUID()}.${extension}`;
-    const asset = await this.prisma.mediaAsset.create({ data: { organizationId: event.organizationId, storageKey: key, originalName: name.slice(0, 200), contentType, sizeBytes } });
+    const asset = await this.prisma.mediaAsset.create({ data: { organizationId: event.organizationId, quotaReservationId: reservation.id, storageKey: key, originalName: name.slice(0, 200), contentType, sizeBytes } });
     return { assetId: asset.id, reservationId: reservation.id, ...(await this.storage.createUploadGrant(key, contentType, 900)) };
   }
 
   async confirmPhoto(userId: string, eventId: string, assetId: string, reservationId: string, caption?: string) {
     const registration = await this.registrationFor(userId, eventId);
     const [asset, event] = await Promise.all([this.prisma.mediaAsset.findUnique({ where: { id: assetId } }), this.prisma.event.findUnique({ where: { id: eventId } })]);
-    if (!asset || !event || asset.organizationId !== event.organizationId || asset.status !== 'PENDING') throw new BadRequestException('Geçersiz yükleme kaydı.');
-    const reservation = await this.prisma.quotaReservation.findFirst({ where: { id: reservationId, organizationId: event.organizationId, consumedAt: null, expiresAt: { gt: new Date() } } });
+    if (!asset || !event || asset.organizationId !== event.organizationId || asset.quotaReservationId !== reservationId || asset.status !== 'PENDING') throw new BadRequestException('Geçersiz yükleme veya rezervasyon kaydı.');
+    const reservation = await this.prisma.quotaReservation.findFirst({ where: { id: reservationId, organizationId: event.organizationId, key: 'photo_storage', bytes: asset.sizeBytes, consumedAt: null, expiresAt: { gt: new Date() } } });
     if (!reservation) throw new BadRequestException('Yükleme rezervasyonu geçersiz veya süresi dolmuş.');
-    return this.prisma.$transaction(async (tx) => { await tx.mediaAsset.update({ where: { id: assetId }, data: { status: 'ACTIVE' } }); await tx.quotaReservation.update({ where: { id: reservationId }, data: { consumedAt: new Date() } }); return tx.eventPhoto.create({ data: { eventId, assetId, uploaderRegistrationId: registration.id, caption } }); });
+    const bytes = await this.storage.get(asset.storageKey);
+    if (!bytes || BigInt(bytes.length) !== asset.sizeBytes) throw new BadRequestException('Dosya yüklenmemiş veya bildirilen boyutla eşleşmiyor.');
+    return this.prisma.$transaction(async tx => {
+      const [activated, consumed] = await Promise.all([
+        tx.mediaAsset.updateMany({ where: { id: assetId, status: 'PENDING' }, data: { status: 'ACTIVE' } }),
+        tx.quotaReservation.updateMany({ where: { id: reservationId, consumedAt: null }, data: { consumedAt: new Date() } }),
+      ]);
+      if (activated.count !== 1 || consumed.count !== 1) throw new BadRequestException('Yükleme daha önce onaylanmış veya rezervasyon kullanılmış.');
+      return tx.eventPhoto.create({ data: { eventId, assetId, uploaderRegistrationId: registration.id, caption: caption?.trim().slice(0, 500) } });
+    });
   }
 
   async manage(userId: string, organizationId: string, eventId: string) {
@@ -52,6 +61,6 @@ export class MediaService {
     return updated;
   }
 
-  async gallery(eventId: string) { const photos = await this.prisma.eventPhoto.findMany({ where: { eventId, status: 'APPROVED' }, include: { asset: true }, orderBy: { createdAt: 'desc' } }); return Promise.all(photos.map(async (photo) => ({ id: photo.id, caption: photo.caption, url: await this.storage.createDownloadUrl(photo.asset.storageKey, 900) }))); }
+  async gallery(eventId: string) { const photos = await this.prisma.eventPhoto.findMany({ where: { eventId, status: 'APPROVED', event: { publicationStatus: 'PUBLISHED', visibility: { not: 'INVITE_ONLY' } }, asset: { status: 'ACTIVE' } }, include: { asset: true }, orderBy: { createdAt: 'desc' } }); return Promise.all(photos.map(async (photo) => ({ id: photo.id, caption: photo.caption, url: await this.storage.createDownloadUrl(photo.asset.storageKey, 900) }))); }
   private async registrationFor(userId: string, eventId: string) { const user = await this.prisma.user.findUnique({ where: { id: userId } }); const registration = user ? await this.prisma.eventRegistration.findUnique({ where: { eventId_email: { eventId, email: user.email } } }) : null; if (!registration || registration.applicationStatus !== 'ACCEPTED') throw new NotFoundException('Kabul edilmiş katılımcı kaydı bulunamadı.'); return registration; }
 }

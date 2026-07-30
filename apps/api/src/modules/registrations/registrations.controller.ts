@@ -1,13 +1,13 @@
 import { Body, Controller, Get, Inject, Param, Patch, Post } from '@nestjs/common';
 import { RegistrationApplicationStatus } from '@prisma/client';
-import { IsArray, IsBoolean, IsEmail, IsEnum, IsObject, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsEmail, IsEnum, IsObject, IsOptional, IsString, Length, MaxLength } from 'class-validator';
 import { AccountSetupService } from '../identity/account-setup.service';
 import { AuthenticatedUser, CurrentUser } from '../identity/policies/current-user.decorator';
 import { Public } from '../identity/policies/public.decorator';
 import { InvitationsService } from './invitations.service';
 import { RegistrationsService } from './registrations.service';
 
-class SubmitDto { @IsEmail() email!: string; @IsString() firstName!: string; @IsString() lastName!: string; @IsObject() answers!: object; @IsOptional() @IsString() formVersionId?: string; @IsOptional() @IsArray() @IsString({ each: true }) consentVersionIds?: string[]; @IsOptional() @IsBoolean() createAccount?: boolean }
+class SubmitDto { @IsEmail() @MaxLength(254) email!: string; @IsString() @Length(2, 100) firstName!: string; @IsString() @Length(2, 100) lastName!: string; @IsObject() answers!: object; @IsOptional() @IsString() formVersionId?: string; @IsOptional() @IsArray() @IsString({ each: true }) consentVersionIds?: string[]; @IsOptional() @IsBoolean() createAccount?: boolean }
 class DecisionDto { @IsEnum(RegistrationApplicationStatus) status!: RegistrationApplicationStatus; @IsOptional() @IsString() reason?: string }
 class InviteDto { @IsEmail() email!: string }
 

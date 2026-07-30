@@ -1,13 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EventFormat, EventPhase, EventRegistrationStatus, EventVisibility, RegistrationMode } from '@prisma/client';
-import { IsArray, IsDateString, IsEnum, IsInt, IsOptional, IsString, MaxLength, Min, ValidateNested } from 'class-validator';
+import { IsArray, IsDateString, IsEnum, IsInt, IsOptional, IsString, Length, Matches, MaxLength, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class FaqDto { @IsString() @MaxLength(300) question!: string; @IsString() @MaxLength(5000) answer!: string; }
 export class CreateEventDto {
-  @IsString() @MaxLength(160) title!: string;
-  @IsString() @MaxLength(80) slug!: string;
-  @IsOptional() @IsString() summary?: string;
+  @IsString() @Length(2, 160) title!: string;
+  @IsString() @Length(2, 80) @Matches(/^[a-z0-9-]+$/) slug!: string;
+  @IsOptional() @IsString() @MaxLength(300) summary?: string;
   @IsOptional() @IsString() description?: string;
   @IsOptional() @IsString() venueName?: string;
   @IsOptional() @IsString() venueAddress?: string;

@@ -42,4 +42,62 @@ describe('Phase 1 identity, organization and tenant isolation', () => {
     await request(app.getHttpServer()).post('/api/auth/register').send({ email: 'bad', firstName: 'A', lastName: 'B', password: 'short' }).expect(400);
     expect(await prisma.user.count({ where: { email: 'bad' } })).toBe(0);
   });
+
+  it('creates the default form atomically and rejects duplicate event slugs', async () => {
+    const registration = await request(app.getHttpServer())
+      .post('/api/auth/register')
+      .send({ email: 'event-builder@example.org', firstName: 'Event', lastName: 'Builder', password: 'SecurePassword1' })
+      .expect(201);
+    const token = registration.body.accessToken as string;
+    const organization = await request(app.getHttpServer())
+      .post('/api/organizations')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Event Builder', slug: 'event-builder', contactEmail: 'events@example.org' })
+      .expect(201);
+    const organizationId = organization.body.id as string;
+    const before = await prisma.form.count({ where: { organizationId } });
+    const event = {
+      title: 'İlk Etkinlik',
+      slug: 'ilk-etkinlik',
+      startsAt: '2027-10-01T09:00:00.000Z',
+      endsAt: '2027-10-01T12:00:00.000Z',
+      capacity: 1,
+      faqs: [],
+    };
+
+    const createdEvent = await request(app.getHttpServer())
+      .post(`/api/organizations/${organizationId}/events`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(event)
+      .expect(201);
+    expect(await prisma.form.count({ where: { organizationId } })).toBe(before + 1);
+
+    await request(app.getHttpServer())
+      .post(`/api/organizations/${organizationId}/events`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ ...event, title: 'Aynı Bağlantı' })
+      .expect(409);
+    expect(await prisma.form.count({ where: { organizationId } })).toBe(before + 1);
+
+    await request(app.getHttpServer())
+      .post(`/api/organizations/${organizationId}/events`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ ...event, slug: 'Geçersiz Kısa Ad' })
+      .expect(400);
+
+    await request(app.getHttpServer())
+      .patch(`/api/organizations/${organizationId}/events/${createdEvent.body.id}/state`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ publicationStatus: 'PUBLISHED', registrationStatus: 'OPEN' })
+      .expect(200);
+    const submit = (email: string) => request(app.getHttpServer())
+      .post('/api/public/events/event-builder/ilk-etkinlik/registrations')
+      .send({ email, firstName: 'Test', lastName: 'Katılımcı', answers: {}, consentVersionIds: [], createAccount: false });
+    const simultaneous = await Promise.all([submit('capacity-one@example.org'), submit('capacity-two@example.org')]);
+    expect(simultaneous.map(response => response.status)).toEqual([201, 201]);
+    expect(simultaneous.map(response => response.body.status).sort()).toEqual(['ACCEPTED', 'WAITLISTED']);
+
+    await submit('capacity-one@example.org').expect(409);
+    expect(await prisma.eventRegistration.count({ where: { eventId: createdEvent.body.id } })).toBe(2);
+  });
 });
