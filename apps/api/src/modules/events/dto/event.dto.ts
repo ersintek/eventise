@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { EventFormat, EventPhase, EventRegistrationStatus, EventVisibility, RegistrationMode } from '@prisma/client';
+import { EventFormat, EventRegistrationStatus, EventVisibility, RegistrationMode } from '@prisma/client';
 import { IsArray, IsDateString, IsEnum, IsInt, IsOptional, IsString, Length, Matches, MaxLength, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -25,7 +25,6 @@ export class CreateEventDto {
   @IsOptional() @IsArray() @ValidateNested({ each: true }) @Type(() => FaqDto) faqs?: FaqDto[];
 }
 export class EventStateDto { @ApiProperty({ enum: ['DRAFT','PUBLISHED','UNPUBLISHED','ARCHIVED'] }) @IsString() publicationStatus!: string; @ApiPropertyOptional({ enum: EventRegistrationStatus }) @IsOptional() @IsEnum(EventRegistrationStatus) registrationStatus?: EventRegistrationStatus; }
-export class EventPhaseDto { @IsEnum(EventPhase) phase!: EventPhase; }
 export class UpdateEventDto {
   @IsString() @MaxLength(160) title!:string;
   @IsOptional() @IsString() summary?:string;

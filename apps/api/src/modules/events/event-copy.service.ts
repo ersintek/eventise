@@ -14,7 +14,7 @@ export class EventCopyService {
     const registrations = await this.prisma.eventRegistration.findMany({
       where: { email: user.email, applicationStatus: 'ACCEPTED' },
       select: {
-        event: { select: { id: true, title: true, startsAt: true, endsAt: true, phase: true, organization: { select: { id: true, name: true, slug: true } } } },
+        event: { select: { id: true, title: true, startsAt: true, endsAt: true, organization: { select: { id: true, name: true, slug: true } } } },
         certificates: { where: { status: 'READY' }, select: { id: true, verificationCode: true, issuedAt: true } },
       },
       orderBy: { event: { startsAt: 'desc' } },
