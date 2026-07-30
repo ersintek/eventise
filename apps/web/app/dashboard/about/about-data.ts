@@ -1,5 +1,19 @@
 export const updates = [
   {
+    version: '0.16.0',
+    title: 'Daha sade etkinlik yönetimi ve görerek hazırlanan hatırlatmalar',
+    changes: [
+      ['Etkinlik çalışma alanı; Genel, Hazırlık, Katılımcı, Uygulama ve Sonuçlar aşamalarına göre yeniden düzenlendi.', 'Etkinliğin her aşamasında daha kolay yön bulma'],
+      ['Genel bakış ekranı etkinliğin güncel durumunu, başvuru sayılarını, doluluğu ve sıradaki işleri tek yerde gösterecek şekilde yenilendi.', 'Ne yapılması gerektiğini tek bakışta anlama'],
+      ['Sıradaki adımlar etkinliğin taslak, yaklaşan, devam eden veya tamamlanmış olmasına göre otomatik olarak uyarlanıyor.', 'Doğru zamanda doğru işe odaklanma'],
+      ['Etkinlik ve kayıt, iletişim, etkinlik günü, rapor ve sertifika araçları daha anlaşılır isimlerle gruplandı.', 'Özellik kaybetmeden daha sade yönetim'],
+      ['Hatırlatma planlama alanına şablon düzenleyici, kişiselleştirme alanları ve canlı e-posta ön izlemesi eklendi.', 'Mesajı göndermeden önce son hâliyle görebilme'],
+      ['Hatırlatmanın alıcı sayısı, etkinliği ve gönderim zamanı aynı planlama alanında bir araya getirildi.', 'Daha güvenli ve anlaşılır gönderim planlama'],
+      ['Planlanan ve gönderilen hatırlatmalar durum rozetleriyle okunabilir bir zaman çizelgesinde gösterilmeye başlandı.', 'Gönderimleri daha kolay takip etme'],
+      ['Etkinlik alt menüleri ve çalışma alanı küçük ekranlarda daha rahat kullanılacak şekilde iyileştirildi.', 'Telefonda daha akıcı etkinlik yönetimi'],
+    ],
+  },
+  {
     version: '0.15.0',
     title: 'Etkinlik açıklamalarında doğru biçim ve daha kısa keşif kartları',
     changes: [
