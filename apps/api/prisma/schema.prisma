@@ -431,6 +431,7 @@ model MediaAsset {
   id String @id @default(cuid())
   organizationId String
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  quotaReservationId String? @unique
   storageKey String @unique
   originalName String
   contentType String

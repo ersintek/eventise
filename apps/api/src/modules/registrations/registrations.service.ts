@@ -16,10 +16,27 @@ export class RegistrationsService {
     const email = d.email.trim().toLowerCase();
     const version = event.form?.versions[0]; const fields = ((version?.schema as { fields?: Field[] } | undefined)?.fields ?? []), answers = d.answers as Record<string, unknown>;
     for (const field of fields) { const value = answers[field.key]; if (field.required && (value === undefined || value === null || value === '')) throw new BadRequestException(`${field.key} alanı zorunludur.`); if (field.type === 'number' && value !== undefined && value !== '' && !Number.isFinite(Number(value))) throw new BadRequestException(`${field.key} sayısal olmalıdır.`); if (field.type === 'select' && value !== undefined && field.options && !field.options.includes(String(value))) throw new BadRequestException(`${field.key} için geçersiz seçim.`); }
-    const consentIds = await this.consents.validateSelection(event.id, d.consentVersionIds ?? []), accepted = await this.prisma.eventRegistration.count({ where: { eventId: event.id, applicationStatus: 'ACCEPTED' } }), status = initialRegistrationStatus(event, accepted) as RegistrationApplicationStatus;
-    const existing = await this.prisma.eventRegistration.findUnique({ where: { eventId_email: { eventId: event.id, email } } });
-    if (existing) throw new ConflictException('Bu e-posta adresiyle daha önce başvuru yapılmış.');
-    const registration = await this.prisma.eventRegistration.create({ data: { eventId: event.id, email, firstName: d.firstName.trim(), lastName: d.lastName.trim(), answers: answers as Prisma.InputJsonValue, formVersionId: version?.id, applicationStatus: status, statusHistory: { create: { toStatus: status } } } });
+    const consentIds = await this.consents.validateSelection(event.id, d.consentVersionIds ?? []);
+    let registration;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        registration = await this.prisma.$transaction(async tx => {
+          const existing = await tx.eventRegistration.findUnique({ where: { eventId_email: { eventId: event.id, email } } });
+          if (existing) throw new ConflictException('Bu e-posta adresiyle daha önce başvuru yapılmış.');
+          const accepted = await tx.eventRegistration.count({ where: { eventId: event.id, applicationStatus: 'ACCEPTED' } });
+          const status = initialRegistrationStatus(event, accepted) as RegistrationApplicationStatus;
+          return tx.eventRegistration.create({ data: { eventId: event.id, email, firstName: d.firstName.trim(), lastName: d.lastName.trim(), answers: answers as Prisma.InputJsonValue, formVersionId: version?.id, applicationStatus: status, statusHistory: { create: { toStatus: status } } } });
+        }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+        break;
+      } catch (error) {
+        if (error instanceof ConflictException) throw error;
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') throw new ConflictException('Bu e-posta adresiyle daha önce başvuru yapılmış.');
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2034' && attempt < 2) continue;
+        throw error;
+      }
+    }
+    if (!registration) throw new ConflictException('Başvuru yoğunluk nedeniyle tamamlanamadı. Lütfen yeniden deneyin.');
+    const status = registration.applicationStatus;
     await this.consents.record(registration.id, consentIds); await this.communications.queueRegistrationMessage({ organizationId: event.organizationId, templateKey: status === 'ACCEPTED' ? 'registration_confirmed' : status === 'WAITLISTED' ? 'waitlisted' : 'application_received', recipient: email, participantFirstName: registration.firstName, participantFullName: `${registration.firstName} ${registration.lastName}`, organizationName: event.organization.name, eventName: event.title, eventStart: event.startsAt, eventEnd: event.endsAt, eventLocation: event.venueName ?? undefined, eventPublicUrl: `/events/${orgSlug}/${eventSlug}` }); return { id: registration.id, status: registration.applicationStatus, updated: false };
   }
   async list(userId: string, organizationId: string, eventId: string) { await this.access.requireEventAccess(userId, organizationId, eventId, ['ORGANIZATION_ADMIN', 'EVENT_MANAGER']); return this.prisma.eventRegistration.findMany({ where: { eventId, event: { organizationId } }, orderBy: { createdAt: 'desc' } }); }

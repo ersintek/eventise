@@ -28,7 +28,7 @@ class BackgroundUploadDto {
   @IsString() sizeBytes!: string; // FormData'dan string gelir, number'a çevrilir
 }
 class IssueDto { @IsString() templateId!: string; }
-class ConfirmBackgroundDto { @IsString() assetId!: string; }
+class ConfirmBackgroundDto { @IsString() assetId!: string; @IsString() reservationId!: string; }
 
 @Controller()
 export class CertificatesController {
@@ -56,7 +56,7 @@ export class CertificatesController {
 
   @Post('organizations/:organizationId/certificate-backgrounds/confirm')
   confirmBackground(@CurrentUser() u: AuthenticatedUser, @Param('organizationId') o: string, @Body() d: ConfirmBackgroundDto) {
-    return this.c.confirmBackgroundUpload(u.id, o, d.assetId);
+    return this.c.confirmBackgroundUpload(u.id, o, d.assetId, d.reservationId);
   }
 
   @Post('organizations/:organizationId/events/:eventId/certificates')

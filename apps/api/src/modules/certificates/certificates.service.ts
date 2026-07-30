@@ -8,6 +8,7 @@ import { StorageProvider } from '../../infrastructure/storage/storage-provider.p
 import { PdfProvider, CertificateField } from '../../infrastructure/pdf/pdf-provider.port';
 import { OrganizationAccessService } from '../organizations/policies/organization-access.service';
 import { AuditService } from '../audit/audit.service';
+import { TiersService } from '../tiers/tiers.service';
 
 interface CertificateDesign {
   backgroundAssetId?: string | null;
@@ -19,7 +20,7 @@ interface CertificateDesign {
 
 @Injectable()
 export class CertificatesService implements OnModuleInit {
-  constructor(@Inject(PrismaService) private prisma: PrismaService, @Inject(JobQueue) private jobs: JobQueue, @Inject(JobRunnerService) private runner: JobRunnerService, @Inject(StorageProvider) private storage: StorageProvider, @Inject(PdfProvider) private pdf: PdfProvider, @Inject(OrganizationAccessService) private access: OrganizationAccessService, @Inject(AuditService) private audit: AuditService) {}
+  constructor(@Inject(PrismaService) private prisma: PrismaService, @Inject(JobQueue) private jobs: JobQueue, @Inject(JobRunnerService) private runner: JobRunnerService, @Inject(StorageProvider) private storage: StorageProvider, @Inject(PdfProvider) private pdf: PdfProvider, @Inject(OrganizationAccessService) private access: OrganizationAccessService, @Inject(AuditService) private audit: AuditService, @Inject(TiersService) private tiers: TiersService) {}
   onModuleInit() { this.runner.register('certificate.generate', p => this.generate(String(p.certificateId))); }
 
   async createTemplate(userId: string, organizationId: string, eventId: string, name: string, bodyTemplate: string, design?: CertificateDesign) {
@@ -42,16 +43,27 @@ export class CertificatesService implements OnModuleInit {
   async requestBackgroundUpload(userId: string, organizationId: string, eventId: string, name: string, contentType: string, sizeBytes: number) {
     await this.access.requireEventAccess(userId, organizationId, eventId, ['ORGANIZATION_ADMIN', 'EVENT_MANAGER']);
     if (!['image/jpeg', 'image/png'].includes(contentType) || sizeBytes < 1 || sizeBytes > 10_000_000) throw new BadRequestException('Sertifika arka planı yalnız JPEG veya PNG, en fazla 10 MB olabilir.');
+    const reservation = await this.tiers.reserveStorage(organizationId, 'file_storage', sizeBytes);
     const key = `organizations/${organizationId}/events/${eventId}/certificate-backgrounds/${randomUUID()}.${contentType === 'image/png' ? 'png' : 'jpg'}`;
-    const asset = await this.prisma.mediaAsset.create({ data: { organizationId, storageKey: key, originalName: name.slice(0, 200), contentType, sizeBytes } });
-    return { assetId: asset.id, ...(await this.storage.createUploadGrant(key, contentType, 900)) };
+    const asset = await this.prisma.mediaAsset.create({ data: { organizationId, quotaReservationId: reservation.id, storageKey: key, originalName: name.trim().slice(0, 200), contentType, sizeBytes } });
+    return { assetId: asset.id, reservationId: reservation.id, ...(await this.storage.createUploadGrant(key, contentType, 900)) };
   }
 
-  async confirmBackgroundUpload(userId: string, organizationId: string, assetId: string) {
-    await this.access.requireMembership(userId, organizationId, ['ORGANIZATION_ADMIN', 'EVENT_MANAGER']);
-    const asset = await this.prisma.mediaAsset.findFirst({ where: { id: assetId, organizationId } });
-    if (!asset || asset.status !== 'PENDING') throw new BadRequestException('Geçersiz yükleme kaydı.');
-    await this.prisma.mediaAsset.update({ where: { id: assetId }, data: { status: 'ACTIVE' } });
+  async confirmBackgroundUpload(userId: string, organizationId: string, assetId: string, reservationId: string) {
+    const asset = await this.prisma.mediaAsset.findFirst({ where: { id: assetId, organizationId, quotaReservationId: reservationId, status: 'PENDING' } });
+    const eventId = asset?.storageKey.match(/\/events\/([^/]+)\/certificate-backgrounds\//)?.[1];
+    if (!asset || !eventId) throw new BadRequestException('Geçersiz yükleme kaydı.');
+    await this.access.requireEventAccess(userId, organizationId, eventId, ['ORGANIZATION_ADMIN', 'EVENT_MANAGER']);
+    const reservation = await this.prisma.quotaReservation.findFirst({ where: { id: reservationId, organizationId, key: 'file_storage', bytes: asset.sizeBytes, consumedAt: null, expiresAt: { gt: new Date() } } });
+    const bytes = await this.storage.get(asset.storageKey);
+    if (!reservation || !bytes || BigInt(bytes.length) !== asset.sizeBytes) throw new BadRequestException('Dosya yüklenmemiş, boyutu farklı veya rezervasyonu geçersiz.');
+    await this.prisma.$transaction(async tx => {
+      const [activated, consumed] = await Promise.all([
+        tx.mediaAsset.updateMany({ where: { id: assetId, status: 'PENDING' }, data: { status: 'ACTIVE' } }),
+        tx.quotaReservation.updateMany({ where: { id: reservationId, consumedAt: null }, data: { consumedAt: new Date() } }),
+      ]);
+      if (activated.count !== 1 || consumed.count !== 1) throw new BadRequestException('Yükleme daha önce onaylanmış veya rezervasyon kullanılmış.');
+    });
     return { assetId };
   }
 
@@ -59,12 +71,18 @@ export class CertificatesService implements OnModuleInit {
     await this.access.requireEventAccess(userId, organizationId, eventId, ['ORGANIZATION_ADMIN', 'EVENT_MANAGER']);
     if (!await this.prisma.certificateTemplate.findFirst({ where: { id: templateId, eventId } })) throw new NotFoundException('Sertifika şablonu bulunamadı.');
     const eligible = await this.prisma.eventRegistration.findMany({ where: { eventId, applicationStatus: 'ACCEPTED', attendance: { status: { in: ['CHECKED_IN', 'MANUALLY_CONFIRMED'] } } }, select: { id: true } });
+    let queued = 0, pending = 0, ready = 0, failed = 0;
     for (const registration of eligible) {
-      const certificate = await this.prisma.certificate.upsert({ where: { registrationId_templateId: { registrationId: registration.id, templateId } }, create: { eventId, registrationId: registration.id, templateId, verificationCode: randomBytes(12).toString('hex') }, update: {} });
+      const existing = await this.prisma.certificate.findUnique({ where: { registrationId_templateId: { registrationId: registration.id, templateId } } });
+      if (existing?.status === 'READY') { ready++; continue; }
+      if (existing?.status === 'PENDING') { pending++; continue; }
+      if (existing?.status === 'FAILED') { failed++; continue; }
+      const certificate = await this.prisma.certificate.create({ data: { eventId, registrationId: registration.id, templateId, verificationCode: randomBytes(12).toString('hex') } });
       await this.jobs.enqueue({ type: 'certificate.generate', payload: { certificateId: certificate.id }, idempotencyKey: `certificate:${certificate.id}` });
+      queued++;
     }
-    await this.audit.record({ actorId: userId, organizationId, action: 'certificates.queued', resourceType: 'event', resourceId: eventId, metadata: { count: eligible.length } });
-    return { queued: eligible.length };
+    await this.audit.record({ actorId: userId, organizationId, action: 'certificates.queued', resourceType: 'event', resourceId: eventId, metadata: { eligible: eligible.length, queued, pending, ready, failed } });
+    return { eligible: eligible.length, queued, pending, ready, failed };
   }
 
   async mine(userId: string) {

@@ -1,4 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../shared/persistence/prisma.service';
 import { OrganizationAccessService } from '../organizations/policies/organization-access.service';
 import { AuditService } from '../audit/audit.service';
@@ -102,8 +103,34 @@ export class EventCopyService {
 
   async copy(userId: string, organizationId: string, eventId: string, data: { title: string; slug: string; startsAt: string; endsAt: string }) {
     await this.access.requireEventAccess(userId, organizationId, eventId, ['ORGANIZATION_ADMIN', 'EVENT_MANAGER']);
-    const source = await this.prisma.event.findUniqueOrThrow({ where: { id: eventId }, include: { faqs: true } });
-    const created = await this.events.create(userId, organizationId, { title: data.title, slug: data.slug, summary: source.summary ?? undefined, description: source.description ?? undefined, venueName: source.venueName ?? undefined, venueAddress: source.venueAddress ?? undefined, startsAt: data.startsAt, endsAt: data.endsAt, timezone: source.timezone, capacity: source.capacity, visibility: source.visibility, registrationMode: source.registrationMode, formId: source.formId ?? undefined, faqs: source.faqs.map(faq => ({ question: faq.question, answer: faq.answer })) });
+    const source = await this.prisma.event.findUniqueOrThrow({
+      where: { id: eventId },
+      include: { faqs: true, form: { include: { versions: { orderBy: { version: 'asc' } } } } },
+    });
+    let clonedFormId: string | undefined;
+    if (source.form) {
+      const clonedForm = await this.prisma.form.create({
+        data: {
+          organizationId,
+          name: `${data.title.trim()} kayıt formu`,
+          versions: {
+            create: source.form.versions.map(version => ({
+              version: version.version,
+              schema: version.schema as Prisma.InputJsonValue,
+              publishedAt: version.publishedAt,
+            })),
+          },
+        },
+      });
+      clonedFormId = clonedForm.id;
+    }
+    let created;
+    try {
+      created = await this.events.create(userId, organizationId, { title: data.title, slug: data.slug, summary: source.summary ?? undefined, description: source.description ?? undefined, venueName: source.venueName ?? undefined, venueAddress: source.venueAddress ?? undefined, startsAt: data.startsAt, endsAt: data.endsAt, timezone: source.timezone, capacity: source.capacity, visibility: source.visibility, registrationMode: source.registrationMode, formId: clonedFormId, faqs: source.faqs.map(faq => ({ question: faq.question, answer: faq.answer })) });
+    } catch (error) {
+      if (clonedFormId) await this.prisma.form.delete({ where: { id: clonedFormId } });
+      throw error;
+    }
     await this.audit.record({ actorId: userId, organizationId, action: 'event.copied', resourceType: 'event', resourceId: created.id, metadata: { sourceEventId: eventId } });
     return created;
   }

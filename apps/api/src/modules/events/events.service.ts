@@ -19,11 +19,19 @@ export class EventsService {
     if (dto.capacity > limits.maxParticipantsPerEvent) throw new BadRequestException('Katılımcı kapasitesi tier limitini aşıyor.');
     const startsAt = new Date(dto.startsAt), endsAt = new Date(dto.endsAt), opensAt = dto.registrationOpensAt ? new Date(dto.registrationOpensAt) : undefined, closesAt = dto.registrationClosesAt ? new Date(dto.registrationClosesAt) : undefined;
     assertEventDates(startsAt, endsAt, opensAt, closesAt);
+    const slug = dto.slug.trim().toLowerCase();
+    if (await this.prisma.event.findUnique({ where: { organizationId_slug: { organizationId, slug } } })) throw new ConflictException('Bu etkinlik bağlantı kısa adı kullanımda.');
     if (dto.formId && !await this.prisma.form.findFirst({ where: { id: dto.formId, organizationId } })) throw new BadRequestException('Kayıt formu bu kuruma ait değil.');
-    let formId = dto.formId;
-    if (!formId) { const form = await this.prisma.form.create({ data: { organizationId, name: `${dto.title} kayıt formu`, versions: { create: { version: 1, schema: { fields: [] }, publishedAt: new Date() } } } }); formId = form.id; }
     const membership = await this.prisma.organizationMembership.findUniqueOrThrow({ where: { userId_organizationId: { userId, organizationId } } });
-    const event = await this.prisma.event.create({ data: { organizationId, formId, title: dto.title.trim(), slug: dto.slug.toLowerCase(), summary: dto.summary, description: dto.description, venueName: dto.venueName, venueAddress: dto.venueAddress, format: dto.format, onlineLink: dto.onlineLink, startsAt, endsAt, timezone: dto.timezone, capacity: dto.capacity, visibility: dto.visibility, registrationMode: dto.registrationMode, registrationOpensAt: opensAt, registrationClosesAt: closesAt, staffAssignments: { create: { membershipId: membership.id } }, faqs: { create: dto.faqs?.map((f, i) => ({ ...f, sortOrder: i })) ?? [] } }, include: { faqs: true } });
+    const event = await this.prisma.$transaction(async tx => {
+      let formId = dto.formId;
+      if (!formId) {
+        const form = await tx.form.create({ data: { organizationId, name: `${dto.title.trim()} kayıt formu`, versions: { create: { version: 1, schema: { fields: [] }, publishedAt: new Date() } } } });
+        formId = form.id;
+      }
+      return tx.event.create({ data: { organizationId, formId, title: dto.title.trim(), slug, summary: dto.summary?.trim(), description: dto.description?.trim(), venueName: dto.venueName?.trim(), venueAddress: dto.venueAddress?.trim(), format: dto.format, onlineLink: dto.onlineLink?.trim(), startsAt, endsAt, timezone: dto.timezone, capacity: dto.capacity, visibility: dto.visibility, registrationMode: dto.registrationMode, registrationOpensAt: opensAt, registrationClosesAt: closesAt, staffAssignments: { create: { membershipId: membership.id } }, faqs: { create: dto.faqs?.map((f, i) => ({ ...f, sortOrder: i })) ?? [] } }, include: { faqs: true } });
+    });
+    await this.lifecycle.schedule(event.id, event.endsAt);
     await this.audit.record({ actorId: userId, organizationId, action: 'event.created', resourceType: 'event', resourceId: event.id }); return event;
   }
   async list(userId: string, organizationId: string) { const membership=await this.access.requireMembership(userId,organizationId);return this.prisma.event.findMany({where:{organizationId,...(membership.role==='ORGANIZATION_ADMIN'?{}:{staffAssignments:{some:{membershipId:membership.id}}})},include:{faqs:true,form:{include:{versions:{where:{publishedAt:{not:null}},orderBy:{version:'desc'},take:1,select:{id:true,version:true,schema:true}}}},_count:{select:{registrations:true}}},orderBy:{startsAt:'desc'}}); }
@@ -34,6 +42,7 @@ export class EventsService {
     const limits=await this.tiers.limitsFor(userId,organizationId);if(dto.capacity>limits.maxParticipantsPerEvent)throw new BadRequestException('Katılımcı kapasitesi tier limitini aşıyor.');
     if(dto.formId&&!await this.prisma.form.findFirst({where:{id:dto.formId,organizationId}}))throw new BadRequestException('Kayıt formu bu kuruma ait değil.');
     const updated=await this.prisma.$transaction(async tx=>{await tx.eventFaqItem.deleteMany({where:{eventId}});return tx.event.update({where:{id:eventId},data:{title:dto.title.trim(),summary:dto.summary,description:dto.description,venueName:dto.venueName,venueAddress:dto.venueAddress,format:dto.format,onlineLink:dto.onlineLink,startsAt,endsAt,capacity:dto.capacity,visibility:dto.visibility,registrationMode:dto.registrationMode,formId:dto.formId||null,faqs:{create:dto.faqs.map((faq,index)=>({...faq,sortOrder:index}))}},include:{faqs:true,_count:{select:{registrations:true}}}})});
+    await this.lifecycle.schedule(updated.id, updated.endsAt);
     await this.audit.record({actorId:userId,organizationId,action:'event.updated',resourceType:'event',resourceId:eventId});return updated;
   }
   async setState(userId: string, organizationId: string, eventId: string, dto: EventStateDto) {
