@@ -1,5 +1,15 @@
 export const updates = [
   {
+    version: '0.12.0',
+    title: 'Daha anlaşılır kurum yönetimi ve navigasyon',
+    changes: [
+      ['“Kullanım ve plan” alanı sadeleştirilerek “Kullanım” olarak yenilendi; Eventise’ın ücretsiz olduğu ve geçici limit artışı için sistem yöneticisine ulaşılabileceği açıkça belirtildi.', 'Ücretlendirme konusunda daha açık bilgilendirme'],
+      ['“Ekip ve ayarlar” ekranı “Kurum ve ekip” olarak yeniden düzenlendi; kurum bilgileri, ekip yönetimi ve kişisel tercihler ayrı bölümlere ayrıldı.', 'Daha anlaşılır kurum yönetimi'],
+      ['Yeni etkinlik ve STK Rehberi sayfalarında ana menünün kaybolması engellendi.', 'Sayfalar arasında kesintisiz gezinme'],
+      ['Ana menü yeni ikonlar, belirgin aktif sayfa renkleri ve kalıcı daraltma seçeneğiyle yenilendi; mobilde kolay erişilen alt menü eklendi.', 'Daha hızlı ve anlaşılır navigasyon'],
+    ],
+  },
+  {
     version: '0.11.0',
     title: 'Daha güvenilir etkinlik akışları',
     changes: [
@@ -15,10 +25,6 @@ export const updates = [
       ['Sistem yöneticileri test kullanıcılarını, kurumları ve etkinlikleri bağlı verileriyle birlikte kalıcı olarak temizleyebilir hâle geldi.', 'Daha kolay test verisi temizliği'],
       ['Kayıt, check-in ve yönetim ekranlarında bağlantı hataları daha anlaşılır gösteriliyor; işlem başarısız olduğunda girilen bilgiler silinmiyor.', 'Daha öngörülebilir kullanıcı deneyimi'],
       ['Giriş, kayıt ve etkinlik ekranlarındaki mobil taşma sorunları giderildi.', 'Telefonlarda daha rahat kullanım'],
-      ['“Kullanım ve plan” alanı sadeleştirilerek “Kullanım” olarak yenilendi; Eventise’ın ücretsiz olduğu ve geçici limit artışı için sistem yöneticisine ulaşılabileceği açıkça belirtildi.', 'Ücretlendirme konusunda daha açık bilgilendirme'],
-      ['“Ekip ve ayarlar” ekranı “Kurum ve ekip” olarak yeniden düzenlendi; kurum bilgileri, ekip yönetimi ve kişisel tercihler ayrı bölümlere ayrıldı.', 'Daha anlaşılır kurum yönetimi'],
-      ['Yeni etkinlik ve STK Rehberi sayfalarında ana menünün kaybolması engellendi.', 'Sayfalar arasında kesintisiz gezinme'],
-      ['Ana menü yeni ikonlar, belirgin aktif sayfa renkleri ve kalıcı daraltma seçeneğiyle yenilendi; mobilde kolay erişilen alt menü eklendi.', 'Daha hızlı ve anlaşılır navigasyon'],
     ],
   },
   {
