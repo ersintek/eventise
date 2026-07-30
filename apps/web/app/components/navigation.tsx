@@ -70,17 +70,15 @@ export function MobileTopBar({ backHref = '/dashboard', backLabel = 'Ana sayfa' 
 
 export function EventNav({ eventId, active, enabled = {} }: { eventId: string; active: string; enabled?: Record<string, boolean> }) {
   const base = `/dashboard/events/${eventId}`;
-  const item = (href: string, label: string, key: string, external = false) => (enabled[key] ?? true) ? <Link className={active === key ? 'active' : ''} href={href} {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{label}{external && ' ↗'}</Link> : null;
+  const item = (href: string, label: string, key: string) => (enabled[key] ?? true) ? <Link className={active === key ? 'active' : ''} href={href} aria-current={active === key ? 'page' : undefined}><span className="event-nav-indicator"/>{label}</Link> : null;
   return <nav className="event-nav" aria-label="Etkinlik bölümleri">
-    <div className="event-nav-back"><Link href="/dashboard">← Tüm etkinlikler</Link></div>
-    <div className="event-nav-links">
-      {item(base, 'Dashboard', 'dashboard')}
-      {item(`${base}/settings`, 'Ayarlar', 'settings')}
-      {item(`${base}/modules`, 'Modüller', 'modules')}
-      {item(`${base}/communication`, 'İletişim', 'communication')}
-      {item(`${base}/day`, 'Etkinlik Günü', 'day', true)}
-      {item(`${base}/post-event`, 'Etkinlik Sonrası', 'post')}
-      {item(`${base}/certificates`, 'Sertifikalar', 'certificates')}
+    <div className="event-nav-top"><Link href="/dashboard">← Tüm etkinlikler</Link><span>Etkinlik çalışma alanı</span></div>
+    <div className="event-nav-flow">
+      <div className="event-nav-phase"><small>GENEL</small><div>{item(base, 'Genel bakış', 'dashboard')}</div></div>
+      <div className="event-nav-phase"><small>HAZIRLIK</small><div>{item(`${base}/settings`, 'Etkinlik ve kayıt', 'settings')}{item(`${base}/modules`, 'İçerik ve araçlar', 'modules')}</div></div>
+      <div className="event-nav-phase"><small>KATILIMCI</small><div>{item(`${base}/communication`, 'İletişim', 'communication')}</div></div>
+      <div className="event-nav-phase"><small>UYGULAMA</small><div>{item(`${base}/day`, 'Etkinlik günü', 'day')}</div></div>
+      <div className="event-nav-phase"><small>SONUÇLAR</small><div>{item(`${base}/post-event`, 'Raporlar ve çıktılar', 'post')}{item(`${base}/certificates`, 'Sertifikalar', 'certificates')}</div></div>
     </div>
   </nav>;
 }

@@ -347,10 +347,10 @@ button{border-radius:var(--radius-sm)}
 /* ============================================================
    Çalışma alanı kartları (etkinlik yönetimi sekmeleri)
    ============================================================ */
-.workspace-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin:1.25rem 0;padding:.5rem;background:var(--cream);border:1px solid var(--line);border-radius:var(--radius-md)}
+.workspace-tabs{display:flex;gap:.25rem;flex-wrap:wrap;margin:1.25rem 0;padding:.375rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);box-shadow:var(--shadow-sm)}
 .workspace-tabs button,.workspace-tabs a{background:var(--surface);border:1px solid var(--line);color:var(--ink-secondary);border-radius:var(--radius-sm);padding:.5rem .875rem;font-size:var(--fs-sm);font-weight:600;cursor:pointer;transition:all var(--transition);text-decoration:none;display:inline-flex;align-items:center;gap:.25rem}
 .workspace-tabs button:hover,.workspace-tabs a:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-50)}
-.workspace-tabs button.active,.workspace-tabs a.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 2px 8px rgba(37,99,235,.25)}
+.workspace-tabs button.active,.workspace-tabs a.active{background:var(--primary-50);color:var(--primary);border-color:var(--primary-200);box-shadow:none}
 
 /* Markdown editör (basit toolbar) */
 .md-editor{border:1px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;background:var(--surface)}
@@ -437,6 +437,41 @@ button{border-radius:var(--radius-sm)}
 .template-actions .primary{min-width:12rem}
 .inline-link{display:inline;border:0;background:transparent;color:var(--primary);font:inherit;font-weight:700;padding:0;text-decoration:underline}
 .reminder-failure{display:block;color:var(--danger);background:var(--danger-bg,rgba(220,38,38,.08));border:1px solid var(--danger-border,rgba(220,38,38,.2));border-radius:var(--radius-sm);padding:.375rem .625rem;margin-top:.375rem;font-size:var(--fs-xs);line-height:1.5}
+.reminder-workspace{display:flex;flex-direction:column;gap:1rem}
+.reminder-composer,.reminder-list-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden}
+.reminder-composer-head,.reminder-list-heading{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;padding:1.25rem 1.5rem;border-bottom:1px solid var(--line)}
+.reminder-composer-head h2,.reminder-list-heading h2{margin:.2rem 0 .25rem;font-size:var(--fs-xl)}
+.reminder-composer-head p:last-child,.reminder-list-heading p:last-child{margin:0;color:var(--muted);font-size:var(--fs-sm)}
+.recipient-summary{display:flex;flex-direction:column;min-width:10rem;padding:.75rem 1rem;border-left:3px solid var(--primary);background:var(--primary-50)}
+.recipient-summary b{color:var(--primary);font-size:var(--fs-xl)}
+.recipient-summary span{color:var(--muted);font-size:var(--fs-xs)}
+.reminder-compose-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(310px,.9fr);gap:1.5rem;padding:1.5rem}
+.reminder-composer label{font-size:var(--fs-xs);font-weight:700}
+.reminder-composer label input,.reminder-composer label textarea,.reminder-composer label select{width:100%;margin-top:.35rem}
+.reminder-composer textarea{min-height:13rem;resize:vertical;line-height:1.6}
+.reminder-preview-column{display:flex;flex-direction:column;gap:1rem}
+.schedule-panel{display:flex;flex-direction:column;gap:.75rem;padding:1rem;border:1px solid var(--line);background:var(--cream);border-radius:var(--radius-md)}
+.schedule-panel>div{display:flex;flex-direction:column;gap:.15rem}
+.schedule-panel>div span,.schedule-panel p{color:var(--muted);font-size:var(--fs-xs);margin:0}
+.schedule-panel .primary{width:100%}
+.reminder-list-heading>span{white-space:nowrap;padding:.35rem .65rem;border-radius:var(--radius-full);background:var(--success-bg);color:var(--success);font-size:var(--fs-xs);font-weight:800}
+.reminder-timeline{padding:0 1.5rem}
+.reminder-row{display:grid;grid-template-columns:12px minmax(175px,.45fr) minmax(0,1fr) auto;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--line-soft)}
+.reminder-row:last-child{border-bottom:0}
+.reminder-dot{width:10px;height:10px;border-radius:50%;background:var(--muted-light)}
+.reminder-dot.scheduled,.reminder-dot.queued{background:var(--primary);box-shadow:0 0 0 4px var(--primary-50)}
+.reminder-dot.sent{background:var(--success);box-shadow:0 0 0 4px var(--success-bg)}
+.reminder-dot.failed{background:var(--danger)}
+.reminder-date,.reminder-message{display:flex;flex-direction:column;gap:.2rem}
+.reminder-date small{color:var(--muted);font-size:var(--fs-xs)}
+.reminder-message{align-items:flex-start}
+.reminder-status{display:inline-flex;padding:.2rem .45rem;border-radius:var(--radius-full);background:var(--line-soft);color:var(--muted);font-size:.68rem;font-weight:800}
+.reminder-status.scheduled,.reminder-status.queued{background:var(--primary-50);color:var(--primary)}
+.reminder-status.sent{background:var(--success-bg);color:var(--success)}
+.reminder-status.failed{background:var(--danger-bg);color:var(--danger)}
+.reminder-empty{text-align:center;padding:2.5rem 1rem;color:var(--muted)}
+.reminder-empty b{color:var(--ink)}
+.reminder-empty p{margin:.35rem 0 0;font-size:var(--fs-sm)}
 
 /* Kayıt amaç seçimi (STK / Katılımcı) */
 .intent-choice h2{font-family:var(--font-display);margin:.5rem 0 .25rem}
@@ -476,6 +511,38 @@ button{border-radius:var(--radius-sm)}
 .roadmap-steps li .link-button{color:var(--primary);font-size:var(--fs-sm);font-weight:600;align-self:flex-start;padding:0}
 .roadmap-steps li .link-button:hover{text-decoration:underline}
 
+/* Etkinlik genel bakışı */
+.event-overview{display:flex;flex-direction:column;gap:1rem}
+.overview-status{display:flex;align-items:center;justify-content:space-between;gap:2rem;padding:1.5rem;border:1px solid var(--line);border-left:4px solid var(--primary);background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+.overview-status h2{margin:.2rem 0 .35rem;font-size:var(--fs-xl)}
+.overview-status p:last-child{max-width:46rem;margin:0;color:var(--muted);font-size:var(--fs-sm);line-height:1.6}
+.overview-status-pills{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-end}
+.overview-status-pills span{padding:.4rem .65rem;border-radius:var(--radius-full);font-size:var(--fs-xs);font-weight:800;white-space:nowrap}
+.overview-status-pills .positive{background:var(--success-bg);color:var(--success)}
+.overview-status-pills .neutral{background:var(--line-soft);color:var(--muted)}
+.overview-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden}
+.overview-metrics>div{display:flex;flex-direction:column;min-width:0;padding:1.15rem 1.25rem;border-right:1px solid var(--line-soft)}
+.overview-metrics>div:last-child{border-right:0}
+.overview-metrics span,.overview-metrics small{color:var(--muted);font-size:var(--fs-xs)}
+.overview-metrics b{font-size:1.75rem;line-height:1.2;margin:.35rem 0;color:var(--ink)}
+.overview-metrics a{color:var(--primary);font-size:var(--fs-xs);font-weight:700}
+.capacity-track{height:.35rem;margin-top:.35rem;background:var(--line-soft);border-radius:var(--radius-full);overflow:hidden}
+.capacity-track span{display:block;height:100%;background:var(--primary);border-radius:inherit}
+.overview-main{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(275px,.7fr);gap:1rem;align-items:start}
+.next-actions,.event-facts{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:1.35rem 1.5rem;box-shadow:var(--shadow-sm)}
+.overview-section-heading h2{font-size:var(--fs-lg);margin:.2rem 0 .75rem}
+.human-task-list{list-style:none;margin:0;padding:0}
+.human-task-list li{display:grid;grid-template-columns:2rem 1fr;gap:.75rem;padding:1rem 0;border-bottom:1px solid var(--line-soft)}
+.human-task-list li:last-child{border-bottom:0;padding-bottom:0}
+.human-task-list li>span{display:grid;place-items:center;width:1.75rem;height:1.75rem;border:1px solid var(--primary-200);border-radius:50%;background:var(--primary-50);color:var(--primary);font-size:var(--fs-xs);font-weight:800}
+.human-task-list b{font-size:var(--fs-sm)}
+.human-task-list p{margin:.25rem 0 .45rem;color:var(--muted);font-size:var(--fs-xs);line-height:1.55}
+.human-task-list a,.event-facts>a{color:var(--primary);font-size:var(--fs-xs);font-weight:700}
+.event-facts dl{display:grid;grid-template-columns:6rem 1fr;gap:.7rem;margin:0 0 1rem}
+.event-facts dt{color:var(--muted);font-size:var(--fs-xs)}
+.event-facts dd{margin:0;font-size:var(--fs-sm);font-weight:700}
+.event-facts>a{display:block;padding:.65rem 0;border-top:1px solid var(--line-soft)}
+
 /* Ayar bölümleri (settings formunda görsel ayrım) */
 .event-settings{display:flex;flex-direction:column;gap:0}
 .settings-section{padding:1.5rem 0;border-bottom:1px solid var(--line-soft)}
@@ -512,6 +579,28 @@ button{border-radius:var(--radius-sm)}
   .template-library-intro{align-items:flex-start;flex-direction:column}
   .template-summary{width:100%}
   .template-edit-grid{grid-template-columns:1fr}
+  .reminder-compose-grid{grid-template-columns:1fr}
+  .reminder-composer-head,.reminder-list-heading{align-items:flex-start;flex-direction:column}
+  .recipient-summary{width:100%}
+  .reminder-row{grid-template-columns:12px 1fr auto}
+  .reminder-date{grid-column:2}
+  .reminder-message{grid-column:2}
+  .reminder-row>button{grid-column:3;grid-row:1/3}
+  .overview-status{align-items:flex-start;flex-direction:column;gap:1rem}
+  .overview-status-pills{justify-content:flex-start}
+  .overview-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .overview-metrics>div:nth-child(2){border-right:0}
+  .overview-metrics>div:nth-child(-n+2){border-bottom:1px solid var(--line-soft)}
+  .overview-main{grid-template-columns:1fr}
+}
+
+@media(max-width:560px){
+  .overview-metrics{grid-template-columns:1fr}
+  .overview-metrics>div{border-right:0;border-bottom:1px solid var(--line-soft)}
+  .overview-metrics>div:last-child{border-bottom:0}
+  .overview-status,.next-actions,.event-facts{padding:1rem}
+  .workspace-tabs{flex-wrap:nowrap;overflow-x:auto}
+  .workspace-tabs a,.workspace-tabs button{white-space:nowrap}
 }
 
 /* Eventise hakkında */

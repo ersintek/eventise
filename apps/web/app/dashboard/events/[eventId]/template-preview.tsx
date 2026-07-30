@@ -121,3 +121,79 @@ export function TemplateForm({ label, description, automatic, initialSubject, in
     </form>
   );
 }
+
+type ReminderTemplate = { id: string; subject: string; body: string; key: string };
+
+export function ReminderComposer({ templates, recipientCount, eventTitle, onSchedule }: {
+  templates: ReminderTemplate[];
+  recipientCount: number;
+  eventTitle: string;
+  onSchedule: (templateId: string, sendAt: string, subject: string, body: string) => Promise<boolean>;
+}) {
+  const [templateId, setTemplateId] = useState(templates[0]?.id ?? '');
+  const selected = templates.find(template => template.id === templateId) ?? templates[0];
+  const [subject, setSubject] = useState(selected?.subject ?? '');
+  const [body, setBody] = useState(selected?.body ?? '');
+  const [sendAt, setSendAt] = useState('');
+  const [showVariables, setShowVariables] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    setSubject(selected?.subject ?? '');
+    setBody(selected?.body ?? '');
+  }, [selected?.id, selected?.subject, selected?.body]);
+
+  const insertVar = (variable: string) => {
+    const el = bodyRef.current;
+    const insert = `{{${variable}}}`;
+    if (!el) return setBody(value => `${value}${insert}`);
+    const next = body.slice(0, el.selectionStart) + insert + body.slice(el.selectionEnd);
+    const cursor = el.selectionStart + insert.length;
+    setBody(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      el.selectionStart = el.selectionEnd = cursor;
+    });
+  };
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      if (await onSchedule(templateId, sendAt, subject, body)) setSendAt('');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!templates.length) return <div className="hint-box">Hatırlatma şablonu bulunamadı. Önce Şablonlar bölümünden bir hatırlatma metni oluşturun.</div>;
+
+  return <form className="reminder-composer" onSubmit={submit}>
+    <div className="reminder-composer-head">
+      <div><p className="eyebrow">YENİ HATIRLATMA</p><h2>Mesajı hazırlayın ve planlayın</h2><p>Seçtiğiniz şablonu bu gönderim için gözden geçirin. Değişiklikler şablona da kaydedilir.</p></div>
+      <div className="recipient-summary"><b>{recipientCount}</b><span>kabul edilen katılımcı</span></div>
+    </div>
+    <div className="reminder-compose-grid">
+      <div className="template-fields">
+        <label>Hatırlatma şablonu<select value={templateId} onChange={event => setTemplateId(event.target.value)}>{templates.map(template => <option value={template.id} key={template.id}>{template.subject}</option>)}</select></label>
+        <label>E-posta konusu<input value={subject} onChange={event => setSubject(event.target.value)} required /></label>
+        <label>Mesaj<textarea ref={bodyRef} value={body} onChange={event => setBody(event.target.value)} required rows={10} /></label>
+        <button type="button" className="variable-toggle" onClick={() => setShowVariables(value => !value)}>{showVariables ? 'Kişiselleştirme alanlarını gizle' : '+ Kişiselleştirme alanı ekle'}</button>
+        {showVariables && <div className="var-chips">{COMMON_VARS.map(variable => <button type="button" key={variable} className="var-chip" onClick={() => insertVar(variable)} title={`{{${variable}}}`}>{VARIABLE_LABELS[variable]}</button>)}</div>}
+      </div>
+      <div className="reminder-preview-column">
+        <div className="email-preview" aria-label="Hatırlatma e-posta ön izlemesi">
+          <div className="email-preview-bar"><span/><span/><span/><small>Canlı ön izleme</small></div>
+          <div className="email-preview-content"><small>KONU</small><h4 dangerouslySetInnerHTML={{ __html: renderPreview(subject) }} /><div className="email-preview-brand"><b>e</b>eventise</div><p dangerouslySetInnerHTML={{ __html: renderPreview(body) }} /><footer>Bu e-posta {SAMPLE_VARS['organization.name']} tarafından Eventise üzerinden gönderilir.</footer></div>
+        </div>
+        <div className="schedule-panel">
+          <div><span>Etkinlik</span><b>{eventTitle}</b></div>
+          <label>Gönderim tarihi ve saati<input type="datetime-local" value={sendAt} onChange={event => setSendAt(event.target.value)} required /></label>
+          <p>{recipientCount > 0 ? `${recipientCount} kabul edilen katılımcıya gönderilecek.` : 'Henüz kabul edilen katılımcı yok. Gönderim anındaki kabul edilen katılımcılar hedeflenir.'}</p>
+          <button className="primary" disabled={busy || !templateId || !sendAt}>{busy ? 'Planlanıyor…' : 'Hatırlatmayı planla'}</button>
+        </div>
+      </div>
+    </div>
+  </form>;
+}
