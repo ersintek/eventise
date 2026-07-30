@@ -1,5 +1,15 @@
 export const updates = [
   {
+    version: '0.15.0',
+    title: 'Etkinlik açıklamalarında doğru biçim ve daha kısa keşif kartları',
+    changes: [
+      ['Etkinlik açıklamalarındaki kalın, italik, başlık, liste ve bağlantı biçimleri katılımcı ekranlarında doğru şekilde gösterilmeye başlandı.', 'Daha okunaklı etkinlik içerikleri'],
+      ['Yaklaşan Etkinlikler ve takip edilen STK etkinlikleri kartlarında kısa açıklamalar kart boyutuna uygun şekilde sınırlandı.', 'Etkinlikleri daha hızlı inceleme'],
+      ['Kartlardaki kısa açıklamalar düz metne çevrilmeden Markdown biçimi korunarak gösteriliyor.', 'Vurgularını kaybetmeyen kısa tanıtımlar'],
+      ['Etkinlik özeti uzunluk kontrolü oluşturma ve güncelleme işlemlerinde tutarlı hâle getirildi.', 'Daha düzenli etkinlik kartları'],
+    ],
+  },
+  {
     version: '0.14.0',
     title: 'Daha güncel ve ulaşılabilir yardım deneyimi',
     changes: [

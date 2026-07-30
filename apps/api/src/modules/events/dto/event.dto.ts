@@ -27,7 +27,7 @@ export class CreateEventDto {
 export class EventStateDto { @ApiProperty({ enum: ['DRAFT','PUBLISHED','UNPUBLISHED','ARCHIVED'] }) @IsString() publicationStatus!: string; @ApiPropertyOptional({ enum: EventRegistrationStatus }) @IsOptional() @IsEnum(EventRegistrationStatus) registrationStatus?: EventRegistrationStatus; }
 export class UpdateEventDto {
   @IsString() @MaxLength(160) title!:string;
-  @IsOptional() @IsString() summary?:string;
+  @IsOptional() @IsString() @MaxLength(300) summary?:string;
   @IsOptional() @IsString() description?:string;
   @IsOptional() @IsString() venueName?:string;
   @IsOptional() @IsString() venueAddress?:string;

@@ -136,7 +136,7 @@
 .follow-event-list{display:flex;flex-direction:column;gap:.625rem}
 .follow-event-card{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem;border:1px solid var(--line);border-radius:var(--radius-md);color:inherit;text-decoration:none;transition:all var(--transition)}
 .follow-event-card:hover{border-color:var(--primary-200);box-shadow:var(--shadow-sm);transform:translateY(-1px)}
-.follow-event-card small{color:var(--primary);font-weight:700}.follow-event-card h3{margin:.25rem 0;font-size:var(--fs-md)}.follow-event-card p{margin:.25rem 0;color:var(--muted);font-size:var(--fs-sm)}.follow-event-card b{font-size:var(--fs-xs)}.follow-event-card>span{color:var(--primary);font-size:var(--fs-lg)}
+.follow-event-card small{color:var(--primary);font-weight:700}.follow-event-card h3{margin:.25rem 0;font-size:var(--fs-md)}.follow-event-card b{font-size:var(--fs-xs)}.follow-event-card>span{color:var(--primary);font-size:var(--fs-lg)}
 .participant-soft-empty{display:flex;gap:.75rem;align-items:start;padding:1rem;background:var(--cream);border-radius:var(--radius-md)}.participant-soft-empty>span{font-size:1.5rem;color:var(--primary)}.participant-soft-empty h3{margin:0;font-size:var(--fs-md)}.participant-soft-empty p{margin:.25rem 0;color:var(--muted);font-size:var(--fs-sm)}
 .follow-org-list{display:flex;flex-direction:column;gap:.5rem}.follow-org-list article{display:flex;align-items:center;gap:.625rem;padding:.75rem 0;border-bottom:1px solid var(--line-soft)}.follow-org-list article:last-child{border:0}.follow-org-list article>span{display:grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:var(--radius-sm);background:var(--primary-50);color:var(--primary);font-size:var(--fs-xs);font-weight:800}.follow-org-list article>div{flex:1;min-width:0}.follow-org-list b,.follow-org-list small{display:block}.follow-org-list small{color:var(--muted);font-size:var(--fs-xs);margin-top:.1rem}.follow-org-list button{padding:.4rem .6rem;font-size:var(--fs-xs)}
 .participant-profile-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:1.25rem;align-items:start}
@@ -157,7 +157,12 @@
 .discovery-card-top{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:1.25rem}
 .event-format,.followed-badge{display:inline-flex;padding:.3rem .55rem;border-radius:var(--radius-full);font-size:var(--fs-xs);font-weight:800}
 .event-format{background:var(--primary-50);color:var(--primary)}.followed-badge{background:var(--success-bg);color:var(--success)}
-.discovery-card>small{color:var(--primary);font-weight:800}.discovery-card h3{font-family:var(--font-display);font-size:var(--fs-xl);line-height:1.2;margin:.4rem 0}.discovery-card>p{color:var(--muted);font-size:var(--fs-sm);line-height:1.6;margin:.15rem 0 1rem}
+.discovery-card>small{color:var(--primary);font-weight:800}.discovery-card h3{font-family:var(--font-display);font-size:var(--fs-xl);line-height:1.2;margin:.4rem 0}
+.event-card-summary{position:relative;max-height:4.8em;overflow:hidden;color:var(--muted);font-size:var(--fs-sm);line-height:1.6;margin:.15rem 0 1rem}
+.event-card-summary::after{content:"";position:absolute;right:0;bottom:0;width:35%;height:1.6em;background:linear-gradient(90deg,transparent,var(--surface))}
+.event-card-summary p,.event-card-summary h1,.event-card-summary h2,.event-card-summary h3,.event-card-summary ul,.event-card-summary ol,.event-card-summary blockquote{font-size:inherit;line-height:inherit;margin:0 0 .25rem}
+.event-card-summary-fallback{color:var(--muted);font-size:var(--fs-sm);line-height:1.6;margin:.15rem 0 1rem}
+.follow-event-card .event-card-summary{margin:.25rem 0;max-height:3.2em}
 .discovery-card dl{display:grid;gap:.55rem;margin:auto 0 1rem}.discovery-card dl div{display:grid;grid-template-columns:4rem 1fr;gap:.5rem}.discovery-card dt{color:var(--muted);font-size:var(--fs-xs)}.discovery-card dd{margin:0;font-size:var(--fs-sm);font-weight:700}
 .discovery-action{display:flex;justify-content:space-between;align-items:center;padding-top:.9rem;border-top:1px solid var(--line-soft);color:var(--primary)}.discovery-action b{font-size:var(--fs-sm)}.discovery-action .has-status{color:var(--success)}.discovery-action span{font-size:var(--fs-lg)}
 
