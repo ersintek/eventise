@@ -170,6 +170,7 @@ model User {
   promotionReviews PromotionRequest[] @relation("PromotionReviewer")
   supportGrants SupportAccessGrant[] @relation("SupportAdmin")
   accountSetupTokens AccountSetupToken[]
+  passwordResetTokens PasswordResetToken[]
   organizationFollows OrganizationFollow[]
   organizationJoinRequests OrganizationJoinRequest[]
   organizationInvitations OrganizationInvitation[]
@@ -967,6 +968,17 @@ model SupportAccessGrant {
 }
 
 model AccountSetupToken {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String @unique
+  expiresAt DateTime
+  usedAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([userId, expiresAt])
+}
+
+model PasswordResetToken {
   id String @id @default(cuid())
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

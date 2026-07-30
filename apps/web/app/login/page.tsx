@@ -9,6 +9,9 @@ const googleErrors: Record<string, string> = {
   'invalid-state': 'Google giriş isteğinin süresi doldu. Lütfen yeniden deneyin.',
   'token-exchange': 'Google oturumu tamamlanamadı. Lütfen yeniden deneyin.',
   account: 'Google hesabı Eventise hesabına bağlanamadı.',
+  'account-conflict': 'Bu e-posta başka bir Google hesabına bağlı. Daha önce kullandığınız Google hesabını seçin.',
+  'account-inactive': 'Bu Eventise hesabı aktif değil. Destek ekibiyle iletişime geçin.',
+  identity: 'Google oturumu doğrulanamadı. Lütfen hesabınızı yeniden seçip deneyin.',
   unavailable: 'Google ile giriş şu anda kullanılamıyor.',
 };
 
@@ -48,6 +51,7 @@ export default function LoginPage() {
       <div className="auth-divider"><span>veya</span></div>
       <label>E-posta<input name="email" type="email" required autoComplete="email" /></label>
       <label>Şifre<input name="password" type="password" required autoComplete="current-password" /></label>
+      <p className="auth-forgot"><Link href="/forgot-password">Şifremi unuttum</Link></p>
       {error && <p className="error" role="alert">{error}</p>}
       <button className="primary" disabled={busy}>{busy ? 'Giriş yapılıyor…' : 'Giriş yap'}</button>
       <p className="auth-link">Hesabınız yok mu? <Link href="/register">Ücretsiz başlayın</Link></p>

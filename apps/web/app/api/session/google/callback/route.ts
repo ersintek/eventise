@@ -6,7 +6,8 @@ const destinations: Record<string, string> = {
 };
 
 function loginError(request: NextRequest, reason: string) {
-  const response = NextResponse.redirect(new URL(`/login?googleError=${encodeURIComponent(reason)}`, request.url));
+  const appUrl = process.env.PUBLIC_APP_URL;
+  const response = NextResponse.redirect(new URL(`/login?googleError=${encodeURIComponent(reason)}`, appUrl || request.url));
   response.cookies.delete('eventise_google_oauth');
   return response;
 }
@@ -42,8 +43,17 @@ export async function GET(request: NextRequest) {
       body: JSON.stringify({ idToken: tokens.id_token }),
       cache: 'no-store',
     });
-    const data = await apiResponse.json() as { accessToken?: string };
-    if (!apiResponse.ok || !data.accessToken) return loginError(request, 'account');
+    const data = await apiResponse.json() as { accessToken?: string; message?: string };
+    if (!apiResponse.ok || !data.accessToken) {
+      const reason = apiResponse.status === 409
+        ? 'account-conflict'
+        : apiResponse.status === 401 && data.message?.includes('aktif değil')
+          ? 'account-inactive'
+          : apiResponse.status === 401
+            ? 'identity'
+            : 'account';
+      return loginError(request, reason);
+    }
 
     const legalStatus = await fetch(`${process.env.API_INTERNAL_URL}/api/legal/status`, {
       headers: { authorization: `Bearer ${data.accessToken}` },
