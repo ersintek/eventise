@@ -1,5 +1,18 @@
 export const updates = [
   {
+    version: '0.17.0',
+    title: 'Etkinlik özellikleri artık yaptığı işi anlatıyor',
+    changes: [
+      ['Etkinlik menüsü Genel Bakış, Etkinlik Bilgileri, Etkinlik Araçları, Davet ve İletişim, Kapı ve Katılım, Sonuçlar ve Sertifikalar olarak açık biçimde adlandırıldı.', 'Aranan özelliği adından anlayabilme'],
+      ['“Modüller” bölümü “Etkinlik Araçları” olarak yenilendi; ön test, son test, tanışma oyunu, geri bildirim ve gruplar anlaşılır başlıklarla ayrıldı.', 'Teknik terimleri öğrenmeden araçları kullanma'],
+      ['Ön test, son test ve oyun ekranlarındaki eksik Türkçe karakterler, teknik durum adları ve belirsiz işlem metinleri düzeltildi.', 'Daha güven veren ve anlaşılır içerik'],
+      ['Duyuru ve kaynak paylaşımının Etkinlik Araçları içindeki tekrarları kaldırıldı; bu işlemler Davet ve İletişim alanında toplandı.', 'Aynı işlem için doğru ve tek bir yer'],
+      ['Katılımcı Daveti, Davet ve İletişim ekranının ilk bölümü yapıldı ve daha görünür bir davet alanına dönüştürüldü.', 'Davet işleminin arada kaybolmaması'],
+      ['“Etkinlik Günü” ekranı yaptığı işi daha doğru anlatan “Kapı ve Katılım” adıyla yenilendi.', 'QR, kapıda kayıt ve katılım teyidine daha kolay ulaşma'],
+      ['Kullanım Rehberi yeni bölüm adları ve güncel işlem yollarıyla eşleştirildi.', 'Ekranlarla aynı dili kullanan yardım içeriği'],
+    ],
+  },
+  {
     version: '0.16.0',
     title: 'Daha sade etkinlik yönetimi ve görerek hazırlanan hatırlatmalar',
     changes: [

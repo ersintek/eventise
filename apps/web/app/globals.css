@@ -472,6 +472,18 @@ button{border-radius:var(--radius-sm)}
 .reminder-empty{text-align:center;padding:2.5rem 1rem;color:var(--muted)}
 .reminder-empty b{color:var(--ink)}
 .reminder-empty p{margin:.35rem 0 0;font-size:var(--fs-sm)}
+.invite-workspace{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden}
+.invite-intro{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:1.5rem;border-bottom:1px solid var(--line)}
+.invite-intro h2{margin:.2rem 0 .35rem;font-size:var(--fs-xl)}
+.invite-intro p:last-child{margin:0;color:var(--muted);font-size:var(--fs-sm)}
+.invite-intro>span{padding:.4rem .65rem;border-radius:var(--radius-full);background:var(--primary-50);color:var(--primary);font-size:var(--fs-xs);font-weight:800;white-space:nowrap}
+.invite-form{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:.75rem;padding:1.5rem}
+.invite-form label{font-size:var(--fs-xs);font-weight:700}
+.invite-form input{width:100%;margin-top:.35rem}
+.invite-form .primary{min-height:2.65rem}
+.invite-help{padding:1rem 1.5rem;background:var(--cream);border-top:1px solid var(--line)}
+.invite-help b{font-size:var(--fs-sm)}
+.invite-help p{margin:.25rem 0 0;color:var(--muted);font-size:var(--fs-xs)}
 
 /* Kayıt amaç seçimi (STK / Katılımcı) */
 .intent-choice h2{font-family:var(--font-display);margin:.5rem 0 .25rem}
@@ -586,6 +598,8 @@ button{border-radius:var(--radius-sm)}
   .reminder-date{grid-column:2}
   .reminder-message{grid-column:2}
   .reminder-row>button{grid-column:3;grid-row:1/3}
+  .invite-intro{align-items:flex-start;flex-direction:column}
+  .invite-form{grid-template-columns:1fr}
   .overview-status{align-items:flex-start;flex-direction:column;gap:1rem}
   .overview-status-pills{justify-content:flex-start}
   .overview-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}

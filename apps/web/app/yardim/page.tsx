@@ -70,8 +70,8 @@ const sections: GuideSection[] = [
       },
       {
         q: 'Kayıt formunu ve onamları değiştirebilir miyim?',
-        a: 'Ayarlar bölümünde standart ad, soyad ve e-posta alanlarına ek sorular ekleyebilir; alanları zorunlu yapabilirsiniz. Etkinliğe özel katılım ve iletişim onamlarını da burada tanımlayabilirsiniz. Katılımcıya yalnızca gerçekten ihtiyaç duyduğunuz bilgileri sorun.',
-        path: 'Etkinliği yönet → Ayarlar → Formlar ve onamlar',
+        a: 'Etkinlik Bilgileri bölümünde standart ad, soyad ve e-posta alanlarına ek sorular ekleyebilir; alanları zorunlu yapabilirsiniz. Etkinliğe özel katılım ve iletişim onamlarını da burada tanımlayabilirsiniz. Katılımcıya yalnızca gerçekten ihtiyaç duyduğunuz bilgileri sorun.',
+        path: 'Etkinliği yönet → Etkinlik Bilgileri → Formlar ve Onam',
         check: 'Formu katılımcı bağlantısından bir kez deneyin ve yalnızca gerekli bilgileri istediğinizden emin olun.',
       },
     ],
@@ -83,7 +83,7 @@ const sections: GuideSection[] = [
       {
         q: 'Başvuruları nereden yönetirim?',
         a: 'Etkinlik çalışma alanındaki başvuru listesinden katılımcı bilgilerini ve başvuru yanıtlarını görebilirsiniz. Onaylı başvuru kullanıyorsanız başvuruları buradan kabul veya reddedersiniz.',
-        path: 'Etkinliği yönet → İletişim → Başvurular',
+        path: 'Etkinliği yönet → Etkinlik Bilgileri → Başvurular',
         check: 'İşlem yapmadan önce doğru etkinliği ve katılımcıyı seçtiğinizi kontrol edin.',
       },
       {
@@ -107,7 +107,7 @@ const sections: GuideSection[] = [
       },
       {
         q: 'Hatırlatma planlanabilir mi?',
-        a: 'Evet. İletişim bölümünde mesaj şablonlarını kullanabilir, hatırlatmaları ileri bir tarih ve saate planlayabilir, gönderilmiş ve planlanmış iletileri takip edebilirsiniz.',
+        a: 'Evet. Davet ve İletişim bölümünde mesaj şablonlarını kullanabilir, hatırlatmaları ileri bir tarih ve saate planlayabilir, gönderilmiş ve planlanmış iletileri takip edebilirsiniz.',
       },
       {
         q: 'Duyurular nerede görünür?',
@@ -117,8 +117,8 @@ const sections: GuideSection[] = [
   },
   {
     id: 'moduller',
-    title: '6. Modüller ve içerikler',
-    intro: 'Test, oyun, geri bildirim, grup, duyuru ve kaynak araçlarını ihtiyacınıza göre kullanın.',
+    title: '6. Etkinlik Araçları',
+    intro: 'Ön test, son test, tanışma oyunu, geri bildirim ve grup araçlarını ihtiyacınıza göre kullanın.',
     items: [
       {
         q: 'Ön test ve son test nasıl kullanılır?',
@@ -130,7 +130,7 @@ const sections: GuideSection[] = [
       },
       {
         q: 'Kaynak veya dosya paylaşabilir miyim?',
-        a: 'Evet. Katılımcılara bir web bağlantısı ekleyebilir veya doğrudan dosya yükleyebilirsiniz. Yüklenen dosyalar kurumunuzun kullanım kotasına dâhildir; doluluk oranını “Kullanım” ekranından görebilirsiniz.',
+        a: 'Evet. Davet ve İletişim bölümündeki Kaynak Paylaşımı alanından bir web bağlantısı ekleyebilir veya doğrudan dosya yükleyebilirsiniz. Yüklenen dosyalar kurumunuzun kullanım kotasına dâhildir.',
       },
       {
         q: 'Geri bildirim formunda hangi sorular kullanılabilir?',
@@ -140,17 +140,17 @@ const sections: GuideSection[] = [
   },
   {
     id: 'etkinlik-gunu',
-    title: '7. Etkinlik günü',
-    intro: 'Etkinlik günü araçları her zaman erişilebilir; önceden deneyebilir ve ekibinizi hazırlayabilirsiniz.',
+    title: '7. Kapı ve Katılım',
+    intro: 'Kapı girişi ve katılım teyidi araçları her zaman erişilebilir; önceden deneyebilir ve ekibinizi hazırlayabilirsiniz.',
     items: [
       {
         q: 'Etkinliği ayrıca “canlıya almam” gerekir mi?',
-        a: 'Hayır. Etkinliğin “Yaklaşan”, “Devam ediyor” ve “Tamamlandı” dönemleri tarihlerden otomatik hesaplanır ve hiçbir aracı kilitlemez. Etkinlik günü ekranını önceden açıp prova yapabilirsiniz.',
+        a: 'Hayır. Etkinliğin “Yaklaşan”, “Devam ediyor” ve “Tamamlandı” dönemleri tarihlerden otomatik hesaplanır ve hiçbir aracı kilitlemez. Kapı ve Katılım ekranını önceden açıp prova yapabilirsiniz.',
       },
       {
-        q: 'Check-in nasıl yapılır?',
-        a: 'Etkinlik günü ekranındaki QR kodu veya bağlantıyı kullanabilir, katılımcıyı listeden bulup girişini kaydedebilirsiniz. Kapıda gelen ve önceden kaydı olmayan kişiler için kapıda kayıt akışı da kullanılabilir.',
-        path: 'Etkinliği yönet → Etkinlik Günü',
+        q: 'Katılım teyidi nasıl yapılır?',
+        a: 'Kapı ve Katılım ekranındaki QR kodu veya bağlantıyı kullanabilir, katılımcıyı listeden bulup girişini kaydedebilirsiniz. Önceden kaydı olmayan kişiler için kapıda kayıt akışı da kullanılabilir.',
+        path: 'Etkinliği yönet → Kapı ve Katılım',
         check: 'Etkinlikten önce QR bağlantısını farklı bir telefonda açarak kısa bir prova yapın.',
       },
       {
