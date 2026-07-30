@@ -1,5 +1,21 @@
 export const updates = [
   {
+    version: '0.11.0',
+    title: 'Daha güvenilir etkinlik akışları',
+    changes: [
+      ['Etkinlik oluşturma ve düzenleme adımlarındaki doğrulamalar güçlendirildi; hatalı girişlerde form bilgileri artık korunuyor.', 'Daha az veri kaybı ve daha kolay düzeltme'],
+      ['Aynı anda gelen başvurularda kapasite kontrolü iyileştirildi ve tekrarlanan kayıt işlemleri engellendi.', 'Daha doğru kontenjan yönetimi'],
+      ['Etkinlik günü giriş işlemleri yalnızca etkinlik canlıyken yapılabilir hâle getirildi; yinelenen katılım kayıtları önlendi.', 'Daha güvenilir yoklama sonuçları'],
+      ['Etkinlik kopyalama özelliği kayıt formunu da yeni etkinliğe uyarlayacak şekilde geliştirildi.', 'Daha hızlı etkinlik hazırlığı'],
+      ['Etkinlik tarihi değiştiğinde kapanış ve geçici modül planları artık otomatik olarak yeni tarihe taşınıyor.', 'Güncel etkinlik takvimine uygun otomasyon'],
+      ['Rapor, sertifika ve hatırlatma işlemlerinde tekrar eden talepler ile başarısızlık durumlarının yönetimi iyileştirildi.', 'Daha tutarlı sonuçlar ve açık işlem durumu'],
+      ['Fotoğraf, kaynak ve sertifika arka planı yüklemelerine dosya, kota ve etkinlik yetkisi kontrolleri eklendi.', 'Daha güvenli içerik yönetimi'],
+      ['Katılımcı modülleri etkinlik erişimi ve etkinlik dönemi kurallarına göre sınırlandırıldı.', 'Doğru zamanda doğru içeriğe erişim'],
+      ['Kayıt, check-in ve yönetim ekranlarında bağlantı hataları daha anlaşılır gösteriliyor; işlem başarısız olduğunda girilen bilgiler silinmiyor.', 'Daha öngörülebilir kullanıcı deneyimi'],
+      ['Giriş, kayıt ve etkinlik ekranlarındaki mobil taşma sorunları giderildi.', 'Telefonlarda daha rahat kullanım'],
+    ],
+  },
+  {
     version: '0.10.0',
     title: 'Etkinlik keşfi ve sadeleştirilmiş yönetim',
     changes: [
