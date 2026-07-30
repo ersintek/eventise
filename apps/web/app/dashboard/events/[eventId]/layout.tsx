@@ -15,8 +15,10 @@ export default async function EventLayout({
       <EventWorkspaceHeader
         eventId={eventId}
         organizationId={organization.id}
+        organizationSlug={organization.slug}
         organizationName={organization.name}
         title={event.title}
+        eventSlug={event.slug}
         startsAt={event.startsAt}
         publicationStatus={event.publicationStatus}
         registrationStatus={event.registrationStatus}

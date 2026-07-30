@@ -69,19 +69,6 @@ export function EventWorkspace({organization,event:initialEvent,initialRegistrat
   const subLink=(href:string,label:string,key:string)=><Link href={href} className={subtab===key?'active':''} onClick={e=>{e.preventDefault();setSubtab(key);router.push(href);router.refresh()}}>{label}</Link>;
 
   return <>
-    {/* Eylem çubuğu */}
-    <div className="event-toolbar">
-      <div className="event-toolbar-group">
-        <button className={`toggle-switch ${published?'on':''}`} onClick={togglePublish} disabled={busy} title="Etkinlik sayfasını yayınla/kaldır"><span>Yayın</span><span className="toggle-track"/></button>
-        <button className={`toggle-switch ${registrationOpen?'on':''}`} onClick={toggleRegistration} disabled={busy} title="Kayıt alımını aç/kapat (gerekirse yayını da açar)"><span>Kayıt</span><span className="toggle-track"/></button>
-      </div>
-      <div className="event-toolbar-spacer"/>
-      <span className={`event-period ${period.toLowerCase()}`}>{period==='UPCOMING'?'Yaklaşan':period==='CURRENT'?'Devam ediyor':'Tamamlandı'}</span>
-      <a className="toolbar-btn" href={publicUrl} target="_blank" rel="noopener noreferrer">Etkinlik sayfasını aç ↗</a>
-      <a className="toolbar-btn" href={`${base}/communication?subtab=notifications`}>Duyuru gönder</a>
-      <button className="toolbar-btn danger" onClick={deleteEvent} disabled={busy} title="Etkinliği sil (30 gün geri alınabilir)">Sil</button>
-    </div>
-
     {notice&&<p className="notice" role="status">{notice}</p>}
 
     {/* ============ DASHBOARD (Genel Bakış) ============ */}

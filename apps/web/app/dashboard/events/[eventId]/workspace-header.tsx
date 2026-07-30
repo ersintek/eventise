@@ -19,8 +19,8 @@ function Icon({ name }: { name: string }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{icons[name]}</svg>;
 }
 
-export function EventWorkspaceHeader({ eventId, organizationId, organizationName, title, startsAt, publicationStatus, registrationStatus }: {
-  eventId: string; organizationId: string; organizationName: string; title: string; startsAt: string; publicationStatus: string; registrationStatus: string;
+export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug, organizationName, title, eventSlug, startsAt, publicationStatus, registrationStatus }: {
+  eventId: string; organizationId: string; organizationSlug: string; organizationName: string; title: string; eventSlug: string; startsAt: string; publicationStatus: string; registrationStatus: string;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -28,6 +28,7 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationName
   const [registration, setRegistration] = useState(registrationStatus);
   const [busy, setBusy] = useState(false);
   const base = `/dashboard/events/${eventId}`;
+  const publicUrl = `/events/${organizationSlug}/${eventSlug}`;
   const current = pathname === base ? 'overview' : pathname.includes('/settings') ? 'info' : pathname.includes('/modules') ? 'tools' : pathname.includes('/communication') ? 'communication' : pathname.includes('/day') ? 'door' : pathname.includes('/post-event') ? 'results' : 'certificate';
   const links = [
     [base, 'Genel Bakış', 'overview'],
@@ -61,16 +62,21 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationName
   }
 
   return <header className="event-command-center">
-    <Link className="event-back" href="/dashboard#events"><span>←</span> Tüm Etkinlikler</Link>
+    <div className="event-topline">
+      <Link className="event-back" href="/dashboard#events"><span>←</span> Tüm Etkinlikler</Link>
+      <span className="workspace-label">ETKİNLİK KONTROL MERKEZİ</span>
+    </div>
     <div className="event-quick-actions" aria-label="Etkinlik hızlı işlemleri">
-      <button disabled={busy} onClick={() => update(publication === 'PUBLISHED' ? 'UNPUBLISHED' : 'PUBLISHED', registration)}>
-        <span className={`action-dot ${publication === 'PUBLISHED' ? 'live' : ''}`}/>{publication === 'PUBLISHED' ? 'Yayında' : 'Yayın dışı'}
+      <button className={`event-action-toggle ${publication === 'PUBLISHED' ? 'is-on' : ''}`} role="switch" aria-checked={publication === 'PUBLISHED'} disabled={busy} onClick={() => update(publication === 'PUBLISHED' ? 'UNPUBLISHED' : 'PUBLISHED', registration)} title="Katılımcıların etkinliğin herkese açık tanıtım sayfasını görüp göremeyeceğini belirler.">
+        <span className="action-icon">◉</span><span className="action-copy"><b>Etkinlik Sayfası</b><small>{publication === 'PUBLISHED' ? 'Yayında' : 'Yayın dışı'}</small></span><span className="action-switch"><i/></span>
       </button>
-      <button disabled={busy} onClick={() => update(publication === 'PUBLISHED' ? publication : 'PUBLISHED', registration === 'OPEN' ? 'CLOSED' : 'OPEN')}>
-        <span className={`action-dot ${registration === 'OPEN' ? 'open' : ''}`}/>{registration === 'OPEN' ? 'Kayıt açık' : 'Kayıt kapalı'}
+      <button className={`event-action-toggle ${registration === 'OPEN' ? 'is-on' : ''}`} role="switch" aria-checked={registration === 'OPEN'} disabled={busy} onClick={() => update(publication === 'PUBLISHED' ? publication : 'PUBLISHED', registration === 'OPEN' ? 'CLOSED' : 'OPEN')} title="Katılımcıların kayıt formunu doldurup yeni başvuru gönderebilmesini açar veya kapatır.">
+        <span className="action-icon">✓</span><span className="action-copy"><b>Kayıt Formu</b><small>{registration === 'OPEN' ? 'Yayında' : 'Yayın dışı'}</small></span><span className="action-switch"><i/></span>
       </button>
-      <Link href={`${base}/communication?subtab=notifications`}>✦ Duyuru gönder</Link>
-      <button className="danger-action" disabled={busy} onClick={removeEvent}>⌫ Sil</button>
+      <span className="action-separator"/>
+      <Link className="event-action-button announce" href={`${base}/communication?subtab=notifications`} title="Kayıtlı katılımcılara hedefli bir etkinlik duyurusu gönderin."><span>✦</span>Duyuru Gönder</Link>
+      <a className="event-action-button public-page" href={publicUrl} target="_blank" rel="noopener noreferrer" title="Katılımcıların gördüğü etkinlik sayfasını yeni bir sekmede açar."><span>↗</span>Etkinlik Sayfasını Aç</a>
+      <button className="event-action-button danger-action" disabled={busy} onClick={removeEvent} title="Etkinliği siler. Silinen etkinlik 30 gün boyunca geri alınabilir."><span>⌫</span>Sil</button>
     </div>
     <div className="event-identity">
       <div className="event-identity-mark">E</div>
