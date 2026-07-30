@@ -9,14 +9,14 @@ import { TemplateForm } from './template-preview';
 import { formatDateTime, formatDateShort, toLocalDatetimeInputValue } from '@/lib/datetime';
 
 type Faq={question:string;answer:string};type Field={key:string;type:string;label:string;required?:boolean;options?:string[]};
-type EventInfo={id:string;title:string;slug:string;summary?:string;description?:string;venueName?:string;venueAddress?:string;format?:string;onlineLink?:string;startsAt:string;endsAt:string;publicationStatus:string;registrationStatus:string;phase:string;visibility:string;registrationMode:string;capacity:number;formId?:string;faqs:Faq[];_count:{registrations:number}};
+type EventInfo={id:string;title:string;slug:string;summary?:string;description?:string;venueName?:string;venueAddress?:string;format?:string;onlineLink?:string;startsAt:string;endsAt:string;publicationStatus:string;registrationStatus:string;visibility:string;registrationMode:string;capacity:number;formId?:string;faqs:Faq[];_count:{registrations:number}};
 type Registration={id:string;firstName:string;lastName:string;email:string;applicationStatus:string};
 type FormInfo={id:string;name:string;versions:Array<{version:number;schema:{fields?:Field[]}}>};
 type Template={id:string;key:string;category:'REMINDER'|'NOTIFICATION';subject:string;body:string};
 type Consent={definition:{id:string;title:string;versions:Array<{id:string;version:number;text:string}>};required:boolean};
 type Reminder={id:string;sendAt:string;status:string;failureReason?:string;template:{key:string;subject:string}};
 export type EventSection='dashboard'|'settings'|'communication';
-const labelMap:Record<string,string>={DRAFT:'Taslak',PUBLISHED:'Yayında',UNPUBLISHED:'Yayın dışı',ARCHIVED:'Arşivlendi',OPEN:'Kayıt açık',CLOSED:'Kayıt kapalı',NOT_OPEN:'Başlamadı',PRE_EVENT:'Hazırlık',LIVE:'Canlı',POST_EVENT:'Tamamlandı',PUBLIC:'Herkese açık',LINK_ONLY:'Bağlantıya sahip olanlar',INVITE_ONLY:'Yalnız davetliler',DIRECT:'Doğrudan kayıt',APPROVAL:'Onaylı başvuru',WAITLIST:'Yedek liste',OFFLINE:'Yüz yüze',ONLINE:'Çevrim içi',HYBRID:'Hibrit'};
+const labelMap:Record<string,string>={DRAFT:'Taslak',PUBLISHED:'Yayında',UNPUBLISHED:'Yayın dışı',ARCHIVED:'Arşivlendi',OPEN:'Kayıt açık',CLOSED:'Kayıt kapalı',NOT_OPEN:'Başlamadı',PUBLIC:'Herkese açık',LINK_ONLY:'Bağlantıya sahip olanlar',INVITE_ONLY:'Yalnız davetliler',DIRECT:'Doğrudan kayıt',APPROVAL:'Onaylı başvuru',WAITLIST:'Yedek liste',OFFLINE:'Yüz yüze',ONLINE:'Çevrim içi',HYBRID:'Hibrit'};
 const L=(v?:string)=>v?labelMap[v]??v:'—';
 const reminderStatusLabelMap:Record<string,string>={SCHEDULED:'Planlandı',QUEUED:'Kuyrukta',SENT:'Gönderildi',FAILED:'Gönderilemedi',CANCELLED:'İptal edildi'};
 const reminderStatusLabel=(v?:string)=>v?reminderStatusLabelMap[v]??v:'—';

@@ -54,12 +54,6 @@ enum EventRegistrationStatus {
   OPEN
   CLOSED
 }
-enum EventPhase {
-  PRE_EVENT
-  LIVE
-  POST_EVENT
-  ARCHIVED
-}
 enum EventVisibility {
   PUBLIC
   LINK_ONLY
@@ -283,7 +277,6 @@ model Event {
   capacity Int
   publicationStatus EventPublicationStatus @default(DRAFT)
   registrationStatus EventRegistrationStatus @default(NOT_OPEN)
-  phase EventPhase @default(PRE_EVENT)
   visibility EventVisibility @default(PUBLIC)
   registrationMode RegistrationMode @default(DIRECT)
   registrationOpensAt DateTime?
@@ -312,7 +305,6 @@ model Event {
   certificates Certificate[]
   reportExports ReportExport[]
   invitations EventInvitation[]
-  temporaryModulesClosedAt DateTime?
   deletedAt DateTime?
   deletionScheduledFor DateTime?
   createdAt DateTime @default(now())

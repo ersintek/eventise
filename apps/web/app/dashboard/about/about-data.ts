@@ -5,7 +5,7 @@ export const updates = [
     changes: [
       ['Etkinlik oluşturma ve düzenleme adımlarındaki doğrulamalar güçlendirildi; hatalı girişlerde form bilgileri artık korunuyor.', 'Daha az veri kaybı ve daha kolay düzeltme'],
       ['Aynı anda gelen başvurularda kapasite kontrolü iyileştirildi ve tekrarlanan kayıt işlemleri engellendi.', 'Daha doğru kontenjan yönetimi'],
-      ['Etkinlik günü giriş işlemleri yalnızca etkinlik canlıyken yapılabilir hâle getirildi; yinelenen katılım kayıtları önlendi.', 'Daha güvenilir yoklama sonuçları'],
+      ['Etkinlik günü araçları tarih veya manuel durum kısıtı olmadan her zaman kullanılabilir hâle getirildi; yinelenen katılım kayıtları önlendi.', 'Önceden prova ve daha güvenilir yoklama'],
       ['Etkinlik kopyalama özelliği kayıt formunu da yeni etkinliğe uyarlayacak şekilde geliştirildi.', 'Daha hızlı etkinlik hazırlığı'],
       ['Etkinlik tarihi değiştiğinde kapanış ve geçici modül planları artık otomatik olarak yeni tarihe taşınıyor.', 'Güncel etkinlik takvimine uygun otomasyon'],
       ['Rapor, sertifika ve hatırlatma işlemlerinde tekrar eden talepler ile başarısızlık durumlarının yönetimi iyileştirildi.', 'Daha tutarlı sonuçlar ve açık işlem durumu'],

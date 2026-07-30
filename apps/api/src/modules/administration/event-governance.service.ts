@@ -31,7 +31,6 @@ export class EventGovernanceService implements OnModuleInit {
       data: {
         publicationStatus: 'ARCHIVED',
         registrationStatus: 'CLOSED',
-        phase: 'ARCHIVED',
         deletedAt: new Date(),
         deletionScheduledFor: purgeAt,
       },
@@ -79,7 +78,6 @@ export class EventGovernanceService implements OnModuleInit {
         data: {
           publicationStatus: 'UNPUBLISHED',
           registrationStatus: 'CLOSED',
-          phase: 'POST_EVENT',
           deletedAt: null,
           deletionScheduledFor: null,
         },
