@@ -5,6 +5,7 @@ export const updates = [
     changes: [
       ['Ana menüde yardım içerikleri “Yardım ve Destek”, ürün bilgileri ise “Eventise” başlığı altında yeniden düzenlendi.', 'Aranan bilgiye daha hızlı erişim'],
       ['“STK Rehberi” güncel ürün akışlarını anlatan kapsamlı bir “Kullanım Rehberi” olarak baştan yazıldı.', 'Etkinliğin her aşamasında güncel yönlendirme'],
+      ['Kullanım Rehberi’ne anlık arama, sık kullanılan işlemler için hızlı yollar ve “Nereden / Kontrol” bilgi blokları eklendi.', 'Daha az arama, daha kolay uygulama'],
       ['“Sorun Bildir” seçeneği ana menüye eklendi ve bulunulan ekrandan doğrudan bildirim gönderilebilir hâle geldi.', 'İhtiyaç anında daha kolay destek'],
       ['“Güncellemeler” sayfasının adı “Yenilikler” olarak değiştirildi; sürüm numaralı ürün günlüğü yapısı korundu.', 'Ürün gelişimini daha anlaşılır takip etme'],
       ['Eventise Hakkında bölümü SICI’yi ve platformun amacını anlatan daha kısa, samimi bir dille yenilendi.', 'Eventise’ı ve yaklaşımını daha yakından tanıma'],

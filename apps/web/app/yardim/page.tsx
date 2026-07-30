@@ -3,16 +3,14 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { AppNav } from '../components/navigation';
 import { ProblemReporter } from '../components/problem-reporter';
+import { GuideBrowser, type GuideSection } from './guide-browser';
 
 export const metadata: Metadata = {
   title: 'Kullanım Rehberi — Eventise',
   description: 'STK’lar için güncel Eventise kullanım rehberi: kurum, etkinlik, başvuru, iletişim, etkinlik günü ve sertifikalar.',
 };
 
-type QA = { q: string; a: string };
-type Section = { id: string; title: string; intro?: string; items: QA[] };
-
-const sections: Section[] = [
+const sections: GuideSection[] = [
   {
     id: 'baslangic',
     title: '1. Başlangıç ve kurum hesabı',
@@ -40,6 +38,8 @@ const sections: Section[] = [
       {
         q: 'Yeni etkinlik oluştururken hangi bilgiler istenir?',
         a: 'Etkinliğin adı, kısa tanıtımı, açıklaması, başlangıç ve bitiş zamanı, etkinlik türü, yer veya çevrim içi bağlantı, görünürlük, kayıt yöntemi ve kapasite belirlenir. Etkinlik yüz yüze, çevrim içi veya hibrit olabilir.',
+        path: 'Ana menü → Yeni etkinlik',
+        check: 'Yayımlamadan önce tarih, saat ve katılımcıyla paylaşılacak bağlantıları yeniden gözden geçirin.',
       },
       {
         q: 'Bağlantı kısa adı nedir?',
@@ -71,6 +71,8 @@ const sections: Section[] = [
       {
         q: 'Kayıt formunu ve onamları değiştirebilir miyim?',
         a: 'Ayarlar bölümünde standart ad, soyad ve e-posta alanlarına ek sorular ekleyebilir; alanları zorunlu yapabilirsiniz. Etkinliğe özel katılım ve iletişim onamlarını da burada tanımlayabilirsiniz. Katılımcıya yalnızca gerçekten ihtiyaç duyduğunuz bilgileri sorun.',
+        path: 'Etkinliği yönet → Ayarlar → Formlar ve onamlar',
+        check: 'Formu katılımcı bağlantısından bir kez deneyin ve yalnızca gerekli bilgileri istediğinizden emin olun.',
       },
     ],
   },
@@ -81,6 +83,8 @@ const sections: Section[] = [
       {
         q: 'Başvuruları nereden yönetirim?',
         a: 'Etkinlik çalışma alanındaki başvuru listesinden katılımcı bilgilerini ve başvuru yanıtlarını görebilirsiniz. Onaylı başvuru kullanıyorsanız başvuruları buradan kabul veya reddedersiniz.',
+        path: 'Etkinliği yönet → İletişim → Başvurular',
+        check: 'İşlem yapmadan önce doğru etkinliği ve katılımcıyı seçtiğinizi kontrol edin.',
       },
       {
         q: 'Kontenjan dolarsa ne olur?',
@@ -146,6 +150,8 @@ const sections: Section[] = [
       {
         q: 'Check-in nasıl yapılır?',
         a: 'Etkinlik günü ekranındaki QR kodu veya bağlantıyı kullanabilir, katılımcıyı listeden bulup girişini kaydedebilirsiniz. Kapıda gelen ve önceden kaydı olmayan kişiler için kapıda kayıt akışı da kullanılabilir.',
+        path: 'Etkinliği yönet → Etkinlik Günü',
+        check: 'Etkinlikten önce QR bağlantısını farklı bir telefonda açarak kısa bir prova yapın.',
       },
       {
         q: 'Saha ekibi nasıl çalışır?',
@@ -164,6 +170,8 @@ const sections: Section[] = [
       {
         q: 'Sertifika nasıl hazırlanır?',
         a: 'Sertifikalar bölümünde metni, vurgu rengini, yatay veya dikey düzeni ve isteğe bağlı imza bilgisini ayarlayın. Kendi PNG veya JPG arka planınızı yükleyebilir ve sonucu canlı önizlemede kontrol edebilirsiniz.',
+        path: 'Etkinliği yönet → Sertifikalar',
+        check: 'Üretmeden önce örnek katılımcı adıyla canlı önizlemeyi kontrol edin.',
       },
       {
         q: 'Sertifika kimlere verilir ve nasıl doğrulanır?',
@@ -259,20 +267,7 @@ export default async function YardimPage() {
           </p>
         </section>
 
-        {sections.map(section => (
-          <section className="help-section" key={section.id} id={section.id}>
-            <h2>{section.title}</h2>
-            {section.intro && <p className="help-section-intro">{section.intro}</p>}
-            <div className="help-accordion">
-              {section.items.map((item, index) => (
-                <details key={item.q} open={section.id === 'baslangic' && index === 0}>
-                  <summary>{item.q}</summary>
-                  <p>{item.a}</p>
-                </details>
-              ))}
-            </div>
-          </section>
-        ))}
+        <GuideBrowser sections={sections}/>
 
         <section className="help-cta">
           <div>
