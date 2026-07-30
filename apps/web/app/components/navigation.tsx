@@ -6,7 +6,7 @@ import { LogoutButton } from '../dashboard/logout-button';
 import { BetaNotice } from './beta-notice';
 
 type Organization = { name: string; memberships?: Array<{ role?: string }> };
-type IconName = 'home' | 'calendar' | 'plus' | 'users' | 'building' | 'usage' | 'shield' | 'book' | 'info' | 'logout' | 'menu';
+type IconName = 'home' | 'calendar' | 'plus' | 'users' | 'building' | 'usage' | 'shield' | 'book' | 'info' | 'updates' | 'logout' | 'menu';
 
 const roleNames: Record<string, string> = {
   ORGANIZATION_ADMIN: 'Kurum yöneticisi', OWNER: 'Kurum yöneticisi', ADMIN: 'Yönetici', EVENT_MANAGER: 'Etkinlik yetkilisi', FIELD_STAFF: 'Saha görevlisi', STAFF: 'Ekip üyesi', MEMBER: 'Üye', SYSTEM_ADMIN: 'Sistem yöneticisi',
@@ -22,6 +22,7 @@ const paths: Record<IconName, React.ReactNode> = {
   shield: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></>,
   book: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14Z"/><path d="M8 7h8M8 11h6"/></>,
   info: <><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></>,
+  updates: <><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/></>,
   logout: <><path d="M10 17l5-5-5-5M15 12H3M15 3h5v18h-5"/></>,
   menu: <><path d="M4 7h16M4 12h16M4 17h16"/></>,
 };
@@ -42,6 +43,10 @@ export function AppNav({ organization, active, systemAdmin = false }: { organiza
     });
   }
   const item = (href: string, label: string, key: string, icon: IconName) => <Link title={collapsed ? label : undefined} aria-label={label} className={active === key ? 'active' : ''} href={href}><Icon name={icon}/><span>{label}</span></Link>;
+  const reportProblem = <a href="#sorun-bildir" title={collapsed ? 'Sorun Bildir' : undefined} aria-label="Sorun Bildir" onClick={event => {
+    event.preventDefault();
+    window.dispatchEvent(new Event('eventise:open-problem-reporter'));
+  }}><Icon name="info"/><span>Sorun Bildir</span></a>;
   const role = organization.memberships?.[0]?.role ?? 'MEMBER';
   return <aside className={`app-nav${collapsed ? ' collapsed' : ''}`}>
     <div className="brand-row"><Mark /><BetaNotice /><button className="nav-collapse" onClick={toggle} aria-label={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'} title={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}><Icon name="menu"/></button></div>
@@ -52,7 +57,8 @@ export function AppNav({ organization, active, systemAdmin = false }: { organiza
       <div className="nav-group"><small>KATILIM</small>{item('/participant', 'Katılımcı alanım', 'participant', 'users')}</div>
       <div className="nav-group"><small>KURUM</small>{item('/dashboard/settings', 'Kurum ve ekip', 'settings', 'building')}{item('/dashboard/quota', 'Kullanım', 'quota', 'usage')}</div>
       {systemAdmin && <div className="nav-group"><small>YÖNETİM</small>{item('/admin', 'Sistem yönetimi', 'admin', 'shield')}</div>}
-      <div className="nav-group"><small>DESTEK</small>{item('/yardim', 'STK Rehberi', 'help', 'book')}{item('/dashboard/about', 'Eventise Hakkında', 'about', 'info')}</div>
+      <div className="nav-group"><small>YARDIM VE DESTEK</small>{item('/yardim', 'Kullanım Rehberi', 'help', 'book')}{reportProblem}</div>
+      <div className="nav-group"><small>EVENTISE</small>{item('/dashboard/about', 'Eventise Hakkında', 'about', 'info')}{item('/dashboard/about/updates', 'Yenilikler', 'updates', 'updates')}</div>
     </nav>
     <div className="nav-logout"><Icon name="logout"/><LogoutButton /></div>
   </aside>;

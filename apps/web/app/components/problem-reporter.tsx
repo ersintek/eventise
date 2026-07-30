@@ -13,6 +13,15 @@ export function ProblemReporter({ organizationId }: { organizationId: string }) 
     else dialog.current?.close();
   }, [open]);
 
+  useEffect(() => {
+    const openReporter = () => {
+      setMessage('');
+      setOpen(true);
+    };
+    window.addEventListener('eventise:open-problem-reporter', openReporter);
+    return () => window.removeEventListener('eventise:open-problem-reporter', openReporter);
+  }, []);
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);

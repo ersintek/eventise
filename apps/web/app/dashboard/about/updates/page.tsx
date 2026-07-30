@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { AboutShell } from '../about-shell';
 import { updates } from '../about-data';
 
-export const metadata: Metadata = { title: 'Güncellemeler — Eventise' };
+export const metadata: Metadata = { title: 'Yenilikler — Eventise' };
 
 export default function UpdatesPage() {
   return <AboutShell activeTab="updates">

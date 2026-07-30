@@ -93,6 +93,71 @@ describe('Phase 1 identity, organization and tenant isolation', () => {
     expect(await prisma.organizationMembership.count({ where: { organizationId: created.body.id } })).toBe(2);
   });
 
+  it('supports multiple organization admins and email invitations without leaving an organization adminless', async () => {
+    const register = async (email: string) => (await request(app.getHttpServer())
+      .post('/api/auth/register')
+      .send({ email, firstName: 'Yönetici', lastName: 'Test', password: 'SecurePassword1' })
+      .expect(201)).body.accessToken as string;
+    const firstAdmin = await register('team-admin-one@example.org');
+    const secondAdmin = await register('team-admin-two@example.org');
+    const organization = (await request(app.getHttpServer())
+      .post('/api/organizations')
+      .set('Authorization', `Bearer ${firstAdmin}`)
+      .send({ name: 'Çok Yöneticili Kurum', slug: 'cok-yoneticili-kurum', contactEmail: 'team@example.org' })
+      .expect(201)).body;
+
+    const added = (await request(app.getHttpServer())
+      .post(`/api/organizations/${organization.id}/members`)
+      .set('Authorization', `Bearer ${firstAdmin}`)
+      .send({ email: 'team-admin-two@example.org', role: 'ORGANIZATION_ADMIN' })
+      .expect(201)).body;
+    expect(added).toMatchObject({ kind: 'member', membership: { role: 'ORGANIZATION_ADMIN' } });
+    await request(app.getHttpServer())
+      .post('/api/legal/accept-organization-terms')
+      .set('Authorization', `Bearer ${secondAdmin}`)
+      .send({ organizationId: organization.id, version: '1.0', representativeRole: 'Kurum yöneticisi', authorityDeclared: true })
+      .expect(201);
+
+    const firstMembership = await prisma.organizationMembership.findFirstOrThrow({
+      where: { organizationId: organization.id, user: { email: 'team-admin-one@example.org' } },
+    });
+    await request(app.getHttpServer())
+      .patch(`/api/organizations/${organization.id}/members/${firstMembership.id}`)
+      .set('Authorization', `Bearer ${secondAdmin}`)
+      .send({ role: 'EVENT_MANAGER' })
+      .expect(200);
+    await request(app.getHttpServer())
+      .patch(`/api/organizations/${organization.id}/members/${added.membership.id}`)
+      .set('Authorization', `Bearer ${secondAdmin}`)
+      .send({ role: 'EVENT_MANAGER' })
+      .expect(409);
+
+    const invited = (await request(app.getHttpServer())
+      .post(`/api/organizations/${organization.id}/members`)
+      .set('Authorization', `Bearer ${secondAdmin}`)
+      .send({ email: 'new-team-member@example.org', role: 'FIELD_STAFF' })
+      .expect(201)).body;
+    expect(invited).toMatchObject({ kind: 'invitation', invitation: { role: 'FIELD_STAFF' } });
+    expect((await request(app.getHttpServer())
+      .get(`/api/organizations/${organization.id}/invitations`)
+      .set('Authorization', `Bearer ${secondAdmin}`)
+      .expect(200)).body).toHaveLength(1);
+
+    const email = await prisma.emailMessage.findFirstOrThrow({
+      where: { recipient: 'new-team-member@example.org', subject: { contains: 'ekibine davet' } },
+      orderBy: { createdAt: 'desc' },
+    });
+    const token = decodeURIComponent(email.body.match(/token=([^"&<]+)/)![1]);
+    const completed = (await request(app.getHttpServer())
+      .post('/api/auth/account-setup/complete')
+      .send({ token, password: 'NewSecurePassword1' })
+      .expect(201)).body;
+    expect(completed.organizationMembershipsCreated).toBe(1);
+    expect(await prisma.organizationMembership.count({
+      where: { organizationId: organization.id, role: 'FIELD_STAFF', user: { email: 'new-team-member@example.org' } },
+    })).toBe(1);
+  });
+
   it('creates the default form atomically and rejects duplicate event slugs', async () => {
     const registration = await request(app.getHttpServer())
       .post('/api/auth/register')

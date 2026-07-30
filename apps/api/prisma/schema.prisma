@@ -172,6 +172,7 @@ model User {
   accountSetupTokens AccountSetupToken[]
   organizationFollows OrganizationFollow[]
   organizationJoinRequests OrganizationJoinRequest[]
+  organizationInvitations OrganizationInvitation[]
   legalAcceptances LegalAcceptance[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -228,6 +229,7 @@ model Organization {
   followers OrganizationFollow[]
   legalAcceptances LegalAcceptance[]
   joinRequests    OrganizationJoinRequest[]
+  invitations     OrganizationInvitation[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -251,6 +253,25 @@ model OrganizationJoinRequest {
   updatedAt      DateTime @updatedAt
   @@unique([organizationId, userId])
   @@index([organizationId, status, createdAt])
+}
+
+model OrganizationInvitation {
+  id             String @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email          String
+  role           OrganizationRole
+  invitedById    String
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  cancelledAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  @@unique([organizationId, email])
+  @@index([userId, acceptedAt, cancelledAt, expiresAt])
+  @@index([organizationId, acceptedAt, cancelledAt])
 }
 
 model LegalAcceptance {

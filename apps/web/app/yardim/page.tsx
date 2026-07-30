@@ -2,10 +2,11 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { AppNav } from '../components/navigation';
+import { ProblemReporter } from '../components/problem-reporter';
 
 export const metadata: Metadata = {
-  title: 'STK Rehberi — Eventise',
-  description: 'Sivil toplum kuruluşları için etkinlik yönetimi rehberi: kayıt, etkinlik oluşturma, yönetim ve etkinlik günü.',
+  title: 'Kullanım Rehberi — Eventise',
+  description: 'STK’lar için güncel Eventise kullanım rehberi: kurum, etkinlik, başvuru, iletişim, etkinlik günü ve sertifikalar.',
 };
 
 type QA = { q: string; a: string };
@@ -14,152 +15,213 @@ type Section = { id: string; title: string; intro?: string; items: QA[] };
 const sections: Section[] = [
   {
     id: 'baslangic',
-    title: 'Başlamadan önce',
-    intro: 'Eventise, sivil toplum kuruluşlarının etkinliklerini kayıttan sertifikaya kadar tek bir yerden yönetmesi için tasarlandı. Ücretsiz başlayabilirsiniz.',
+    title: '1. Başlangıç ve kurum hesabı',
+    intro: 'Önce doğru hesap türünü seçin, ardından kurumunuzun çalışma alanına geçin.',
     items: [
       {
-        q: 'Nasıl kayıt olunur?',
-        a: 'Kayıt sayfasında iki seçenek göreceksiniz: "STK olarak katıl" ve "Etkinliklere katıl". Etkinlik düzenleyecekseniz "STK olarak katıl"ı seçin. Ardından adınızı, e-postanızı ve en az 12 karakterli bir şifreyi girin. Hesabınız oluşturulduğunda sizi kurum (çalışma alanı) oluşturma adımına götüreceğiz.',
+        q: 'STK hesabı nasıl açılır?',
+        a: 'Kayıt ekranında “STK olarak katıl” seçeneğini seçin. Google hesabınızla devam edebilir veya ad, soyad, e-posta ve şifrenizle kayıt olabilirsiniz. Yalnızca etkinliklere katılacaksanız “Etkinliklere katıl” seçeneğini kullanın.',
       },
       {
-        q: 'STK olarak katılmak ile etkinliklere katılmak arasındaki fark nedir?',
-        a: '"STK olarak katıl" seçeneği bir kurum hesabıdır — etkinlik oluşturabilir, katılımcıları yönetebilir, modüller hazırlayabilirsiniz. "Etkinliklere katıl" ise yalnızca bir katılımcı hesabıdır; başka STK\'ların etkinliklerine kayıt olup içeriklere erişirsiniz. Aynı e-postayla iki rolu da sonradan kullanamazsınız, bu yüzden STK görevlileri "STK olarak katıl"ı seçmelidir.',
+        q: 'Kurumum Eventise’ta zaten varsa ne yapmalıyım?',
+        a: 'Kurum adını yazdığınızda mevcut bir kayıt bulunursa yeni ve yinelenen bir kurum oluşturmak yerine katılma isteği gönderebilirsiniz. Kurum yöneticisi isteğinizi “Kurum ve ekip” ekranından kabul ettiğinde çalışma alanına erişirsiniz.',
       },
       {
-        q: 'Kurum (çalışma alanı) nedir, neden gerekli?',
-        a: 'Kurum, etkinliklerinizi ve ekibinizi bir arada tutan çalışma alanıdır. Örneğin "İklim Derneği" adında bir kurum oluşturduğunuzda, tüm etkinlikleriniz bu kurum altında toplanır ve kurumunuza davet ettiğiniz ekip üyeleri bu etkinliklere erişebilir. Kurum olmadan etkinlik oluşturamazsınız.',
-      },
-      {
-        q: 'Ekibe nasıl kişi eklerim?',
-        a: 'Kurumunuzu oluşturduktan sonra, soldaki menüden "Ekip" bölümüne girin. Buradan ekip üyelerini e-postalarıyla davet edebilir ve rollerini belirleyebilirsiniz. "Kurum yöneticisi" her şeyi yapabilir; "Etkinlik yöneticisi" ise yalnızca atandığı etkinlikleri yönetir.',
+        q: 'Kurum çalışma alanı ne işe yarar?',
+        a: 'Etkinlikleriniz, ekip üyeleriniz, kullanım bilgileriniz ve kurumsal ayarlarınız bu alanda birlikte tutulur. Birden fazla kişi aynı kurum altında çalışabilir; herkes yalnızca rolünün izin verdiği işlemleri görür.',
       },
     ],
   },
   {
-    id: 'olusturma',
-    title: 'Etkinlik oluşturma',
-    intro: 'Yeni bir etkinlik 4 adımlık bir sihirbazla oluşturulur. "Yeni etkinlik" düğmesine tıklayın ve adımları takip edin.',
+    id: 'ilk-etkinlik',
+    title: '2. İlk etkinliğinizi oluşturun',
+    intro: '“Yeni etkinlik” akışı temel bilgileri toplar; ayrıntıları daha sonra tamamlayabilirsiniz.',
     items: [
       {
-        q: 'Etkinlik nasıl oluşturulur?',
-        a: 'Panele girdiğinizde "Yeni etkinlik" düğmesine tıklayın. 4 adım sizi karşılar: 1) Temel bilgiler (ad ve açıklama), 2) Tarih ve yer (başlangıç/bitiş zamanı ve bağlantı kısa adı), 3) Başvuru (onaylı mı, doğrudan mı; kontenjan), 4) Kontrol (özeti gözden geçirip oluşturun). Adımları tamamladığınızda etkinlik taslak olarak kaydedilir.',
+        q: 'Yeni etkinlik oluştururken hangi bilgiler istenir?',
+        a: 'Etkinliğin adı, kısa tanıtımı, açıklaması, başlangıç ve bitiş zamanı, etkinlik türü, yer veya çevrim içi bağlantı, görünürlük, kayıt yöntemi ve kapasite belirlenir. Etkinlik yüz yüze, çevrim içi veya hibrit olabilir.',
       },
       {
-        q: '"Bağlantı kısa adı" nedir?',
-        a: 'Bu, etkinliğinizin herkese açık bağlantısında görünen kısımdır; örneğin /events/iklim-dernegi/genclik-bulusmasi. Otomatik olarak etkinlik adınızdan üretilir ama dilediğiniz gibi düzenleyebilirsiniz. Katılımcılarla paylaşacağınız adres budur.',
+        q: 'Bağlantı kısa adı nedir?',
+        a: 'Etkinliğin paylaşılabilir web adresinde görünen bölümdür. Etkinlik adından otomatik üretilir, gerekirse değiştirebilirsiniz. Kısa, anlaşılır ve Türkçe karakter içermeyen bir ifade seçmeniz iyi olur.',
       },
       {
-        q: '"Onaylı başvuru" ile "Doğrudan kayıt" arasındaki fark nedir?',
-        a: '"Onaylı başvuru"da her katılımcı başvurusunu siz tek tek değerlendirip kabul veya reddedersiniz — davetli/kontrollü etkinlikler için ideal. "Doğrudan kayıt"ta uygun başvurular otomatik olarak kabul edilir; büyük, açık etkinlikler için pratiktir. Dilediğinizi seçebilir, sonra ayarlardan değiştirebilirsiniz.',
-      },
-      {
-        q: 'Görünürlük seçenekleri ne demek?',
-        a: 'Üç seçenek var: "Herkese açık" — etkinlik herkes tarafından bulunabilir. "Bağlantıya sahip olanlar" — yalnızca bağlantıyı paylaştığınız kişiler kayıt olabilir. "Yalnız davetliler" — yalnızca davet ettiğiniz e-posta adresleri kayıt olabilir. Gizlilik ihtiyacınıza göre seçin.',
-      },
-      {
-        q: 'Kontenjanı nasıl belirlerim?',
-        a: 'Başvuru adımında bir sayı girersiniz; etkinlik başına ücretsiz katılımcı sınırı 500 kişidir. İhtiyacınız daha yüksekse sistem yöneticisiyle iletişime geçip geçici bir istisna tanımlanabilir.',
+        q: 'Bir etkinliği kopyalayabilir miyim?',
+        a: 'Evet. Daha önce hazırladığınız bir etkinliği kopyalayarak yeni etkinliğinizi hızlandırabilirsiniz. Temel ayarlar ve kayıt formu yeni etkinliğe uyarlanır; tarihleri ve güncel bilgileri yayımlamadan önce mutlaka kontrol edin.',
       },
     ],
   },
   {
-    id: 'yayin',
-    title: 'Yayınlama ve kayıtlar',
-    intro: 'Etkinliğiniz taslak halindeyken kimse göremez. Yayınladığınızda kayıtlar başlayabilir.',
+    id: 'yayin-kayit',
+    title: '3. Yayın, görünürlük ve kayıtlar',
+    intro: 'Etkinliğin kimler tarafından görüleceğini ve başvuruların nasıl sonuçlanacağını siz belirlersiniz.',
     items: [
       {
-        q: 'Taslağı nasıl yayınlarım?',
-        a: 'Etkinlik panelinde üstte bir araç çubuğu vardır. "Yayında" durumunu açan bir toggle (anahtar) bulunur. Bunu açtığınızda etkinlik herkese açık bağlantıda görünür hale gelir. Kapatırsanız tekrar gizlenir.',
+        q: 'Taslak, yayın ve kayıt durumu arasındaki fark nedir?',
+        a: 'Taslak etkinlik katılımcılara gösterilmez. Etkinliği yayımladığınızda tanıtım sayfası erişilebilir olur. Kayıtları ayrıca açıp kapatabilirsiniz; böylece sayfa yayında kalırken yeni başvuruları durdurabilirsiniz.',
       },
       {
-        q: 'Kayıtları nasıl açarım/kapatırım?',
-        a: 'Aynı araç çubuğunda "Kayıt açık" adında ikinci bir toggle vardır. Yayını açtıktan sonra bu toggle ile kayıtları açıp kapatabilirsiniz. Kontenjan dolduğunda kayıtlar otomatik kapanır.',
+        q: 'Görünürlük seçenekleri ne anlama gelir?',
+        a: '“Herkese açık” etkinlikler katılımcıların Yaklaşan Etkinlikler alanında keşfedilebilir. “Bağlantıya sahip olanlar” yalnızca paylaştığınız adres üzerinden ulaşır. “Yalnız davetliler” seçeneğinde ise yalnızca davet edilen kişiler kayıt olabilir.',
       },
       {
-        q: 'Başvuruları nasıl değerlendiririm?',
-        a: 'Eğer "Onaylı başvuru" modunu seçtiyseniz, panelde "İletişim" bölümünde başvurular listelenir. Her başvuruyu tek tek "Kabul et" veya "Reddet" şeklinde değerlendirebilirsiniz. Kabul edilenler etkinlik günü içeriklerine erişebilir.',
+        q: 'Doğrudan kayıt ve onaylı başvuru arasındaki fark nedir?',
+        a: 'Doğrudan kayıtta uygun başvuru otomatik kabul edilir. Onaylı başvuruda her başvuruyu inceleyip kabul veya reddedersiniz. Kontrollü ya da seçimli etkinliklerde onaylı başvuru daha uygundur.',
+      },
+      {
+        q: 'Kayıt formunu ve onamları değiştirebilir miyim?',
+        a: 'Ayarlar bölümünde standart ad, soyad ve e-posta alanlarına ek sorular ekleyebilir; alanları zorunlu yapabilirsiniz. Etkinliğe özel katılım ve iletişim onamlarını da burada tanımlayabilirsiniz. Katılımcıya yalnızca gerçekten ihtiyaç duyduğunuz bilgileri sorun.',
       },
     ],
   },
   {
-    id: 'yonetim',
-    title: 'Etkinlik yönetimi',
-    intro: 'Her etkinliğin panelinde 6 bölüm vardır. Bunlar etkinliğin yaşam döngüsünü takip eder.',
+    id: 'basvurular',
+    title: '4. Başvurular ve katılımcılar',
     items: [
       {
-        q: 'Altı bölüm ne işe yarar?',
-        a: 'Dashboard: etkinliğin genel görünümü, katılımcı sayısı ve son etkinlikler. Ayarlar: etkinlik adı, tarih, kontenjan, görünürlük ve formlar. Modüller: testler, oyunlar, geri bildirim, duyurular, dosyalar. İletişim: başvuru değerlendirme ve duyuru gönderme. Etkinlik Günü: canlı check-in ve operasyon. Etkinlik Sonrası: sertifika ve değerlendirme.',
+        q: 'Başvuruları nereden yönetirim?',
+        a: 'Etkinlik çalışma alanındaki başvuru listesinden katılımcı bilgilerini ve başvuru yanıtlarını görebilirsiniz. Onaylı başvuru kullanıyorsanız başvuruları buradan kabul veya reddedersiniz.',
       },
       {
-        q: '"Etkinlik Günü" ne zaman aktifleşir?',
-        a: 'Etkinlik başlangıç saati geldiğinde, paneldeki "Yayına al" (go-live) düğmesiyle etkinliği canlı moda alırsınız. Bu, check-in ve canlı modülleri (oyunlar, duyurular) aktifleştirir. Etkinlik bittiğinde "Etkinlik Sonrası" bölümüne geçebilirsiniz.',
+        q: 'Kontenjan dolarsa ne olur?',
+        a: 'Sistem kapasiteyi eş zamanlı olarak kontrol eder ve kapasitenin üzerinde kesin kayıt oluşmasını engeller. Etkinliğinizde yedek liste kullanıyorsanız sonraki başvurular yedek listeye alınabilir.',
+      },
+      {
+        q: 'Etkinlik sayfasındaki SSS alanı ne işe yarar?',
+        a: 'Ulaşım, erişilebilirlik, katılım ücreti veya gerekli malzemeler gibi tekrar sorulan konuları etkinlik ayarlarından ekleyebilirsiniz. Bu yanıtlar tanıtım sayfasında görünür ve ekibinizin mesaj yükünü azaltır.',
+      },
+    ],
+  },
+  {
+    id: 'iletisim',
+    title: '5. Katılımcılarla iletişim',
+    intro: 'Başvuru öncesinden etkinlik sonrasına kadar mesajları aynı çalışma alanından yönetin.',
+    items: [
+      {
+        q: 'Kimlere mesaj gönderebilirim?',
+        a: 'Tüm kayıtlılar, kabul edilenler veya check-in yapanlar gibi hedef gruplar seçebilirsiniz. Mesajı göndermeden önce doğru etkinliği ve hedef grubu kontrol edin.',
+      },
+      {
+        q: 'Hatırlatma planlanabilir mi?',
+        a: 'Evet. İletişim bölümünde mesaj şablonlarını kullanabilir, hatırlatmaları ileri bir tarih ve saate planlayabilir, gönderilmiş ve planlanmış iletileri takip edebilirsiniz.',
+      },
+      {
+        q: 'Duyurular nerede görünür?',
+        a: 'Gönderdiğiniz duyurular seçtiğiniz katılımcı grubunun kişisel etkinlik alanında görünür. Önemli güncellemeler için kısa bir başlık ve tek bir açık eylem kullanmanız iyi olur.',
       },
     ],
   },
   {
     id: 'moduller',
-    title: 'Modüller',
-    intro: 'Modüller bölümünde katılımcıların etkinlik öncesi, sırasında ve sonrasında etkileşim kuracağı içerikleri hazırlarsınız.',
+    title: '6. Modüller ve içerikler',
+    intro: 'Test, oyun, geri bildirim, grup, duyuru ve kaynak araçlarını ihtiyacınıza göre kullanın.',
     items: [
       {
-        q: 'Testler (ön test / son test) ne işe yarar?',
-        a: 'Ön test, etkinlik öncesinde katılımcıların bilgi düzeyini veya beklentisini ölçer. Son test ise etkinlik sonrasında ne öğrendiklerini değerlendirir. Çoktan seçmeli, açık uçlu veya işaretlemeli sorular ekleyebilirsiniz. İstediğiniz zaman açıp kapatabilirsiniz.',
+        q: 'Ön test ve son test nasıl kullanılır?',
+        a: 'Hazır bir şablonla başlayabilir veya kendi sorularınızı oluşturabilirsiniz. Ön test ve son test sonuçları karşılaştırılabilir. Araçlar etkinlik tarihinden bağımsız olarak açık kalır; etkinlikten önce prova yapabilirsiniz.',
       },
       {
-        q: 'Tanışma oyunu nasıl çalışır?',
-        a: 'Katılımcılara eğlenceli bir soru sorulur (örneğin "Bugün enerjini bir emojiyle anlat"). Herkes yanıtlarını girer; siz "Kartı aç" dediğinizde yanıtlar herkese gösterilir. Buz kırıcı warm-up oturumları için ideal.',
+        q: 'Oyunlar ve gruplar ne işe yarar?',
+        a: 'Oyunlarla katılımcıların etkileşimini artırabilir, sonuçları hazır olduğunuzda açıklayabilirsiniz. Katılımcıları rastgele, dengeli veya elle çalışma gruplarına ayırabilirsiniz.',
       },
       {
-        q: 'Geri bildirim formu nasıl oluşturulur?',
-        a: 'Modüller → Geri Bildirim bölümünden bir başlık girin ve istediğiniz soruları ekleyin. Her soru puan (1-5 yıldız), kısa yanıt veya uzun yanıt tipinde olabilir. Katılımcılar yanıtladıkça sonuçlar panelde toplanır.',
+        q: 'Kaynak veya dosya paylaşabilir miyim?',
+        a: 'Evet. Katılımcılara bir web bağlantısı ekleyebilir veya doğrudan dosya yükleyebilirsiniz. Yüklenen dosyalar kurumunuzun kullanım kotasına dâhildir; doluluk oranını “Kullanım” ekranından görebilirsiniz.',
       },
       {
-        q: 'Duyurular katılımcıya nasıl gider?',
-        a: 'İletişim bölümünden bir duyuru yazıp gönderdiğinizde, kabul edilmiş tüm katılımcıların katılımcı alanında görünür hale gelir. Katılımcı bir sonraki girişinde duyuruyu okundu olarak işaretler.',
-      },
-      {
-        q: 'Kaynaklar (dosya/bağlantı) nasıl eklenir?',
-        a: 'Modüller → Kaynaklar bölümünden harici bir bağlantı (örneğin Google Drive veya YouTube) ekleyebilirsiniz. Katılımcılar bu bağlantıları kendi alanlarından açabilir. Dosya yüklemeyi gelecekte ekleyeceğiz; şimdilik bağlantı kullanın.',
-      },
-      {
-        q: 'Gruplar ne için?',
-        a: 'Gruplar bölümünde katılımcıları küçük çalışma gruplarına bölebilirsiniz (örneğin atölye çalışması için 4\'er kişilik gruplar). Sistem katılımcıları otomatik dağıtır; isterseniz elle de düzenleyebilirsiniz.',
+        q: 'Geri bildirim formunda hangi sorular kullanılabilir?',
+        a: 'Puan, kısa yanıt ve uzun yanıt soruları oluşturabilirsiniz. Yanıtlar etkinliğin çalışma alanında toplanır ve etkinlik sonrası değerlendirmede kullanılabilir.',
       },
     ],
   },
   {
-    id: 'gun',
-    title: 'Etkinlik günü ve sonrası',
+    id: 'etkinlik-gunu',
+    title: '7. Etkinlik günü',
+    intro: 'Etkinlik günü araçları her zaman erişilebilir; önceden deneyebilir ve ekibinizi hazırlayabilirsiniz.',
     items: [
       {
-        q: 'Katılımcılar nasıl check-in yapar?',
-        a: 'Etkinlik günü, her etkinlik için bir check-in bağlantısı üretilir. Bu bağlantıyı kapıdaki karşılamada QR kod veya kısa link olarak katılımcılarla paylaşabilirsiniz. Katılımcı bağlantıya tıklar, e-postasıyla teyit verir ve içeri girer.',
+        q: 'Etkinliği ayrıca “canlıya almam” gerekir mi?',
+        a: 'Hayır. Etkinliğin “Yaklaşan”, “Devam ediyor” ve “Tamamlandı” dönemleri tarihlerden otomatik hesaplanır ve hiçbir aracı kilitlemez. Etkinlik günü ekranını önceden açıp prova yapabilirsiniz.',
       },
       {
-        q: '"Etkinlik Sonrası" bölümünde ne yapılır?',
-        a: 'Etkinlik bittikten sonra bu bölüm aktifleşir. Burada son test sonuçlarını, geri bildirim özetlerini ve katılım istatistiklerini görebilir, sertifika üretebilirsiniz. Etkinliği tamamlayıp arşive aldığınızda panel sabitlenir ama veriler korunur.',
+        q: 'Check-in nasıl yapılır?',
+        a: 'Etkinlik günü ekranındaki QR kodu veya bağlantıyı kullanabilir, katılımcıyı listeden bulup girişini kaydedebilirsiniz. Kapıda gelen ve önceden kaydı olmayan kişiler için kapıda kayıt akışı da kullanılabilir.',
       },
       {
-        q: 'Sertifikalar nasıl üretilir?',
-        a: 'Etkinlik Sonrası bölümünden, kabul edilmiş ve check-in yapmış katılımcılar için sertifikalar üretebilirsiniz. Her sertifikanın bir doğrulama kodu olur; katılımcı PDF\'ini indirebilir, doğrulama sayfasından orijinalliğini teyit edebilir.',
+        q: 'Saha ekibi nasıl çalışır?',
+        a: 'Saha görevlileri kendilerine verilen yetkiyle giriş ve etkinlik operasyonlarını yürütebilir. Görevleri önceden paylaştırın ve gerçek katılımcı kayıtlarını etkilememek için prova sonuçlarını kontrol edin.',
       },
     ],
   },
   {
-    id: 'genel',
-    title: 'Genel',
+    id: 'sonrasi',
+    title: '8. Etkinlik sonrası ve sertifikalar',
     items: [
       {
-        q: 'Ücretsiz limitler nedir?',
-        a: 'Tier 1 (ücretsiz planda) kurum başına 20 aktif etkinlik ve etkinlik başına 500 katılımcı barındırabilirsiniz. Sivil toplum kuruluşları için kalıcı olarak ücretsizdir. Geçici olarak daha yüksek kontenjana ihtiyacınız varsa sistem yöneticisinden istisna talep edebilirsiniz.',
+        q: 'Etkinlik sonrasında neleri görebilirim?',
+        a: 'Katılım kayıtlarını, test ve geri bildirim sonuçlarını inceleyebilir; etkinlik raporu hazırlayabilir ve kaynakları paylaşmaya devam edebilirsiniz. Etkinlik tarihi geçmiş olsa da bu araçlar kapanmaz.',
       },
       {
-        q: 'Verilerim güvende mi?',
-        a: 'Evet. Katılımcı verileri yalnızca sizin kurumunuzun erişimine açıktır. KVKK kapsamında onam metinleri her etkinlik için ayrı tanımlanabilir (Ayarlar → Formlar ve Onam). Katılımcıların kişisel bilgileri hiçbir üçüncü tarafla paylaşılmaz; hesabını silmek isteyen bir katılımcı 30 gün içinde verilerinin tamamen silinmesini talep edebilir.',
+        q: 'Sertifika nasıl hazırlanır?',
+        a: 'Sertifikalar bölümünde metni, vurgu rengini, yatay veya dikey düzeni ve isteğe bağlı imza bilgisini ayarlayın. Kendi PNG veya JPG arka planınızı yükleyebilir ve sonucu canlı önizlemede kontrol edebilirsiniz.',
       },
       {
-        q: 'Mail gönderimi nasıl çalışır?',
-        a: 'Duyuru ve sistem bildirimleri Eventise üzerinden, kurumunuzun adıyla gönderilir. Şu an için yanıt adresi (reply-to) ortak bir adrestir; kuruma özel kişiselleştirilmiş gönderici adresi gelecekte eklenecek. E-posta aboneliğini iptal etmek isteyen katılımcı her mailin altındaki bağlantıyı kullanabilir.',
+        q: 'Sertifika kimlere verilir ve nasıl doğrulanır?',
+        a: 'Uygun katılımcılar için sertifikaları ürettikten sonra katılımcılar PDF dosyasına kendi alanlarından erişebilir. Doğrulama QR kodu veya benzersiz kod, sertifikanın Eventise üzerinden teyit edilmesini sağlar.',
+      },
+    ],
+  },
+  {
+    id: 'kurum-ekip',
+    title: '9. Kurum, ekip ve kullanım',
+    items: [
+      {
+        q: 'Ekip üyelerini ve katılma isteklerini nereden yönetirim?',
+        a: '“Kurum ve ekip” ekranında e-posta ile ekip üyesi davet edebilir, bekleyen davetleri görebilir ve kuruma katılma isteklerini kabul veya reddedebilirsiniz. Yetkileri kişinin görevine göre sınırlı tutun.',
+      },
+      {
+        q: 'Eventise ücretli mi?',
+        a: 'Eventise sivil toplum kuruluşları ve aktivistler için ücretsizdir. Mevcut planda kurum başına 20 aktif etkinlik ve etkinlik başına 500 katılımcı sınırı bulunur. Geçici olarak daha yüksek bir limite ihtiyacınız varsa Eventise ekibine ulaşabilirsiniz.',
+      },
+      {
+        q: 'Fotoğraf ve dosya kullanımımı nereden görürüm?',
+        a: 'Ana menüdeki “Kullanım” sayfası fotoğraf ve dosyalar için kullanılan alanı ve kotayı ayrı ayrı gösterir.',
+      },
+    ],
+  },
+  {
+    id: 'katilimci',
+    title: '10. Katılımcı deneyimi',
+    items: [
+      {
+        q: 'Katılımcılar etkinlikleri nasıl bulur?',
+        a: 'Herkese açık yaklaşan etkinlikler katılımcı alanındaki keşif ekranında gösterilir. Katılımcılar ilgilendikleri STK’ları takip edebilir ve yalnızca takip ettikleri kurumların etkinliklerini filtreleyebilir.',
+      },
+      {
+        q: 'Katılımcı kendi alanında neleri görür?',
+        a: 'Yaklaşan, devam eden ve geçmiş etkinliklerini; başvuru durumunu, duyuruları, testleri, geri bildirimleri, paylaşılan kaynakları ve hazır olduğunda sertifikalarını tek yerde görür.',
+      },
+      {
+        q: 'Katılımcı verileri ve onamlar nasıl yönetilir?',
+        a: 'Katılımcı kendi profil ve bildirim tercihlerini düzenleyebilir, verdiği onamları görebilir ve uygun olduğunda geri çekebilir. Kurumlar yalnızca etkinlik için gerekli verileri toplamalı ve kendi KVKK yükümlülüklerini gözetmelidir.',
+      },
+    ],
+  },
+  {
+    id: 'destek',
+    title: 'Sorun çözme ve destek',
+    items: [
+      {
+        q: 'Bir işlem başarısız olursa ne yapmalıyım?',
+        a: 'Önce ekrandaki hata mesajını okuyun ve bağlantınızı kontrol edin. Formdaki bilgilerin çoğu hata durumunda korunur. Aynı işlemi art arda göndermek yerine sonucu kontrol edip yeniden deneyin.',
+      },
+      {
+        q: 'Sorunu nasıl bildirebilirim?',
+        a: 'Ana menüde “Yardım ve Destek” altındaki “Sorun Bildir” seçeneğini kullanın. Ne yaptığınızı, ne olmasını beklediğinizi ve ne olduğunu kısaca yazın; bulunduğunuz ekran ve hesap bilgileri bildirime otomatik eklenir.',
+      },
+      {
+        q: 'Yeni özellikleri nereden takip edebilirim?',
+        a: 'Ana menüde Eventise altındaki “Yenilikler” sayfasını açın. En yeni sürüm en üstte yer alır; sürüm numaraları ve kullanıcıya yansıyan değişiklikler birlikte gösterilir.',
       },
     ],
   },
@@ -167,7 +229,7 @@ const sections: Section[] = [
 
 export default async function YardimPage() {
   const token = (await cookies()).get('eventise_session')?.value;
-  let organization: { name: string; memberships?: Array<{ role?: string }> } | undefined;
+  let organization: { id: string; name: string; memberships?: Array<{ role?: string }> } | undefined;
   let systemAdmin = false;
   if (token) {
     const headers = { authorization: `Bearer ${token}` };
@@ -183,43 +245,44 @@ export default async function YardimPage() {
   return (
     <div className={organization ? 'app-shell' : undefined}>
       {organization && <AppNav organization={organization} active="help" systemAdmin={systemAdmin}/>}
-    <main className="help-page">
-      <header className="help-header">
-        <Link href="/" className="logo dark"><b>e</b>eventise</Link>
-        <Link href={backHref} className="help-back">← {backLabel}</Link>
-      </header>
+      <main className="help-page">
+        <header className="help-header">
+          <Link href="/" className="logo dark"><b>e</b>eventise</Link>
+          <Link href={backHref} className="help-back">← {backLabel}</Link>
+        </header>
 
-      <section className="help-hero">
-        <p className="eyebrow">STK'LAR İÇİN REHBER</p>
-        <h1>Etkinliklerinizi uçtan uca yönetin</h1>
-        <p className="help-lead">
-          Bu rehber, bir sivil toplum kuruluşu olarak Eventise ile etkinlik açmayı, kayıtları yönetmeyi, modüller hazırlamayı ve etkinlik gününü sorunsuz geçirmeyi anlatır. Aşağıdaki başlıklara göz atın; aradığınızı bulamazsanız ekibimizle iletişime geçebilirsiniz.
-        </p>
-      </section>
-
-      {sections.map(section => (
-        <section className="help-section" key={section.id} id={section.id}>
-          <h2>{section.title}</h2>
-          {section.intro && <p className="help-section-intro">{section.intro}</p>}
-          <div className="help-accordion">
-            {section.items.map((item, index) => (
-              <details key={item.q} open={section.id === 'baslangic' && index === 0}>
-                <summary>{item.q}</summary>
-                <p>{item.a}</p>
-              </details>
-            ))}
-          </div>
+        <section className="help-hero">
+          <p className="eyebrow">STK’LAR İÇİN KULLANIM REHBERİ</p>
+          <h1>Eventise’ı adım adım kullanın</h1>
+          <p className="help-lead">
+            Kurum hesabınızı oluşturmaktan etkinlik sonrası rapor ve sertifikalara kadar ihtiyaç duyacağınız temel bilgileri burada bulabilirsiniz. Baştan sona okuyabilir veya aradığınız başlığa doğrudan geçebilirsiniz.
+          </p>
         </section>
-      ))}
 
-      <section className="help-cta">
-        <div>
-          <h2>{token ? 'İlk etkinliğinizi oluşturun' : 'Hazırsanız başlayın'}</h2>
-          <p>{token ? 'Panel üzerinden yeni bir etkinlik oluşturup dakikalar içinde yayınlayabilirsiniz.' : 'Ücretsiz bir STK hesabı oluşturun ve ilk etkinliğinizi dakikalar içinde yayınlayın.'}</p>
-        </div>
-        <Link className="primary" href={token ? '/dashboard/events/new' : '/register'}>{token ? 'Yeni etkinlik →' : 'Ücretsiz başla →'}</Link>
-      </section>
-    </main>
+        {sections.map(section => (
+          <section className="help-section" key={section.id} id={section.id}>
+            <h2>{section.title}</h2>
+            {section.intro && <p className="help-section-intro">{section.intro}</p>}
+            <div className="help-accordion">
+              {section.items.map((item, index) => (
+                <details key={item.q} open={section.id === 'baslangic' && index === 0}>
+                  <summary>{item.q}</summary>
+                  <p>{item.a}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+        ))}
+
+        <section className="help-cta">
+          <div>
+            <h2>{token ? 'Hazırsanız yeni etkinliğinizi oluşturalım' : 'Hazırsanız başlayalım'}</h2>
+            <p>{token ? 'Temel bilgileri girin; kalan hazırlıkları kendi hızınızda tamamlayın.' : 'Ücretsiz bir STK hesabı oluşturun ve ilk etkinliğinizi hazırlayın.'}</p>
+          </div>
+          <Link className="primary" href={token ? '/dashboard/events/new' : '/register'}>{token ? 'Yeni etkinlik →' : 'Ücretsiz başla →'}</Link>
+        </section>
+      </main>
+      {organization && <ProblemReporter organizationId={organization.id}/>}
     </div>
   );
 }

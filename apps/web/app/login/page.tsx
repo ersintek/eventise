@@ -51,7 +51,7 @@ export default function LoginPage() {
       {error && <p className="error" role="alert">{error}</p>}
       <button className="primary" disabled={busy}>{busy ? 'Giriş yapılıyor…' : 'Giriş yap'}</button>
       <p className="auth-link">Hesabınız yok mu? <Link href="/register">Ücretsiz başlayın</Link></p>
-      <p className="auth-link"><Link href="/yardim">STK&apos;lar için rehber →</Link></p>
+      <p className="auth-link"><Link href="/yardim">Kullanım rehberi →</Link></p>
     </form></section>
   </main>;
 }

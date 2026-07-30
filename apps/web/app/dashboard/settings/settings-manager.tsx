@@ -6,6 +6,7 @@ type SettingsManagerProps = {
   organization: any;
   members: any[];
   joinRequests: any[];
+  invitations: any[];
   me: any;
 };
 
@@ -13,10 +14,12 @@ export function SettingsManager({
   organization,
   members: initialMembers,
   joinRequests: initialJoinRequests,
+  invitations: initialInvitations,
   me,
 }: SettingsManagerProps) {
   const [members, setMembers] = useState(initialMembers);
   const [joinRequests, setJoinRequests] = useState(initialJoinRequests);
+  const [invitations, setInvitations] = useState(initialInvitations);
   const [message, setMessage] = useState('');
 
   async function call(path: string, method: string, body?: object) {
@@ -62,14 +65,22 @@ export function SettingsManager({
   async function addMember(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const member = await call(`organizations/${organization.id}/members`, 'POST', {
+    const result = await call(`organizations/${organization.id}/members`, 'POST', {
       email: form.get('email'),
       role: form.get('role'),
     });
-    if (member) {
-      setMembers((current) => [...current, member]);
+    if (result?.kind === 'member') {
+      setMembers((current) => [...current.filter((member) => member.id !== result.membership.id), result.membership]);
+      event.currentTarget.reset();
+    } else if (result?.kind === 'invitation') {
+      setInvitations((current) => [result.invitation, ...current.filter((invitation) => invitation.id !== result.invitation.id)]);
       event.currentTarget.reset();
     }
+  }
+
+  async function updateRole(membershipId: string, role: string) {
+    const member = await call(`organizations/${organization.id}/members/${membershipId}`, 'PATCH', { role });
+    if (member) setMembers((current) => current.map((item) => item.id === member.id ? member : item));
   }
 
   async function reviewJoinRequest(requestId: string, approved: boolean) {
@@ -106,11 +117,12 @@ export function SettingsManager({
         <div className="team-layout">
         <form className="settings-card invite-card" onSubmit={addMember}>
           <h3>Ekip üyesi ekle</h3>
-          <p>Kişinin önce Eventise hesabı oluşturmuş olması gerekir.</p>
+          <p>Hesabı varsa doğrudan eklenir; yoksa e-postayla davet edilir.</p>
           <label>E-posta<input name="email" type="email" required placeholder="uye@kurum.org" /></label>
           <label>
             Rol <span className="tooltip" data-tip="Etkinlik yetkilisi tüm etkinlik süreçlerini yönetir. Saha görevlisi yalnızca etkinlik günü operasyonlarına erişir.">(?)</span>
             <select name="role">
+              <option value="ORGANIZATION_ADMIN">Kurum yöneticisi</option>
               <option value="EVENT_MANAGER">Etkinlik yetkilisi</option>
               <option value="FIELD_STAFF">Saha görevlisi</option>
             </select>
@@ -123,7 +135,12 @@ export function SettingsManager({
           {members.map((member) => (
             <article key={member.id}>
               <div className="member-avatar">{(member.user?.firstName?.[0] || '') + (member.user?.lastName?.[0] || '')}</div>
-              <div><b>{member.user?.firstName} {member.user?.lastName}</b><p>{member.user?.email} · {member.role}</p></div>
+              <div><b>{member.user?.firstName} {member.user?.lastName}</b><p>{member.user?.email}</p></div>
+              <select aria-label={`${member.user?.email} rolü`} value={member.role} onChange={(event) => updateRole(member.id, event.target.value)}>
+                <option value="ORGANIZATION_ADMIN">Kurum yöneticisi</option>
+                <option value="EVENT_MANAGER">Etkinlik yetkilisi</option>
+                <option value="FIELD_STAFF">Saha görevlisi</option>
+              </select>
               {member.userId !== me.id && (
                 <button onClick={async () => {
                   if (await call(`organizations/${organization.id}/members/${member.id}`, 'DELETE')) setMembers((current) => current.filter((item) => item.id !== member.id));
@@ -134,6 +151,24 @@ export function SettingsManager({
         </section>
         </div>
       </section>
+
+      {invitations.length > 0 && (
+        <section className="applications join-requests">
+          <h2>Bekleyen ekip davetleri</h2>
+          <p>Hesabını tamamlamamış kişilere gönderilen davetler.</p>
+          {invitations.map((invitation) => (
+            <article key={invitation.id}>
+              <div><b>{invitation.email}</b><p>{invitation.role} · {new Date(invitation.expiresAt).toLocaleString('tr-TR')} tarihine kadar</p></div>
+              <div className="button-row">
+                <button onClick={() => call(`organizations/${organization.id}/invitations/${invitation.id}/resend`, 'POST')}>Yeniden gönder</button>
+                <button onClick={async () => {
+                  if (await call(`organizations/${organization.id}/invitations/${invitation.id}`, 'DELETE')) setInvitations((current) => current.filter((item) => item.id !== invitation.id));
+                }}>İptal et</button>
+              </div>
+            </article>
+          ))}
+        </section>
+      )}
 
       {joinRequests.length > 0 && (
         <section className="applications join-requests">

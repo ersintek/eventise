@@ -21,7 +21,7 @@ export async function AboutShell({ activeTab, children }: { activeTab: 'about' |
   const organization = organizations[0] ?? { name: 'Eventise', memberships: [{ role: 'SYSTEM_ADMIN' }] };
 
   return <main className="app-shell">
-    <AppNav organization={organization} active="about" systemAdmin={me.systemRole === 'SYSTEM_ADMIN'} />
+    <AppNav organization={organization} active={activeTab} systemAdmin={me.systemRole === 'SYSTEM_ADMIN'} />
     <section className="dashboard about-page">
       <MobileTopBar />
       <header className="page-heading about-heading">
@@ -29,7 +29,7 @@ export async function AboutShell({ activeTab, children }: { activeTab: 'about' |
       </header>
       <nav className="about-tabs" aria-label="Eventise hakkında bölümleri">
         <Link className={activeTab === 'about' ? 'active' : ''} href="/dashboard/about">Hakkında</Link>
-        <Link className={activeTab === 'updates' ? 'active' : ''} href="/dashboard/about/updates">Güncellemeler</Link>
+        <Link className={activeTab === 'updates' ? 'active' : ''} href="/dashboard/about/updates">Yenilikler</Link>
       </nav>
       {children}
     </section>

@@ -1,5 +1,29 @@
 export const updates = [
   {
+    version: '0.14.0',
+    title: 'Daha güncel ve ulaşılabilir yardım deneyimi',
+    changes: [
+      ['Ana menüde yardım içerikleri “Yardım ve Destek”, ürün bilgileri ise “Eventise” başlığı altında yeniden düzenlendi.', 'Aranan bilgiye daha hızlı erişim'],
+      ['“STK Rehberi” güncel ürün akışlarını anlatan kapsamlı bir “Kullanım Rehberi” olarak baştan yazıldı.', 'Etkinliğin her aşamasında güncel yönlendirme'],
+      ['“Sorun Bildir” seçeneği ana menüye eklendi ve bulunulan ekrandan doğrudan bildirim gönderilebilir hâle geldi.', 'İhtiyaç anında daha kolay destek'],
+      ['“Güncellemeler” sayfasının adı “Yenilikler” olarak değiştirildi; sürüm numaralı ürün günlüğü yapısı korundu.', 'Ürün gelişimini daha anlaşılır takip etme'],
+      ['Eventise Hakkında bölümü SICI’yi ve platformun amacını anlatan daha kısa, samimi bir dille yenilendi.', 'Eventise’ı ve yaklaşımını daha yakından tanıma'],
+    ],
+  },
+  {
+    version: '0.13.0',
+    title: 'Kurum ekibinizi birlikte yönetin',
+    changes: [
+      ['Aynı kurumun birden fazla kez oluşturulması engellendi; mevcut kurum bulunduğunda katılma isteği gönderilebiliyor.', 'Tek ve düzenli kurum kaydı'],
+      ['Kurum yöneticileri gelen katılma isteklerini Kurum ve ekip ekranından kabul veya reddedebilir hâle geldi.', 'Kontrollü ekip katılımı'],
+      ['Bir kuruma birden fazla kurum yöneticisi atanması ve ekip üyelerinin rollerinin sonradan değiştirilmesi eklendi.', 'Görevlerin ekip içinde paylaşılması'],
+      ['Son kurum yöneticisinin yetkisinin kaldırılması engellendi.', 'Yöneticisiz kalmayan güvenli çalışma alanı'],
+      ['Eventise hesabı olmayan kişiler e-postayla ekip üyesi olarak davet edilebilir hâle geldi.', 'Hesap durumundan bağımsız kolay davet'],
+      ['Davet edilen kişi hesabını tamamladığında belirlenen rolle otomatik olarak kuruma ekleniyor.', 'Kesintisiz ekip oluşturma'],
+      ['Bekleyen davetleri görüntüleme, yeniden gönderme ve iptal etme seçenekleri eklendi.', 'Daha açık davet takibi'],
+    ],
+  },
+  {
     version: '0.12.0',
     title: 'Daha anlaşılır kurum yönetimi ve navigasyon',
     changes: [
@@ -13,7 +37,6 @@ export const updates = [
     version: '0.11.0',
     title: 'Daha güvenilir etkinlik akışları',
     changes: [
-      ['Aynı kurumun birden fazla kez oluşturulması engellendi; mevcut kuruma katılma isteği gönderme ve yöneticinin isteği kabul ya da reddetme akışı eklendi.', 'Daha düzenli kurum ve ekip yönetimi'],
       ['Etkinlik oluşturma ve düzenleme adımlarındaki doğrulamalar güçlendirildi; hatalı girişlerde form bilgileri artık korunuyor.', 'Daha az veri kaybı ve daha kolay düzeltme'],
       ['Aynı anda gelen başvurularda kapasite kontrolü iyileştirildi ve tekrarlanan kayıt işlemleri engellendi.', 'Daha doğru kontenjan yönetimi'],
       ['Etkinlik günü araçları tarih veya manuel durum kısıtı olmadan her zaman kullanılabilir hâle getirildi; yinelenen katılım kayıtları önlendi.', 'Önceden prova ve daha güvenilir yoklama'],
