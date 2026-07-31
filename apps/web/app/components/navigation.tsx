@@ -33,9 +33,12 @@ function Icon({ name }: { name: IconName }) {
 
 function Mark() { return <div className="brand"><span>e</span><b>eventise</b></div>; }
 
-export function AppNav({ organization, active, systemAdmin = false }: { organization: Organization; active: string; systemAdmin?: boolean }) {
-  const [collapsed, setCollapsed] = useState(false);
-  useEffect(() => setCollapsed(localStorage.getItem('eventise-nav-collapsed') === 'true'), []);
+export function AppNav({ organization, active, systemAdmin = false, compactDefault = false }: { organization: Organization; active: string; systemAdmin?: boolean; compactDefault?: boolean }) {
+  const [collapsed, setCollapsed] = useState(compactDefault);
+  useEffect(() => {
+    const saved = localStorage.getItem('eventise-nav-collapsed');
+    setCollapsed(saved === null ? compactDefault : saved === 'true');
+  }, [compactDefault]);
   function toggle() {
     setCollapsed(value => {
       localStorage.setItem('eventise-nav-collapsed', String(!value));

@@ -10,7 +10,7 @@ export default async function EventLayout({
   const { organization, event } = await loadEventData(eventId);
 
   return <div className="app-shell event-app-shell">
-    <AppNav organization={organization} active="events" />
+    <AppNav organization={organization} active="events" compactDefault />
     <main className="event-workspace-shell">
       <EventWorkspaceHeader
         eventId={eventId}

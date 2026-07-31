@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { formatDateLong } from '@/lib/datetime';
 
 const icons: Record<string, React.ReactNode> = {
@@ -27,6 +27,22 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
   const [publication, setPublication] = useState(publicationStatus);
   const [registration, setRegistration] = useState(registrationStatus);
   const [busy, setBusy] = useState(false);
+  const [compact, setCompact] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const onScroll = () => setCompact(window.scrollY > 96);
+    const onPointerDown = (event: PointerEvent) => {
+      if (!moreRef.current?.contains(event.target as Node)) setMoreOpen(false);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('pointerdown', onPointerDown);
+    };
+  }, []);
   const base = `/dashboard/events/${eventId}`;
   const publicUrl = `/events/${organizationSlug}/${eventSlug}`;
   const current = pathname === base ? 'overview' : pathname.includes('/settings') ? 'info' : pathname.includes('/modules') ? 'tools' : pathname.includes('/communication') ? 'communication' : pathname.includes('/day') ? 'door' : pathname.includes('/post-event') ? 'results' : 'certificate';
@@ -61,7 +77,7 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
     else setBusy(false);
   }
 
-  return <header className="event-command-center">
+  return <header className={`event-command-center${compact ? ' is-compact' : ''}`}>
     <div className="event-topline">
       <Link className="event-back" href="/dashboard#events"><span>←</span> Tüm Etkinlikler</Link>
       <span className="workspace-label">ETKİNLİK KONTROL MERKEZİ</span>
@@ -75,8 +91,13 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
       </button>
       <span className="action-separator"/>
       <Link className="event-action-button announce" href={`${base}/communication?subtab=notifications`} title="Kayıtlı katılımcılara hedefli bir etkinlik duyurusu gönderin."><span>✦</span>Duyuru Gönder</Link>
-      <a className="event-action-button public-page" href={publicUrl} target="_blank" rel="noopener noreferrer" title="Katılımcıların gördüğü etkinlik sayfasını yeni bir sekmede açar."><span>↗</span>Etkinlik Sayfasını Aç</a>
-      <button className="event-action-button danger-action" disabled={busy} onClick={removeEvent} title="Etkinliği siler. Silinen etkinlik 30 gün boyunca geri alınabilir."><span>⌫</span>Sil</button>
+      <div className="event-more" ref={moreRef}>
+        <button className="event-more-trigger" type="button" aria-haspopup="menu" aria-expanded={moreOpen} onClick={() => setMoreOpen(value => !value)} title="Diğer işlemler">•••<span className="sr-only">Diğer işlemler</span></button>
+        {moreOpen && <div className="event-more-menu" role="menu">
+          <a href={publicUrl} target="_blank" rel="noopener noreferrer" role="menuitem"><span>↗</span><span><b>Etkinlik sayfasını aç</b><small>Yeni sekmede görüntüle</small></span></a>
+          <button type="button" role="menuitem" className="danger-action" disabled={busy} onClick={removeEvent}><span>⌫</span><span><b>Etkinliği sil</b><small>30 gün geri alınabilir</small></span></button>
+        </div>}
+      </div>
     </div>
     <div className="event-identity">
       <div className="event-identity-mark">E</div>
