@@ -31,7 +31,15 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const onScroll = () => setCompact(window.scrollY > 96);
+    let frame = 0;
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        const y = window.scrollY;
+        setCompact(current => current ? y > 32 : y > 160);
+      });
+    };
     const onPointerDown = (event: PointerEvent) => {
       if (!moreRef.current?.contains(event.target as Node)) setMoreOpen(false);
     };
@@ -41,6 +49,7 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
     return () => {
       window.removeEventListener('scroll', onScroll);
       document.removeEventListener('pointerdown', onPointerDown);
+      if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
   const base = `/dashboard/events/${eventId}`;
