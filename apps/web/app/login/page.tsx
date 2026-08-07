@@ -35,11 +35,10 @@ export default function LoginPage() {
       return;
     }
     const legal = await fetch('/api/backend/legal/status').then((result) => result.ok ? result.json() : null).catch(() => null);
-    if (!legal?.userTermsAccepted) router.push('/legal/accept');
-    else {
-      const organizations = await fetch('/api/backend/organizations').then((result) => result.ok ? result.json() : []).catch(() => []);
-      router.push(organizations.length ? '/dashboard' : '/participant');
-    }
+    const organizations = await fetch('/api/backend/organizations').then((result) => result.ok ? result.json() : []).catch(() => []);
+    const destination = organizations.length ? 'dashboard' : 'participant';
+    if (!legal?.userTermsAccepted) router.push(`/legal/accept?destination=${destination}`);
+    else router.push(destination === 'dashboard' ? '/dashboard' : '/participant');
     router.refresh();
   }
 
@@ -47,7 +46,8 @@ export default function LoginPage() {
     <section className="auth-brand"><div className="logo"><b>e</b>eventise</div><div><span>STK&apos;LAR İÇİN TASARLANDI</span><h1>Etkinlikler,<br />insanlar ve etki.<br /><em>Tek bir yerde.</em></h1><p>Etkinlik öncesinden sertifikaya kadar bütün süreci güvenle yönetin.</p></div></section>
     <section className="auth-panel"><form className="auth-card" onSubmit={submit}>
       <p className="eyebrow">TEKRAR HOŞ GELDİNİZ</p><h2>Hesabınıza giriş yapın</h2>
-      <a className="google-button" href="/api/session/google"><span className="google-mark">G</span>Google ile devam et</a>
+      <a className="google-button" href="/api/session/google"><span className="google-mark">G</span>Google ile giriş yap</a>
+      <small>Mevcut Eventise hesabınıza giriş yapar. İlk kez geliyorsanız aşağıdan ücretsiz hesap oluşturun.</small>
       <div className="auth-divider"><span>veya</span></div>
       <label>E-posta<input name="email" type="email" required autoComplete="email" /></label>
       <label>Şifre<input name="password" type="password" required autoComplete="current-password" /></label>

@@ -4,10 +4,12 @@ const destinations: Record<string, string> = {
   onboarding: '/onboarding',
   participant: '/participant',
 };
+const validDestinations = new Set(['auto', ...Object.keys(destinations)]);
 
 function loginError(request: NextRequest, reason: string) {
   const appUrl = process.env.PUBLIC_APP_URL;
-  const response = NextResponse.redirect(new URL(`/login?googleError=${encodeURIComponent(reason)}`, appUrl || request.url));
+  const path = reason === 'account-not-found' ? '/register?googlePrompt=choose' : `/login?googleError=${encodeURIComponent(reason)}`;
+  const response = NextResponse.redirect(new URL(path, appUrl || request.url));
   response.cookies.delete('eventise_google_oauth');
   return response;
 }
@@ -16,7 +18,8 @@ export async function GET(request: NextRequest) {
   const stored = request.cookies.get('eventise_google_oauth')?.value;
   const separator = stored?.lastIndexOf('.') ?? -1;
   const expectedState = separator > 0 ? stored!.slice(0, separator) : '';
-  const destination = separator > 0 ? stored!.slice(separator + 1) : 'auto';
+  const storedDestination = separator > 0 ? stored!.slice(separator + 1) : 'auto';
+  const destination = validDestinations.has(storedDestination) ? storedDestination : 'auto';
   const state = request.nextUrl.searchParams.get('state') ?? '';
   const code = request.nextUrl.searchParams.get('code');
   if (!code || !expectedState || state !== expectedState) return loginError(request, 'invalid-state');
@@ -40,12 +43,14 @@ export async function GET(request: NextRequest) {
     const apiResponse = await fetch(`${process.env.API_INTERNAL_URL}/api/auth/google`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ idToken: tokens.id_token }),
+      body: JSON.stringify({ idToken: tokens.id_token, createAccount: destination !== 'auto' }),
       cache: 'no-store',
     });
     const data = await apiResponse.json() as { accessToken?: string; message?: string };
     if (!apiResponse.ok || !data.accessToken) {
-      const reason = apiResponse.status === 409
+      const reason = apiResponse.status === 404
+        ? 'account-not-found'
+        : apiResponse.status === 409
         ? 'account-conflict'
         : apiResponse.status === 401 && data.message?.includes('aktif değil')
           ? 'account-inactive'
@@ -55,18 +60,17 @@ export async function GET(request: NextRequest) {
       return loginError(request, reason);
     }
 
+    const organizations = await fetch(`${process.env.API_INTERNAL_URL}/api/organizations`, {
+      headers: { authorization: `Bearer ${data.accessToken}` },
+      cache: 'no-store',
+    }).then((response) => response.ok ? response.json() as Promise<unknown[]> : []);
+    const resolvedDestination = destination === 'auto' ? (organizations.length ? 'dashboard' : 'participant') : destination;
     const legalStatus = await fetch(`${process.env.API_INTERNAL_URL}/api/legal/status`, {
       headers: { authorization: `Bearer ${data.accessToken}` },
       cache: 'no-store',
     }).then((response) => response.ok ? response.json() as Promise<{ userTermsAccepted: boolean }> : null);
-    let target = legalStatus?.userTermsAccepted ? destinations[destination] : `/legal/accept?destination=${destination === 'onboarding' ? 'onboarding' : 'participant'}`;
-    if (!target) {
-      const organizations = await fetch(`${process.env.API_INTERNAL_URL}/api/organizations`, {
-        headers: { authorization: `Bearer ${data.accessToken}` },
-        cache: 'no-store',
-      }).then((response) => response.ok ? response.json() as Promise<unknown[]> : []);
-      target = organizations.length ? '/dashboard' : '/participant';
-    }
+    const resolvedPath = resolvedDestination === 'dashboard' ? '/dashboard' : destinations[resolvedDestination];
+    const target = legalStatus?.userTermsAccepted ? resolvedPath : `/legal/accept?destination=${resolvedDestination}`;
     const response = NextResponse.redirect(new URL(target, appUrl));
     response.cookies.delete('eventise_google_oauth');
     response.cookies.set('eventise_session', data.accessToken, {

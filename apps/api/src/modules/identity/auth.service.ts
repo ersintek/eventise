@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcryptjs';
 import { randomBytes } from 'crypto';
@@ -41,7 +41,7 @@ export class AuthService {
     return this.session(user);
   }
 
-  async google(idToken: string) {
+  async google(idToken: string, createAccount = false) {
     const identity = await this.googleIdentity.verify(idToken);
     let user = await this.prisma.user.findUnique({ where: { googleSubject: identity.subject } });
     if (!user) {
@@ -50,6 +50,7 @@ export class AuthService {
       if (user) {
         user = await this.prisma.user.update({ where: { id: user.id }, data: { googleSubject: identity.subject, emailVerifiedAt: user.emailVerifiedAt ?? new Date() } });
       } else {
+        if (!createAccount) throw new NotFoundException('Bu Google hesabıyla ilişkili bir Eventise hesabı bulunamadı.');
         user = await this.prisma.user.create({
           data: {
             email: identity.email,

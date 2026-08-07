@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 type Intent = 'organizer' | 'participant';
@@ -11,6 +11,8 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [intent, setIntent] = useState<Intent | ''>('');
+  const [googlePrompt, setGooglePrompt] = useState(false);
+  useEffect(() => { setGooglePrompt(new URLSearchParams(window.location.search).get('googlePrompt') === 'choose'); }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -31,13 +33,15 @@ export default function RegisterPage() {
     <section className="auth-panel">
       {!intent ? <div className="auth-card intent-choice">
         <p className="eyebrow">HESAP OLUŞTUR</p><h2>Nasıl devam edelim?</h2>
-        <p className="intent-subtitle">Size uygun olanı seçin; istediğiniz zaman değiştirebilirsiniz.</p>
+        {googlePrompt && <p className="notice" role="status">Bu Google hesabıyla henüz bir Eventise hesabı yok. Hesabınızı oluşturmadan önce kullanım amacınızı seçin.</p>}
+        <p className="intent-subtitle">Seçiminiz ilk kurulumda sizi doğru alana yönlendirir. Katılımcı hesabıyla etkinliklere katılabilir; STK seçeneğiyle kurum çalışma alanı oluşturabilirsiniz.</p>
         <button type="button" className="intent-card" onClick={() => setIntent('organizer')}><span className="intent-icon">🏛️</span><div><b>STK olarak katıl</b><small>Etkinlik oluşturun, katılımcıları yönetin, kurumunuzu büyütün.</small></div><span className="intent-arrow">→</span></button>
         <button type="button" className="intent-card" onClick={() => setIntent('participant')}><span className="intent-icon">🎟️</span><div><b>Etkinliklere katıl</b><small>Kayıt olun, etkinlik günü içeriklere erişin, sertifikanızı alın.</small></div><span className="intent-arrow">→</span></button>
         <p className="auth-link">Zaten hesabınız var mı? <Link href="/login">Giriş yapın</Link></p>
       </div> : <form className="auth-card" onSubmit={submit}>
         <p className="eyebrow">{intent === 'organizer' ? 'STK HESABI' : 'KATILIMCI HESABI'}</p>
         <h2>{intent === 'organizer' ? 'STK olarak kaydolun' : 'Etkinliklere katılmak için kaydolun'}</h2>
+        <p className="intent-subtitle">{intent === 'organizer' ? 'Kişisel hesabınızın ardından temsil ettiğiniz kurumun çalışma alanını oluşturacaksınız.' : 'Kişisel katılımcı alanınız oluşturulur; bir kurum çalışma alanı açılmaz.'}</p>
         <a className="google-button" href={`/api/session/google?destination=${intent === 'organizer' ? 'onboarding' : 'participant'}`}><span className="google-mark">G</span>Google ile devam et</a>
         <div className="auth-divider"><span>veya</span></div>
         <div className="two"><label>Ad<input name="firstName" required minLength={2} /></label><label>Soyad<input name="lastName" required minLength={2} /></label></div>

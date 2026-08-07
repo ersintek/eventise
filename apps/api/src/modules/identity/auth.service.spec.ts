@@ -1,4 +1,4 @@
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { hash } from 'bcryptjs';
 import { describe, expect, it, vi } from 'vitest';
 import { AuthService } from './auth.service';
@@ -25,12 +25,18 @@ describe('AuthService', () => {
     await expect(service.login({ email: user.email, password: 'SecurePassword1' })).resolves.toMatchObject({ accessToken: 'signed-token', user: { id: 'u1' } });
     expect(audit.record).toHaveBeenCalledOnce();
   });
-  it('creates an account for a verified Google identity', async () => {
+  it('does not create an account during a Google sign-in attempt', async () => {
+    const { service, prisma, googleIdentity } = setup();
+    googleIdentity.verify.mockResolvedValue({ subject: 'google-new', email: 'new@example.org', firstName: 'Yeni', lastName: 'Kullanıcı' });
+    await expect(service.google('valid-google-id-token')).rejects.toBeInstanceOf(NotFoundException);
+    expect(prisma.user.create).not.toHaveBeenCalled();
+  });
+  it('creates an account for a verified Google identity after an explicit registration choice', async () => {
     const { service, prisma, googleIdentity, audit } = setup();
     googleIdentity.verify.mockResolvedValue({ subject: 'google-1', email: 'ada@example.org', firstName: 'Ada', lastName: 'Lovelace' });
     const created = { id: 'u2', email: 'ada@example.org', firstName: 'Ada', lastName: 'Lovelace', status: 'ACTIVE', systemRole: 'USER' };
     prisma.user.create.mockResolvedValue(created);
-    await expect(service.google('valid-google-id-token')).resolves.toMatchObject({ accessToken: 'signed-token', user: { id: 'u2' } });
+    await expect(service.google('valid-google-id-token', true)).resolves.toMatchObject({ accessToken: 'signed-token', user: { id: 'u2' } });
     expect(prisma.user.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ googleSubject: 'google-1', emailVerifiedAt: expect.any(Date) }) }));
     expect(audit.record).toHaveBeenCalledWith(expect.objectContaining({ action: 'identity.user_logged_in_google' }));
   });
