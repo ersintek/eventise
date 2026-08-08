@@ -11,6 +11,7 @@ export class SmtpEmailProvider implements EmailProvider {
   }
   async send(message: EmailMessage): Promise<EmailDeliveryResult> {
     const result = await this.transporter.sendMail({ from: this.config.getOrThrow('EMAIL_FROM'), to: message.to, subject: message.subject, html: message.html, replyTo: message.replyTo, headers: { 'X-Eventise-Idempotency-Key': message.idempotencyKey } });
-    return { providerMessageId: result.messageId, accepted: result.accepted.length > 0 };
+    if (result.accepted.length === 0) throw new Error(`SMTP sağlayıcısı alıcıyı kabul etmedi${result.rejected.length ? `: ${result.rejected.join(', ')}` : '.'}`);
+    return { providerMessageId: result.messageId, accepted: true };
   }
 }

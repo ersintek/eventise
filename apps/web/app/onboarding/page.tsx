@@ -1,5 +1,5 @@
 'use client';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function OnboardingPage() {
@@ -8,6 +8,12 @@ export default function OnboardingPage() {
   const [message, setMessage] = useState('');
   const [existingOrganization, setExistingOrganization] = useState<{ id: string; name: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    void fetch('/api/backend/organizations').then(async response => {
+      if (response.ok && (await response.json() as unknown[]).length) router.replace('/dashboard');
+      else if (response.status === 401) router.replace('/login');
+    });
+  }, [router]);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); setError(''); setMessage(''); setExistingOrganization(null);
     const values = Object.fromEntries(new FormData(event.currentTarget));

@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
       headers: { authorization: `Bearer ${data.accessToken}` },
       cache: 'no-store',
     }).then((response) => response.ok ? response.json() as Promise<unknown[]> : []);
-    const resolvedDestination = destination === 'auto' ? (organizations.length ? 'dashboard' : 'participant') : destination;
+    const resolvedDestination = organizations.length ? 'dashboard' : destination === 'auto' ? 'participant' : destination;
     const legalStatus = await fetch(`${process.env.API_INTERNAL_URL}/api/legal/status`, {
       headers: { authorization: `Bearer ${data.accessToken}` },
       cache: 'no-store',
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 15 * 60,
+      maxAge: 7 * 24 * 60 * 60,
     });
     return response;
   } catch {
