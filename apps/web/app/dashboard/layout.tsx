@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { ProblemReporter } from '../components/problem-reporter';
+import { TourRedirector } from '../components/product-tour';
 
 export default async function DashboardLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const token = (await cookies()).get('eventise_session')?.value;
@@ -18,5 +19,5 @@ export default async function DashboardLayout({ children }: Readonly<{ children:
     }
   }
 
-  return <>{children}{organizationId && <ProblemReporter organizationId={organizationId}/>}</>;
+  return <>{children}<TourRedirector />{organizationId && <ProblemReporter organizationId={organizationId}/>}</>;
 }

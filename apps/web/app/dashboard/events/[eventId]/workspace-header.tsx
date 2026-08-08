@@ -91,7 +91,7 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
       <Link className="event-back" href="/dashboard#events"><span>←</span> Tüm Etkinlikler</Link>
       <span className="workspace-label">ETKİNLİK KONTROL MERKEZİ</span>
     </div>
-    <div className="event-quick-actions" aria-label="Etkinlik hızlı işlemleri">
+    <div className="event-quick-actions" aria-label="Etkinlik hızlı işlemleri" data-tour-id="publication-controls">
       <button className={`event-action-toggle ${publication === 'PUBLISHED' ? 'is-on' : ''}`} role="switch" aria-checked={publication === 'PUBLISHED'} disabled={busy} onClick={() => update(publication === 'PUBLISHED' ? 'UNPUBLISHED' : 'PUBLISHED', registration)} title="Katılımcıların etkinliğin herkese açık tanıtım sayfasını görüp göremeyeceğini belirler.">
         <span className="action-icon">◉</span><span className="action-copy"><b>Etkinlik Sayfası</b><small>{publication === 'PUBLISHED' ? 'Yayında' : 'Yayın dışı'}</small></span><span className="action-switch"><i/></span>
       </button>
@@ -113,7 +113,7 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
       <div><span>{organizationName}</span><h1>{title}</h1><p>📅 {formatDateLong(startsAt)}</p></div>
     </div>
     <nav className="event-primary-nav" aria-label="Etkinlik ana menüsü">
-      {links.map(([href, label, key]) => <Link key={key} href={href} className={current === key ? 'active' : ''} aria-current={current === key ? 'page' : undefined}><Icon name={key}/><span>{label}</span></Link>)}
+      {links.map(([href, label, key]) => <Link data-tour-id={key === 'info' ? 'registration-area' : key === 'communication' ? 'communication-area' : key === 'door' ? 'event-day-area' : undefined} key={key} href={href} className={current === key ? 'active' : ''} aria-current={current === key ? 'page' : undefined}><Icon name={key}/><span>{label}</span></Link>)}
     </nav>
   </header>;
 }

@@ -1,6 +1,7 @@
 import { AppNav } from '../../../components/navigation';
 import { loadEventData } from './event-data';
 import { EventWorkspaceHeader } from './workspace-header';
+import { ProductTour } from '../../../components/product-tour';
 
 export default async function EventLayout({
   children,
@@ -25,5 +26,6 @@ export default async function EventLayout({
       />
       <div className="event-workspace-content">{children}</div>
     </main>
+    <ProductTour eventPath={`/dashboard/events/${eventId}`} />
   </div>;
 }

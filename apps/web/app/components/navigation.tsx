@@ -50,6 +50,9 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
     event.preventDefault();
     window.dispatchEvent(new Event('eventise:open-problem-reporter'));
   }}><Icon name="info"/><span>Sorun Bildir</span></a>;
+  const restartTour = <button type="button" className="nav-tour-button" title={collapsed ? 'Eventise turu' : undefined} aria-label="Eventise turunu başlat" onClick={() => {
+    window.dispatchEvent(new Event('eventise:start-product-tour'));
+  }}><Icon name="updates"/><span>Eventise turu</span></button>;
   const role = organization.memberships?.[0]?.role ?? 'MEMBER';
   return <aside className={`app-nav${collapsed ? ' collapsed' : ''}`}>
     <div className="brand-row"><Mark /><BetaNotice /><button className="nav-collapse" onClick={toggle} aria-label={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'} title={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}><Icon name="menu"/></button></div>
@@ -60,7 +63,7 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
       <div className="nav-group"><small>KATILIM</small>{item('/participant', 'Katılımcı alanım', 'participant', 'users')}</div>
       <div className="nav-group"><small>KURUM</small>{item('/dashboard/settings', 'Kurum ve ekip', 'settings', 'building')}{item('/dashboard/quota', 'Kullanım', 'quota', 'usage')}</div>
       {systemAdmin && <div className="nav-group"><small>YÖNETİM</small>{item('/admin', 'Sistem yönetimi', 'admin', 'shield')}</div>}
-      <div className="nav-group"><small>YARDIM VE DESTEK</small>{item('/yardim', 'Kullanım Rehberi', 'help', 'book')}{reportProblem}</div>
+      <div className="nav-group"><small>YARDIM VE DESTEK</small>{restartTour}{item('/yardim', 'Kullanım Rehberi', 'help', 'book')}{reportProblem}</div>
       <div className="nav-group"><small>EVENTISE</small>{item('/dashboard/about', 'Eventise Hakkında', 'about', 'info')}{item('/dashboard/about/updates', 'Yenilikler', 'updates', 'updates')}</div>
     </nav>
     <div className="nav-logout"><Icon name="logout"/><LogoutButton /></div>
