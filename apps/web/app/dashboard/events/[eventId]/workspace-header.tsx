@@ -86,7 +86,7 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
     else setBusy(false);
   }
 
-  return <header className={`event-command-center${compact ? ' is-compact' : ''}`}>
+  return <header className={`event-command-center${compact ? ' is-compact' : ''}`} data-tour-id="event-command-center">
     <div className="event-topline">
       <Link className="event-back" href="/dashboard#events"><span>←</span> Tüm Etkinlikler</Link>
       <span className="workspace-label">ETKİNLİK KONTROL MERKEZİ</span>
@@ -113,7 +113,7 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
       <div><span>{organizationName}</span><h1>{title}</h1><p>📅 {formatDateLong(startsAt)}</p></div>
     </div>
     <nav className="event-primary-nav" aria-label="Etkinlik ana menüsü">
-      {links.map(([href, label, key]) => <Link data-tour-id={key === 'info' ? 'registration-area' : key === 'communication' ? 'communication-area' : key === 'door' ? 'event-day-area' : undefined} key={key} href={href} className={current === key ? 'active' : ''} aria-current={current === key ? 'page' : undefined}><Icon name={key}/><span>{label}</span></Link>)}
+      {links.map(([href, label, key]) => <Link data-tour-id={`${key === 'info' ? 'registration' : key === 'door' ? 'event-day' : key}-area`} key={key} href={href} className={current === key ? 'active' : ''} aria-current={current === key ? 'page' : undefined}><Icon name={key}/><span>{label}</span></Link>)}
     </nav>
   </header>;
 }

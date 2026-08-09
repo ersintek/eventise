@@ -1,42 +1,57 @@
-export const EVENTISE_TOUR_VERSION = 'event-workspace-v1';
+export const EVENTISE_TOUR_VERSION = 'event-workspace-v2';
 
 export type TourStep = {
   id: string;
   target: string;
+  eyebrow: string;
   title: string;
   description: string;
 };
 
 export const EVENTISE_TOUR_STEPS: TourStep[] = [
   {
-    id: 'overview',
-    target: 'event-overview',
-    title: 'Kontrol merkezi sizinle birlikte düşünür',
-    description: 'Etkinliğin bugünkü durumunu, başvuruları ve en anlamlı sonraki seçeneği burada görürsünüz.',
+    id: 'control-center', target: 'event-command-center', eyebrow: 'ETKİNLİK ÇALIŞMA ALANI',
+    title: 'Etkinliğinizin bütün yolculuğu burada.',
+    description: 'Üst bölüm etkinliğinizin kontrol merkezi. Yayın durumundan kayıt akışına, etkinlik gününden sonuçlara kadar her bölüme buradan ulaşırsınız.',
   },
   {
-    id: 'publication',
-    target: 'publication-controls',
-    title: 'Ne zaman hazırsa, o zaman yayında',
-    description: 'Etkinlik sayfasını ve kayıt formunu birbirinden bağımsız olarak açıp kapatabilirsiniz.',
+    id: 'publication', target: 'publication-controls', eyebrow: 'YAYIN KONTROLLERİ',
+    title: 'Hazır olduğunuz anda görünür olun.',
+    description: 'Etkinlik sayfası dışarıdan görünürlüğü, Kayıt Formu ise yeni başvuru almayı yönetir. İkisini ihtiyacınıza göre ayrı ayrı açıp kapatabilirsiniz.',
   },
   {
-    id: 'registration',
-    target: 'registration-area',
-    title: 'Kayıt deneyimi sizin kontrolünüzde',
-    description: 'Formu düzenleyin, başvuruları değerlendirin ve katılımcı listenizi tek yerde yönetin.',
+    id: 'overview', target: 'overview-area', eyebrow: 'GENEL BAKIŞ',
+    title: 'Bugün neye bakmanız gerektiğini görün.',
+    description: 'Başvuru, kontenjan ve etkinlik durumunun kısa özeti burada. Eventise, mevcut aşamaya göre size tek bir anlamlı sonraki seçenek de sunar.',
   },
   {
-    id: 'communication',
-    target: 'communication-area',
-    title: 'Doğru mesaj, doğru anda',
-    description: 'Davetleri, duyuruları ve hatırlatmaları etkinliğin akışından kopmadan yönetin.',
+    id: 'registration', target: 'registration-area', eyebrow: 'KAYIT & BİLGİLER',
+    title: 'Katılımcının göreceği deneyimi hazırlayın.',
+    description: 'Etkinlik bilgilerini, kayıt formunu, başvuruları, SSS alanını ve gerekli onamları bu bölümden yönetirsiniz.',
   },
   {
-    id: 'event-day',
-    target: 'event-day-area',
-    title: 'Kapıdan sertifikaya tek akış',
-    description: 'QR katılım teyidi, sonuçlar ve doğrulanabilir sertifikalar etkinliğin devamında hazırdır.',
+    id: 'tools', target: 'tools-area', eyebrow: 'ETKİNLİK ARAÇLARI',
+    title: 'Katılımı daha etkileşimli hale getirin.',
+    description: 'Testler, tanışma oyunları ve grup araçlarını önceden hazırlayın. Etkinlik başladığında hepsi aynı çalışma alanından yönetilir.',
+  },
+  {
+    id: 'communication', target: 'communication-area', eyebrow: 'DAVET & İLETİŞİM',
+    title: 'Doğru mesajı doğru anda ulaştırın.',
+    description: 'Davetleri gönderin, hatırlatmaları planlayın, duyuruları hazırlayın ve otomatik e-posta metinlerini tek yerde düzenleyin.',
+  },
+  {
+    id: 'event-day', target: 'event-day-area', eyebrow: 'KAPI & KATILIM',
+    title: 'Etkinlik günü akışını hızlandırın.',
+    description: 'QR ile giriş alın, katılımcı listesinden manuel teyit yapın ve kapıda kayıt ihtiyacını aynı ekrandan yönetin.',
+  },
+  {
+    id: 'results', target: 'results-area', eyebrow: 'SONUÇLAR',
+    title: 'Etkinliğin etkisini görünür kılın.',
+    description: 'Katılım oranlarını inceleyin, raporları indirin ve etkinlik sonrası paylaşılacak kaynakları burada tamamlayın.',
+  },
+  {
+    id: 'certificates', target: 'certificate-area', eyebrow: 'SERTİFİKALAR',
+    title: 'Katılımı kalıcı bir çıktıya dönüştürün.',
+    description: 'Katılımı teyit edilen kişiler için tasarımlı ve QR ile doğrulanabilir sertifikalar hazırlayıp üretebilirsiniz.',
   },
 ];
-

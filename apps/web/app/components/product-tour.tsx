@@ -13,6 +13,7 @@ export function ProductTour({ eventPath }: { eventPath: string }) {
   const [box, setBox] = useState<Box | null>(null);
 
   const start = useCallback((showWelcome = false) => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
     setIndex(0);
     setWelcome(showWelcome);
     setOpen(true);
@@ -38,27 +39,34 @@ export function ProductTour({ eventPath }: { eventPath: string }) {
 
   useEffect(() => {
     if (!open) return;
+    const previousOverflow = document.documentElement.style.overflow;
+    if (!welcome) document.documentElement.style.overflow = 'hidden';
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') close();
       if (!welcome && event.key === 'ArrowRight') setIndex(value => Math.min(value + 1, EVENTISE_TOUR_STEPS.length - 1));
       if (!welcome && event.key === 'ArrowLeft') setIndex(value => Math.max(value - 1, 0));
     };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      document.documentElement.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKey);
+    };
   }, [close, open, welcome]);
 
   useLayoutEffect(() => {
     if (!open || welcome) return;
+    let frame = 0;
     const update = () => {
       const target = document.querySelector<HTMLElement>(`[data-tour-id="${EVENTISE_TOUR_STEPS[index].target}"]`);
       if (!target) { setBox(null); return; }
       const rect = target.getBoundingClientRect();
-      setBox({ top: Math.max(8, rect.top - 7), left: Math.max(8, rect.left - 7), width: Math.min(window.innerWidth - 16, rect.width + 14), height: rect.height + 14 });
+      setBox({ top: Math.max(8, rect.top - 7), left: Math.max(8, rect.left - 7), width: Math.min(window.innerWidth - 16, rect.width + 14), height: Math.min(window.innerHeight - Math.max(8, rect.top - 7) - 8, rect.height + 14) });
     };
-    update();
+    const target = document.querySelector<HTMLElement>(`[data-tour-id="${EVENTISE_TOUR_STEPS[index].target}"]`);
+    target?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'auto' });
+    frame = window.requestAnimationFrame(() => window.requestAnimationFrame(update));
     window.addEventListener('resize', update);
-    window.addEventListener('scroll', update, true);
-    return () => { window.removeEventListener('resize', update); window.removeEventListener('scroll', update, true); };
+    return () => { window.cancelAnimationFrame(frame); window.removeEventListener('resize', update); };
   }, [index, open, welcome]);
 
   if (!open) return null;
@@ -68,7 +76,7 @@ export function ProductTour({ eventPath }: { eventPath: string }) {
       <h2 id="tour-welcome-title">İyi bir etkinlik, iyi bir akışla başlar.</h2>
       <p>Başvurudan kapı girişine, iletişimden sertifikaya kadar bütün süreci tek merkezden yönetin.</p>
       <div className="tour-value-row"><span>Başvuruları yönetin</span><span>Katılımı hızlandırın</span><span>Etkiyi görünür kılın</span></div>
-      <div className="tour-actions"><button type="button" className="tour-text-button" onClick={() => close(true)}>Kendim keşfedeceğim</button><button type="button" className="primary" onClick={() => setWelcome(false)}>2 dakikada tanıyın <span>→</span></button></div>
+      <div className="tour-actions"><button type="button" className="tour-text-button" onClick={() => close(true)}>Kendim keşfedeceğim</button><button type="button" className="primary" onClick={() => { window.scrollTo({ top: 0, behavior: 'auto' }); setWelcome(false); }}>2 dakikada tanıyın <span>→</span></button></div>
     </div>
   </div>;
 
@@ -78,7 +86,7 @@ export function ProductTour({ eventPath }: { eventPath: string }) {
     {box && <div className="tour-focus" style={box} />}
     <section className="tour-popover" aria-live="polite">
       <div className="tour-popover-top"><span>{index + 1} / {EVENTISE_TOUR_STEPS.length}</span><button type="button" onClick={() => close()} aria-label="Turu kapat">×</button></div>
-      <h2 id="tour-step-title">{step.title}</h2><p>{step.description}</p>
+      <p className="tour-step-eyebrow">{step.eyebrow}</p><h2 id="tour-step-title">{step.title}</h2><p>{step.description}</p>
       <div className="tour-dots" aria-hidden="true">{EVENTISE_TOUR_STEPS.map((item, dot) => <i className={dot === index ? 'active' : ''} key={item.id}/>)}</div>
       <div className="tour-actions">{index > 0 ? <button type="button" className="tour-text-button" onClick={() => setIndex(index - 1)}>Geri</button> : <button type="button" className="tour-text-button" onClick={() => close()}>Turu kapat</button>}<button type="button" className="primary" onClick={() => finish ? close(true) : setIndex(index + 1)}>{finish ? 'Keşfetmeye başla' : 'Devam'} <span>→</span></button></div>
     </section>
@@ -88,7 +96,7 @@ export function ProductTour({ eventPath }: { eventPath: string }) {
 export function TourRedirector() {
   useEffect(() => {
     const listener = () => {
-      if (document.querySelector('[data-tour-id="event-overview"]')) return;
+      if (document.querySelector('[data-tour-id="event-command-center"]')) return;
       const eventLink = Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href^="/dashboard/events/"]'))
         .find(link => link.getAttribute('href') !== '/dashboard/events/new');
       const path = localStorage.getItem('eventise-last-event-path') || eventLink?.getAttribute('href');
