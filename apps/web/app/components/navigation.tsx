@@ -36,10 +36,23 @@ function Mark() { return <Link className="brand" href="/dashboard" aria-label="E
 
 export function AppNav({ organization, active, systemAdmin = false, compactDefault = false }: { organization: Organization; active: string; systemAdmin?: boolean; compactDefault?: boolean }) {
   const [collapsed, setCollapsed] = useState(compactDefault);
+  const [viewerName, setViewerName] = useState('Kullanıcı');
   useEffect(() => {
     const saved = localStorage.getItem('eventise-nav-collapsed');
     setCollapsed(saved === null ? compactDefault : saved === 'true');
   }, [compactDefault]);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/backend/auth/me', { signal: controller.signal })
+      .then(response => response.ok ? response.json() : null)
+      .then(me => {
+        if (!me) return;
+        const fullName = [me.firstName, me.lastName].filter(Boolean).join(' ').trim();
+        setViewerName(fullName || me.email || 'Kullanıcı');
+      })
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, []);
   function toggle() {
     setCollapsed(value => {
       localStorage.setItem('eventise-nav-collapsed', String(!value));
@@ -67,22 +80,27 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
   const role = organization.memberships?.[0]?.role ?? 'MEMBER';
   return <aside className={`app-nav${collapsed ? ' collapsed' : ''}`}>
     <div className="brand-row"><Mark /><BetaNotice /><button className="nav-collapse" onClick={toggle} aria-label={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'} title={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}><Icon name="menu"/></button></div>
-    <div className="org-chip" title={organization.name}><span>{organization.name.slice(0, 2).toUpperCase()}</span><div><small>ÇALIŞMA ALANI</small><b>{organization.name}</b><em>{roleNames[role] ?? role}</em></div></div>
-    <Link
-      href="/dashboard/about/updates"
-      className={`nav-updates-spotlight${active === 'updates' ? ' active' : ''}`}
-      aria-current={active === 'updates' ? 'page' : undefined}
-      aria-label="Yenilikler: 0.20.0 sürümünde neler değişti?"
-      title={collapsed ? 'Yenilikler' : undefined}
-    >
-      <span className="nav-updates-icon"><Icon name="updates"/><i aria-hidden="true" /></span>
-      <span className="nav-item-copy"><span><b>Yenilikler</b><em>YENİ</em></span><small>v0.20.0 · Neler değişti?</small></span>
+    <div className="org-chip" title={`${organization.name} · ${viewerName}`}><span><Icon name="building"/></span><div><b>{organization.name}</b><strong>{viewerName}</strong><em>{roleNames[role] ?? role}</em></div></div>
+    <Link className={`participant-switch${active === 'participant' ? ' active' : ''}`} href="/participant" aria-current={active === 'participant' ? 'page' : undefined} title={collapsed ? 'Katılımcı alanım' : undefined}>
+      <span className="participant-switch-icon"><Icon name="users"/></span>
+      <span className="nav-item-copy"><b>Katılımcı alanım</b><small>Kişisel etkinliklerim ve belgelerim</small></span>
       <Icon name="arrow"/>
     </Link>
     <nav aria-label="Ana menü">
+      <Link
+        href="/dashboard/about/updates"
+        className={`nav-updates-spotlight${active === 'updates' ? ' active' : ''}`}
+        aria-current={active === 'updates' ? 'page' : undefined}
+        aria-label="Yenilikler: 0.20.0 sürümünde neler değişti?"
+        title={collapsed ? 'Yenilikler' : undefined}
+      >
+        <span className="nav-updates-icon"><Icon name="updates"/><i aria-hidden="true" /></span>
+        <span className="nav-item-copy"><span><b>Yenilikler</b><em>YENİ</em></span><small>v0.20.0 · Neler değişti?</small></span>
+        <Icon name="arrow"/>
+      </Link>
       <div className="nav-group"><small>BAŞLANGIÇ</small>{item('/dashboard', 'Ana sayfa', 'Günün özeti ve bekleyen işler', 'home', 'home')}</div>
       <div className="nav-group"><small>ETKİNLİKLER</small>{item('/dashboard#events', 'Etkinlikler', 'Tüm etkinlikleri görüntüle', 'events', 'calendar')}{item('/dashboard/events/new', 'Yeni etkinlik', 'Adım adım etkinlik oluştur', 'new', 'plus', true)}</div>
-      <div className="nav-group"><small>ÇALIŞMA ALANLARI</small>{item('/participant', 'Katılımcı alanım', 'Kayıtlarım ve belgelerim', 'participant', 'users')}{item('/dashboard/settings', 'Kurum ve ekip', 'Bilgiler, üyeler ve yetkiler', 'settings', 'building')}{item('/dashboard/quota', 'Kullanım', 'Dosya ve depolama limitleri', 'quota', 'usage')}</div>
+      <div className="nav-group"><small>KURUM</small>{item('/dashboard/settings', 'Kurum ve ekip', 'Bilgiler, üyeler ve yetkiler', 'settings', 'building')}{item('/dashboard/quota', 'Kullanım', 'Dosya ve depolama limitleri', 'quota', 'usage')}</div>
       {systemAdmin && <div className="nav-group"><small>YÖNETİM</small>{item('/admin', 'Sistem yönetimi', 'Kurumlar, kullanıcılar ve planlar', 'admin', 'shield')}</div>}
       <div className="nav-group"><small>YARDIM VE DESTEK</small>{restartTour}{item('/yardim', 'Kullanım rehberi', 'Adım adım kullanım bilgileri', 'help', 'book')}{reportProblem}</div>
       <div className="nav-group"><small>EVENTISE</small>{item('/dashboard/about', 'Eventise hakkında', 'Ürün, yaklaşım ve iletişim', 'about', 'info')}</div>
