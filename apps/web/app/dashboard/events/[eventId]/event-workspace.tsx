@@ -8,6 +8,7 @@ import { MarkdownEditor } from '../new/markdown-editor';
 import { ReminderComposer, TemplateForm } from './template-preview';
 import { formatDateTime, formatDateShort, toLocalDatetimeInputValue } from '@/lib/datetime';
 import { EventSuggestion } from './event-suggestion';
+import { PageAppearanceEditor } from './page-appearance-editor';
 
 type Faq={question:string;answer:string};type Field={key:string;type:string;label:string;required?:boolean;options?:string[]};
 type EventInfo={id:string;title:string;slug:string;summary?:string;description?:string;venueName?:string;venueAddress?:string;format?:string;onlineLink?:string;startsAt:string;endsAt:string;publicationStatus:string;registrationStatus:string;visibility:string;registrationMode:string;capacity:number;formId?:string;faqs:Faq[];_count:{registrations:number}};
@@ -94,12 +95,14 @@ export function EventWorkspace({organization,event:initialEvent,initialRegistrat
     {/* ============ AYARLAR ============ */}
     {section==='settings'&&<>
       <nav className="workspace-tabs" aria-label="Ayarlar bölümleri">
+        {subLink(`${base}/settings?subtab=appearance`,'Sayfa tasarımı','appearance')}
         {subLink(`${base}/settings?subtab=info`,'Bilgiler','info')}
         {subLink(`${base}/settings?subtab=faq`,'SSS','faq')}
         {subLink(`${base}/settings?subtab=applications`,`Başvurular (${initialRegistrations.length})`,'applications')}
         {subLink(`${base}/settings?subtab=forms`,'Formlar ve Onam','forms')}
         <a className="toolbar-btn" href={`${base}/modules`} style={{marginLeft:'auto'}}>Testler ↗</a>
       </nav>
+      {subtab==='appearance'&&<PageAppearanceEditor organizationId={organization.id} eventId={event.id} organizationName={(organization as {name?:string}).name??''} title={event.title} summary={event.summary} startsAt={event.startsAt} venueName={event.venueName}/>}
       {subtab==='info'&&<form className="workspace-card event-settings" onSubmit={saveSettings}>
         <div className="settings-section"><div className="section-intro"><h2>Temel bilgiler</h2><p>Etkinliğin ana kimliğini belirleyin.</p></div><label>Etkinlik adı<input name="title" required defaultValue={event.title}/></label><label>Kısa açıklama (özet) <span className="tooltip" data-tip="Boş bırakırsanız ayrıntılı açıklamadan otomatik oluşturulur. İsterseniz elle düzenleyin.">(?)</span><textarea name="summary" value={summaryDraft} onChange={e=>setSummaryDraft(e.target.value)} placeholder="Boş bırakılırsa açıklamadan otomatik oluşturulur."/></label><label>Ayrıntılı açıklama <span className="tooltip" data-tip="Markdown desteklenir: **kalın**, *italik*, ## başlık, - madde işareti">(?)</span><MarkdownEditor value={descDraft} onChange={v=>{setDescDraft(v);if(!summaryDraft.trim())setSummaryDraft(v.replace(/[#*`\[\]()_-]/g,'').replace(/\n+/g,' ').trim().slice(0,150))}} placeholder={"## Hakkında\n\nEtkinlik ayrıntılarını yazın."} rows={6}/><input type="hidden" name="description" value={descDraft}/></label></div>
         <div className="settings-section"><div className="section-intro"><h2>Tarih ve mekân</h2><p>Etkinlik ne zaman ve nerede?</p></div><div className="two"><label>Başlangıç<input name="startsAt" type="datetime-local" required defaultValue={toLocalDatetimeInputValue(event.startsAt)}/></label><label>Bitiş<input name="endsAt" type="datetime-local" required defaultValue={toLocalDatetimeInputValue(event.endsAt)}/></label></div><label>Etkinlik türü<select name="format" value={settingsFormat} onChange={e=>setSettingsFormat(e.target.value)}><option value="OFFLINE">Yüz yüze (Offline)</option><option value="ONLINE">Çevrim içi (Online)</option><option value="HYBRID">Hibrit</option></select></label>{settingsFormat!=='ONLINE'&&<div className="two"><label>Mekân adı<input name="venueName" defaultValue={event.venueName} placeholder="Örn. Konferans Salonu"/></label><label>Adres<input name="venueAddress" defaultValue={event.venueAddress} placeholder="Tam adres"/></label></div>}{(settingsFormat==='ONLINE'||settingsFormat==='HYBRID')&&<label>Çevrim içi katılım linki<input name="onlineLink" defaultValue={event.onlineLink} placeholder="Etkinlik linki kısa süre içinde paylaşılacak"/></label>}</div>

@@ -19,6 +19,7 @@ import './product.css';
 import './participant.css';
 import './admin.css';
 import './operations.css';
+import './event-page.css';
 
 export const metadata: Metadata = {
   title: 'Eventise — STK Etkinlik Yönetimi',

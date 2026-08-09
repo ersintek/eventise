@@ -4,12 +4,13 @@ import { PrismaService } from '../../shared/persistence/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { OrganizationAccessService } from '../organizations/policies/organization-access.service';
 import { TiersService } from '../tiers/tiers.service';
+import { StorageProvider } from '../../infrastructure/storage/storage-provider.port';
 import { CreateEventDto, EventStateDto, UpdateEventDto } from './dto/event.dto';
 import { assertEventDates, canTransitionPublication } from './domain/event-rules';
 
 @Injectable()
 export class EventsService {
-  constructor(@Inject(PrismaService) private prisma: PrismaService, @Inject(OrganizationAccessService) private access: OrganizationAccessService, @Inject(TiersService) private tiers: TiersService, @Inject(AuditService) private audit: AuditService) {}
+  constructor(@Inject(PrismaService) private prisma: PrismaService, @Inject(OrganizationAccessService) private access: OrganizationAccessService, @Inject(TiersService) private tiers: TiersService, @Inject(AuditService) private audit: AuditService, @Inject(StorageProvider) private storage: StorageProvider) {}
   async create(userId: string, organizationId: string, dto: CreateEventDto) {
     await this.access.requireMembership(userId, organizationId, ['ORGANIZATION_ADMIN','EVENT_MANAGER']);
     const limits = await this.tiers.limitsFor(userId, organizationId);
@@ -49,5 +50,22 @@ export class EventsService {
     const updated = await this.prisma.event.update({ where: { id: eventId }, data: { publicationStatus: dto.publicationStatus as EventPublicationStatus, registrationStatus: dto.registrationStatus } });
     await this.audit.record({ actorId: userId, organizationId, action: 'event.state_changed', resourceType: 'event', resourceId: eventId, metadata: { from: event.publicationStatus, to: updated.publicationStatus } }); return updated;
   }
-  async publicGet(orgSlug: string, eventSlug: string) { const event = await this.prisma.event.findFirst({ where: { slug: eventSlug, organization: { slug: orgSlug }, publicationStatus: 'PUBLISHED', visibility: { not: 'INVITE_ONLY' } }, include: { organization: { select: { name: true, slug: true } }, faqs: { orderBy: { sortOrder: 'asc' } } } }); if (!event) throw new NotFoundException('Etkinlik bulunamadı.'); return event; }
+  async publicGet(orgSlug: string, eventSlug: string) {
+    const event = await this.prisma.event.findFirst({
+      where: { slug: eventSlug, organization: { slug: orgSlug }, publicationStatus: 'PUBLISHED', visibility: { not: 'INVITE_ONLY' } },
+      include: {
+        coverAsset: { select: { storageKey: true, status: true } },
+        organization: { select: { name: true, slug: true, description: true, website: true, logoAsset: { select: { storageKey: true, status: true } } } },
+        faqs: { orderBy: { sortOrder: 'asc' } },
+      },
+    });
+    if (!event) throw new NotFoundException('Etkinlik bulunamadı.');
+    const [coverImageUrl, logoUrl] = await Promise.all([
+      event.coverAsset?.status === 'ACTIVE' ? this.storage.createDownloadUrl(event.coverAsset.storageKey, 3600) : null,
+      event.organization.logoAsset?.status === 'ACTIVE' ? this.storage.createDownloadUrl(event.organization.logoAsset.storageKey, 3600) : null,
+    ]);
+    const { coverAsset, organization, ...result } = event;
+    const { logoAsset, ...publicOrganization } = organization;
+    return { ...result, coverImageUrl, organization: { ...publicOrganization, logoUrl } };
+  }
 }

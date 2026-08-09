@@ -231,6 +231,8 @@ model Organization {
   legalAcceptances LegalAcceptance[]
   joinRequests    OrganizationJoinRequest[]
   invitations     OrganizationInvitation[]
+  logoAssetId     String? @unique
+  logoAsset       MediaAsset? @relation("OrganizationLogo", fields: [logoAssetId], references: [id], onDelete: SetNull)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -327,6 +329,9 @@ model Event {
   registrationMode RegistrationMode @default(DIRECT)
   registrationOpensAt DateTime?
   registrationClosesAt DateTime?
+  accentColor String @default("#4F46E5")
+  coverAssetId String?
+  coverAsset MediaAsset? @relation("EventCover", fields: [coverAssetId], references: [id], onDelete: SetNull)
   formId String?
   form Form? @relation(fields: [formId], references: [id], onDelete: SetNull)
   faqs EventFaqItem[]
@@ -479,6 +484,8 @@ model MediaAsset {
   photos EventPhoto[]
   resources EventResource[]
   certificateBackgrounds CertificateTemplate[] @relation("CertificateTemplateBackground")
+  logoFor Organization? @relation("OrganizationLogo")
+  coverForEvents Event[] @relation("EventCover")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([organizationId, status])
