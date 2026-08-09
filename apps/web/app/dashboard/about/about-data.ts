@@ -1,5 +1,63 @@
 export const updates = [
   {
+    version: '0.26.0',
+    title: 'Katılımcı alanına daha sade geçiş',
+    changes: [
+      ['Kurum panelindeki katılımcı alanı bağlantısı menünün alt bölümünde daha sade ve belirgin bir geçiş olarak konumlandırıldı.', 'Çalışma alanları arasında daha kolay geçiş'],
+      ['Daraltılmış menüde katılımcı geçişinin görünümü ve açıklamaları küçük ekranlara uyumlu hâle getirildi.', 'Her ekran boyutunda tutarlı navigasyon'],
+    ],
+  },
+  {
+    version: '0.25.0',
+    title: 'Katılımcı ve STK hesapları için ayrı giriş yolları',
+    changes: [
+      ['Giriş ve kayıt başlangıcında katılımcı alanı ile STK ekip alanı birbirinden ayrıldı.', 'İlk adımdan itibaren doğru alana yönelme'],
+      ['Katılımcılar ve kurum ekipleri için amaca uygun giriş, kayıt ve Google ile devam etme ekranları hazırlandı.', 'Daha açık ve kısa hesap işlemleri'],
+      ['Kurum oluşturma, mevcut kuruma erişme ve ekip davetini tamamlama işlemleri yeni STK erişim alanında bir araya getirildi.', 'Kurum erişimini tek yerden yönetme'],
+      ['Kurum yöneticileri hesap sahibi ekip üyelerini e-posta adresleriyle doğrudan çalışma alanına ekleyebilir hâle geldi.', 'Ekibi daha hızlı oluşturma'],
+    ],
+  },
+  {
+    version: '0.24.0',
+    title: 'Menüde daha güçlü kurum kimliği ve kişisel alan',
+    changes: [
+      ['Kurum adı, çalışma alanı ve kullanıcı rolü ana menüde daha okunaklı bir kimlik alanında gösterilmeye başlandı.', 'Hangi kurum adına çalıştığını kolayca görme'],
+      ['Katılımcı işlemleri kurum yönetim araçlarından ayrılarak kişisel alana taşındı.', 'Kişisel ve kurumsal işlemleri karıştırmadan ilerleme'],
+      ['Menü başlıkları, açıklamaları ve aktif sayfa işaretleri daha tutarlı hâle getirildi.', 'Daha hızlı yön bulma'],
+    ],
+  },
+  {
+    version: '0.23.0',
+    title: 'Etkinlik sayfaları daha güçlü bir vitrine dönüştü',
+    changes: [
+      ['Herkese açık etkinlik sayfası kapak görseli, kurum logosu ve etkinliğe özel vurgu rengiyle baştan tasarlandı.', 'Kuruma ait, daha etkileyici etkinlik tanıtımı'],
+      ['Tarih, saat, mekân, kontenjan ve kayıt durumu sayfanın üst bölümünde hızlı okunabilir biçimde düzenlendi.', 'Temel bilgilere tek bakışta ulaşma'],
+      ['Kayıt formu daha kısa açıklamalar, açık durum mesajları ve güven bilgileriyle yenilendi.', 'Daha anlaşılır ve güven veren başvuru'],
+      ['Etkinlik bağlantısını paylaşma, kurum bilgilerini gösterme ve konumu haritada açma seçenekleri eklendi.', 'Etkinliği daha kolay duyurma ve keşfetme'],
+      ['Etkinlik yöneticileri sayfa kapağını ve vurgu rengini çalışma alanından düzenleyebilir hâle geldi.', 'Etkinliğe uygun görünümü kolayca hazırlama'],
+    ],
+  },
+  {
+    version: '0.22.0',
+    title: 'Daha açıklayıcı ve düzenli ana menü',
+    changes: [
+      ['Ana menü başlangıç, etkinlikler, çalışma alanları, yardım ve Eventise başlıkları altında yeniden düzenlendi.', 'Aranan bölüme daha hızlı ulaşma'],
+      ['Menü seçeneklerine hangi işe yaradıklarını anlatan kısa açıklamalar eklendi.', 'Seçmeden önce doğru yolu anlayabilme'],
+      ['Yeni etkinlik oluşturma ve Yenilikler bağlantıları görsel olarak öne çıkarıldı.', 'Sık kullanılan ve yeni içeriklere kolay erişim'],
+      ['Daraltılmış ve mobil menü görünümleri yeni yapıyla uyumlu hâle getirildi.', 'Masaüstü ve telefonda tutarlı kullanım'],
+    ],
+  },
+  {
+    version: '0.21.0',
+    title: 'Daha kapsamlı ve kararlı çalışma alanı turu',
+    changes: [
+      ['Ürün turu etkinlik bilgileri, araçlar, davet ve iletişim, kapı ve katılım ile sonuçlar boyunca genişletildi.', 'Etkinlik yönetiminin tamamını adım adım keşfetme'],
+      ['Tur adımları ilgili bölümleri otomatik olarak görünür alana taşıyacak biçimde iyileştirildi.', 'Yönlendirmeyi kaybetmeden ilerleme'],
+      ['Eksik veya henüz hazır olmayan bir bölüm turun ilerlemesini engellemeyecek şekilde tur akışı güçlendirildi.', 'Daha kararlı tanıtım deneyimi'],
+      ['Tur sırasında vurgulanan alanlar ve açıklama kartlarının konumu küçük ekranlarda iyileştirildi.', 'Telefonda daha rahat ürün turu'],
+    ],
+  },
+  {
     version: '0.20.0',
     title: 'Daha kalıcı oturumlar ve güvenilir e-posta gönderimi',
     changes: [

@@ -11,17 +11,23 @@ export default function UpdatesPage() {
       <p>Eventise’a eklenen özellikleri ve deneyimi iyileştiren değişiklikleri burada bulabilirsiniz. En yeni güncelleme her zaman en üstte yer alır.</p>
     </section>
     <div className="updates-list">
-      {updates.map((update, index) => <article className="update-card" key={update.version}>
-        <div className="update-version">
-          <span>Güncelleme</span>
-          <strong>{update.version}</strong>
-          {index === 0 && <small>En yeni</small>}
-        </div>
+      {updates.map((update, index) => <details className="update-card" key={update.version} open={index === 0}>
+        <summary>
+          <span className="update-version">
+            <span>Güncelleme</span>
+            <strong>{update.version}</strong>
+            {index === 0 && <small>En yeni</small>}
+          </span>
+          <span className="update-heading">
+            <strong>{update.title}</strong>
+            <small>{update.changes.length} yenilik · Detayları göster</small>
+          </span>
+          <span className="update-toggle" aria-hidden="true">+</span>
+        </summary>
         <div className="update-content">
-          <h2>{update.title}</h2>
           <ul>{update.changes.map(([change, benefit]) => <li key={change}><span className="update-check">✓</span><div><p>{change}</p><small>+ {benefit}</small></div></li>)}</ul>
         </div>
-      </article>)}
+      </details>)}
     </div>
   </AboutShell>;
 }
