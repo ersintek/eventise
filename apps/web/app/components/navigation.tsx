@@ -6,7 +6,7 @@ import { LogoutButton } from '../dashboard/logout-button';
 import { BetaNotice } from './beta-notice';
 
 type Organization = { name: string; memberships?: Array<{ role?: string }> };
-type IconName = 'home' | 'calendar' | 'plus' | 'users' | 'building' | 'usage' | 'shield' | 'book' | 'info' | 'updates' | 'logout' | 'menu';
+type IconName = 'home' | 'calendar' | 'plus' | 'users' | 'building' | 'usage' | 'shield' | 'book' | 'info' | 'updates' | 'logout' | 'menu' | 'arrow';
 
 const roleNames: Record<string, string> = {
   ORGANIZATION_ADMIN: 'Kurum yöneticisi', OWNER: 'Kurum yöneticisi', ADMIN: 'Yönetici', EVENT_MANAGER: 'Etkinlik yetkilisi', FIELD_STAFF: 'Saha görevlisi', STAFF: 'Ekip üyesi', MEMBER: 'Üye', SYSTEM_ADMIN: 'Sistem yöneticisi',
@@ -25,13 +25,14 @@ const paths: Record<IconName, React.ReactNode> = {
   updates: <><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/></>,
   logout: <><path d="M10 17l5-5-5-5M15 12H3M15 3h5v18h-5"/></>,
   menu: <><path d="M4 7h16M4 12h16M4 17h16"/></>,
+  arrow: <path d="m9 18 6-6-6-6"/>,
 };
 
 function Icon({ name }: { name: IconName }) {
   return <svg className="nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
 }
 
-function Mark() { return <div className="brand"><span>e</span><b>eventise</b></div>; }
+function Mark() { return <Link className="brand" href="/dashboard" aria-label="Eventise ana sayfa"><span>e</span><b>eventise</b></Link>; }
 
 export function AppNav({ organization, active, systemAdmin = false, compactDefault = false }: { organization: Organization; active: string; systemAdmin?: boolean; compactDefault?: boolean }) {
   const [collapsed, setCollapsed] = useState(compactDefault);
@@ -45,27 +46,46 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
       return !value;
     });
   }
-  const item = (href: string, label: string, key: string, icon: IconName) => <Link title={collapsed ? label : undefined} aria-label={label} className={active === key ? 'active' : ''} href={href}><Icon name={icon}/><span>{label}</span></Link>;
+  const item = (href: string, label: string, description: string, key: string, icon: IconName, emphasis = false) => <Link
+    title={collapsed ? label : undefined}
+    aria-label={`${label}: ${description}`}
+    aria-current={active === key ? 'page' : undefined}
+    className={`${active === key ? 'active ' : ''}${emphasis ? 'nav-emphasis' : ''}`.trim()}
+    href={href}
+  >
+    <Icon name={icon}/>
+    <span className="nav-item-copy"><b>{label}</b><small>{description}</small></span>
+  </Link>;
   const reportProblem = <a href="#sorun-bildir" title={collapsed ? 'Sorun Bildir' : undefined} aria-label="Sorun Bildir" onClick={event => {
     event.preventDefault();
     window.dispatchEvent(new Event('eventise:open-problem-reporter'));
-  }}><Icon name="info"/><span>Sorun Bildir</span></a>;
+  }}><Icon name="info"/><span className="nav-item-copy"><b>Sorun bildir</b><small>Destek ekibine ilet</small></span></a>;
   const restartTour = <a href="#eventise-turu" title={collapsed ? 'Hızlı ürün turu' : undefined} aria-label="Hızlı ürün turunu başlat" onClick={event => {
     event.preventDefault();
     window.dispatchEvent(new Event('eventise:start-product-tour'));
-  }}><Icon name="updates"/><span>Hızlı ürün turu</span></a>;
+  }}><Icon name="updates"/><span className="nav-item-copy"><b>Hızlı ürün turu</b><small>Ekranda adım adım keşfet</small></span></a>;
   const role = organization.memberships?.[0]?.role ?? 'MEMBER';
   return <aside className={`app-nav${collapsed ? ' collapsed' : ''}`}>
     <div className="brand-row"><Mark /><BetaNotice /><button className="nav-collapse" onClick={toggle} aria-label={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'} title={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}><Icon name="menu"/></button></div>
-    <div className="org-chip"><span>{organization.name.slice(0, 2).toUpperCase()}</span><div><b>{organization.name}</b><small>{roleNames[role] ?? role}</small></div></div>
+    <div className="org-chip" title={organization.name}><span>{organization.name.slice(0, 2).toUpperCase()}</span><div><small>ÇALIŞMA ALANI</small><b>{organization.name}</b><em>{roleNames[role] ?? role}</em></div></div>
+    <Link
+      href="/dashboard/about/updates"
+      className={`nav-updates-spotlight${active === 'updates' ? ' active' : ''}`}
+      aria-current={active === 'updates' ? 'page' : undefined}
+      aria-label="Yenilikler: 0.20.0 sürümünde neler değişti?"
+      title={collapsed ? 'Yenilikler' : undefined}
+    >
+      <span className="nav-updates-icon"><Icon name="updates"/><i aria-hidden="true" /></span>
+      <span className="nav-item-copy"><span><b>Yenilikler</b><em>YENİ</em></span><small>v0.20.0 · Neler değişti?</small></span>
+      <Icon name="arrow"/>
+    </Link>
     <nav aria-label="Ana menü">
-      <div className="nav-group"><small>GENEL</small>{item('/dashboard', 'Ana sayfa', 'home', 'home')}</div>
-      <div className="nav-group"><small>ETKİNLİK YÖNETİMİ</small>{item('/dashboard#events', 'Etkinlikler', 'events', 'calendar')}{item('/dashboard/events/new', 'Yeni etkinlik', 'new', 'plus')}</div>
-      <div className="nav-group"><small>KATILIM</small>{item('/participant', 'Katılımcı alanım', 'participant', 'users')}</div>
-      <div className="nav-group"><small>KURUM</small>{item('/dashboard/settings', 'Kurum ve ekip', 'settings', 'building')}{item('/dashboard/quota', 'Kullanım', 'quota', 'usage')}</div>
-      {systemAdmin && <div className="nav-group"><small>YÖNETİM</small>{item('/admin', 'Sistem yönetimi', 'admin', 'shield')}</div>}
-      <div className="nav-group"><small>YARDIM VE DESTEK</small>{restartTour}{item('/yardim', 'Kullanım Rehberi', 'help', 'book')}{reportProblem}</div>
-      <div className="nav-group"><small>EVENTISE</small>{item('/dashboard/about', 'Eventise Hakkında', 'about', 'info')}{item('/dashboard/about/updates', 'Yenilikler', 'updates', 'updates')}</div>
+      <div className="nav-group"><small>BAŞLANGIÇ</small>{item('/dashboard', 'Ana sayfa', 'Günün özeti ve bekleyen işler', 'home', 'home')}</div>
+      <div className="nav-group"><small>ETKİNLİKLER</small>{item('/dashboard#events', 'Etkinlikler', 'Tüm etkinlikleri görüntüle', 'events', 'calendar')}{item('/dashboard/events/new', 'Yeni etkinlik', 'Adım adım etkinlik oluştur', 'new', 'plus', true)}</div>
+      <div className="nav-group"><small>ÇALIŞMA ALANLARI</small>{item('/participant', 'Katılımcı alanım', 'Kayıtlarım ve belgelerim', 'participant', 'users')}{item('/dashboard/settings', 'Kurum ve ekip', 'Bilgiler, üyeler ve yetkiler', 'settings', 'building')}{item('/dashboard/quota', 'Kullanım', 'Dosya ve depolama limitleri', 'quota', 'usage')}</div>
+      {systemAdmin && <div className="nav-group"><small>YÖNETİM</small>{item('/admin', 'Sistem yönetimi', 'Kurumlar, kullanıcılar ve planlar', 'admin', 'shield')}</div>}
+      <div className="nav-group"><small>YARDIM VE DESTEK</small>{restartTour}{item('/yardim', 'Kullanım rehberi', 'Adım adım kullanım bilgileri', 'help', 'book')}{reportProblem}</div>
+      <div className="nav-group"><small>EVENTISE</small>{item('/dashboard/about', 'Eventise hakkında', 'Ürün, yaklaşım ve iletişim', 'about', 'info')}</div>
     </nav>
     <div className="nav-logout"><Icon name="logout"/><LogoutButton /></div>
   </aside>;
