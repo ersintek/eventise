@@ -69,10 +69,7 @@ export function SettingsManager({
       email: form.get('email'),
       role: form.get('role'),
     });
-    if (result?.kind === 'member') {
-      setMembers((current) => [...current.filter((member) => member.id !== result.membership.id), result.membership]);
-      event.currentTarget.reset();
-    } else if (result?.kind === 'invitation') {
+    if (result?.kind === 'invitation') {
       setInvitations((current) => [result.invitation, ...current.filter((invitation) => invitation.id !== result.invitation.id)]);
       event.currentTarget.reset();
     }
@@ -117,7 +114,7 @@ export function SettingsManager({
         <div className="team-layout">
         <form className="settings-card invite-card" onSubmit={addMember}>
           <h3>Ekip üyesi ekle</h3>
-          <p>Hesabı varsa doğrudan eklenir; yoksa e-postayla davet edilir.</p>
+          <p>Bu adrese bir davet gönderilir. Üyelik, kişi daveti kabul ettiğinde başlar.</p>
           <label>E-posta<input name="email" type="email" required placeholder="uye@kurum.org" /></label>
           <label>
             Rol <span className="tooltip" data-tip="Etkinlik yetkilisi tüm etkinlik süreçlerini yönetir. Saha görevlisi yalnızca etkinlik günü operasyonlarına erişir.">(?)</span>
@@ -127,7 +124,7 @@ export function SettingsManager({
               <option value="FIELD_STAFF">Saha görevlisi</option>
             </select>
           </label>
-          <button className="primary">Ekibe ekle</button>
+          <button className="primary">Davet gönder</button>
         </form>
 
         <section className="applications team-list">
@@ -155,7 +152,7 @@ export function SettingsManager({
       {invitations.length > 0 && (
         <section className="applications join-requests">
           <h2>Bekleyen ekip davetleri</h2>
-          <p>Hesabını tamamlamamış kişilere gönderilen davetler.</p>
+          <p>Henüz kabul edilmemiş ekip davetleri. Davetler 7 gün geçerlidir.</p>
           {invitations.map((invitation) => (
             <article key={invitation.id}>
               <div><b>{invitation.email}</b><p>{invitation.role} · {new Date(invitation.expiresAt).toLocaleString('tr-TR')} tarihine kadar</p></div>

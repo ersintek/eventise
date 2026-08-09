@@ -9,6 +9,15 @@ class MemberRoleDto { @IsEnum(['ORGANIZATION_ADMIN','EVENT_MANAGER','FIELD_STAFF
 class ReviewJoinRequestDto { @IsBoolean() approved!: boolean; }
 class UpdateOrganizationDto{@IsString()name!:string;@IsOptional()@IsString()description?:string;@IsEmail()contactEmail!:string;@IsOptional()@IsUrl({protocols:['http','https'],require_protocol:true})website?:string}
 
+@ApiTags('organization-access') @ApiBearerAuth() @Controller('organization-access')
+export class OrganizationAccessController {
+  constructor(@Inject(OrganizationsService) private readonly organizations: OrganizationsService) {}
+  @Get() status(@CurrentUser() user: AuthenticatedUser) { return this.organizations.getAccessStatus(user.id); }
+  @Post('invitations/:invitationId/accept') accept(@CurrentUser() user: AuthenticatedUser, @Param('invitationId') invitationId: string) {
+    return this.organizations.acceptInvitation(user.id, invitationId);
+  }
+}
+
 @ApiTags('organizations') @ApiBearerAuth() @Controller('organizations')
 export class OrganizationsController {
   constructor(@Inject(OrganizationsService) private readonly organizations: OrganizationsService) {}

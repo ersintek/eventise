@@ -16,7 +16,7 @@ export default async function Dashboard() {
   const token = (await cookies()).get('eventise_session')?.value;
   if (!token) redirect('/login');
   const [organizations, me] = await Promise.all([api<any[]>('organizations', token), api<any>('auth/me', token)]);
-  if (!organizations.length) redirect('/participant');
+  if (!organizations.length) redirect('/organization/access');
   const organization = organizations[0], events = await api<any[]>(`organizations/${organization.id}/events`, token), now = Date.now();
   const upcoming = events.filter(event => new Date(event.endsAt).getTime() >= now);
   const registrations = events.reduce((total, event) => total + (event._count?.registrations ?? 0), 0);

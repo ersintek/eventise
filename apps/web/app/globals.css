@@ -940,6 +940,37 @@ button{border-radius:var(--radius-sm)}
 .correct-answer label{font-weight:600;margin-bottom:.25rem}
 .option-check{display:inline-flex;align-items:center;gap:.25rem;margin-right:.625rem;font-weight:400}
 
+/* Ayrıştırılmış giriş ve STK erişim akışı */
+.gateway-card{width:min(560px,100%)}
+.gateway-card>h2{margin-bottom:.65rem}
+.gateway-option{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.9rem;padding:1.1rem;margin-top:.85rem;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface)}
+.gateway-option h3{margin:.1rem 0 .25rem;font-size:var(--fs-md)}
+.gateway-option p{margin:0;color:var(--muted);font-size:var(--fs-sm);line-height:1.5}
+.gateway-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.gateway-actions .link-button,.access-create .link-button,.setup-confirmation>.link-button{display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none}
+.auth-context-link{display:inline-block;margin-bottom:1.25rem;color:var(--muted);font-size:var(--fs-sm);font-weight:700}
+.organization-auth-brand::before{background:linear-gradient(145deg,#312e81,#6d28d9 55%,#7c3aed)}
+.participant-auth-brand::before{background:linear-gradient(145deg,#155e75,#0891b2 55%,#0d9488)}
+.access-card{width:min(680px,100%)}
+.access-section,.access-guidance,.access-create{margin-top:1.25rem;padding:1.1rem;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--cream)}
+.access-section h2,.access-guidance h2,.access-create h2{margin:0 0 .55rem;font-size:var(--fs-md)}
+.access-section p,.access-guidance p,.access-create p{margin:.3rem 0;color:var(--muted);line-height:1.55}
+.access-invitation{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem;background:var(--surface);border:1px solid var(--primary-100);border-radius:var(--radius-md)}
+.access-invitation p{margin:.25rem 0}
+.access-invitation small{color:var(--muted)}
+.access-guidance strong{overflow-wrap:anywhere;color:var(--ink)}
+.access-guidance .secondary{margin-top:.75rem}
+.access-create{border-color:var(--primary-100);background:var(--primary-50)}
+.access-create .link-button{margin-top:.8rem;width:100%}
+.setup-confirmation>.primary,.setup-confirmation>.link-button{width:100%;margin-top:.75rem}
+.setup-warning{margin:1.25rem 0;padding:1rem;border-left:4px solid var(--warning);background:var(--warning-bg);border-radius:var(--radius-md)}
+.setup-warning p{margin:.35rem 0 0;color:var(--ink-secondary);font-size:var(--fs-sm);line-height:1.55}
+
+@media(max-width:600px){
+  .gateway-option{grid-template-columns:1fr}.gateway-option>.intent-icon{margin-bottom:.15rem}.gateway-actions{grid-column:1;grid-template-columns:1fr}
+  .access-invitation{align-items:stretch;flex-direction:column}.access-invitation .primary{width:100%}
+}
+
 /* Assessment + submissions tablo */
 .assessment-header{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
 .assessment-header h3{margin:0}

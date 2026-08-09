@@ -262,8 +262,8 @@ model OrganizationInvitation {
   id             String @id @default(cuid())
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  userId         String
-  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String?
+  user           User? @relation(fields: [userId], references: [id], onDelete: Cascade)
   email          String
   role           OrganizationRole
   invitedById    String
@@ -274,6 +274,7 @@ model OrganizationInvitation {
   updatedAt      DateTime @updatedAt
   @@unique([organizationId, email])
   @@index([userId, acceptedAt, cancelledAt, expiresAt])
+  @@index([email, acceptedAt, cancelledAt, expiresAt])
   @@index([organizationId, acceptedAt, cancelledAt])
 }
 

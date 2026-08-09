@@ -17,7 +17,7 @@ export async function AboutShell({ activeTab, children }: { activeTab: 'about' |
   const token = (await cookies()).get('eventise_session')?.value;
   if (!token) redirect('/login');
   const [organizations, me] = await Promise.all([api<any[]>('organizations', token), api<any>('auth/me', token)]);
-  if (!organizations.length && me.systemRole !== 'SYSTEM_ADMIN') redirect('/participant');
+  if (!organizations.length && me.systemRole !== 'SYSTEM_ADMIN') redirect('/organization/access');
   const organization = organizations[0] ?? { name: 'Eventise', memberships: [{ role: 'SYSTEM_ADMIN' }] };
 
   return <main className="app-shell">

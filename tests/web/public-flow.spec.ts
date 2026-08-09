@@ -40,13 +40,17 @@ test('public shell exposes working account entry points', async ({ page }) => {
   await expect(page).toHaveTitle(/Eventise/i);
 
   await page.goto('/register');
-  await expect(page.getByRole('heading', { name: /Nasıl devam edelim/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /STK olarak katıl/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Etkinliklere katıl/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Hangi alan için devam ediyorsunuz/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'STK kaydı' })).toHaveAttribute('href', '/register/organization');
+  await expect(page.getByRole('link', { name: 'Kayıt ol' })).toHaveAttribute('href', '/register/participant');
 
-  await page.goto('/login');
+  await page.goto('/login/participant');
+  await expect(page.getByRole('heading', { name: /Katılımcı alanına giriş yapın/i })).toBeVisible();
   await expect(page.getByLabel(/e-posta/i)).toBeVisible();
   await expect(page.getByLabel(/şifre/i)).toBeVisible();
+
+  await page.goto('/login/organization');
+  await expect(page.getByRole('heading', { name: /STK yönetim alanına giriş yapın/i })).toBeVisible();
 });
 
 test('unauthenticated protected routes return to login on desktop and mobile', async ({ page }) => {
@@ -62,5 +66,11 @@ test('registration and login content fits the active viewport', async ({ page })
   await expectAuthContentToFit(page);
 
   await page.goto('/login');
+  await expectAuthContentToFit(page);
+
+  await page.goto('/register/organization');
+  await expectAuthContentToFit(page);
+
+  await page.goto('/login/participant');
   await expectAuthContentToFit(page);
 });

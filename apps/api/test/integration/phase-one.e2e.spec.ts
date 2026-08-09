@@ -111,7 +111,18 @@ describe('Phase 1 identity, organization and tenant isolation', () => {
       .set('Authorization', `Bearer ${firstAdmin}`)
       .send({ email: 'team-admin-two@example.org', role: 'ORGANIZATION_ADMIN' })
       .expect(201)).body;
-    expect(added).toMatchObject({ kind: 'member', membership: { role: 'ORGANIZATION_ADMIN' } });
+    expect(added).toMatchObject({ kind: 'invitation', invitation: { role: 'ORGANIZATION_ADMIN' } });
+    expect(await prisma.organizationMembership.count({ where: { organizationId: organization.id, user: { email: 'team-admin-two@example.org' } } })).toBe(0);
+    const secondAdminAccess = (await request(app.getHttpServer())
+      .get('/api/organization-access')
+      .set('Authorization', `Bearer ${secondAdmin}`)
+      .expect(200)).body;
+    expect(secondAdminAccess.invitations).toHaveLength(1);
+    const acceptedAdmin = (await request(app.getHttpServer())
+      .post(`/api/organization-access/invitations/${added.invitation.id}/accept`)
+      .set('Authorization', `Bearer ${secondAdmin}`)
+      .expect(201)).body;
+    expect(acceptedAdmin).toMatchObject({ accepted: true, membership: { role: 'ORGANIZATION_ADMIN' } });
     await request(app.getHttpServer())
       .post('/api/legal/accept-organization-terms')
       .set('Authorization', `Bearer ${secondAdmin}`)
@@ -127,7 +138,7 @@ describe('Phase 1 identity, organization and tenant isolation', () => {
       .send({ role: 'EVENT_MANAGER' })
       .expect(200);
     await request(app.getHttpServer())
-      .patch(`/api/organizations/${organization.id}/members/${added.membership.id}`)
+      .patch(`/api/organizations/${organization.id}/members/${acceptedAdmin.membership.id}`)
       .set('Authorization', `Bearer ${secondAdmin}`)
       .send({ role: 'EVENT_MANAGER' })
       .expect(409);
@@ -138,6 +149,11 @@ describe('Phase 1 identity, organization and tenant isolation', () => {
       .send({ email: 'new-team-member@example.org', role: 'FIELD_STAFF' })
       .expect(201)).body;
     expect(invited).toMatchObject({ kind: 'invitation', invitation: { role: 'FIELD_STAFF' } });
+    expect(await prisma.user.findUnique({ where: { email: 'new-team-member@example.org' } })).toBeNull();
+    await request(app.getHttpServer())
+      .post(`/api/organization-access/invitations/${invited.invitation.id}/accept`)
+      .set('Authorization', `Bearer ${firstAdmin}`)
+      .expect(404);
     expect((await request(app.getHttpServer())
       .get(`/api/organizations/${organization.id}/invitations`)
       .set('Authorization', `Bearer ${secondAdmin}`)
@@ -147,12 +163,20 @@ describe('Phase 1 identity, organization and tenant isolation', () => {
       where: { recipient: 'new-team-member@example.org', subject: { contains: 'ekibine davet' } },
       orderBy: { createdAt: 'desc' },
     });
-    const token = decodeURIComponent(email.body.match(/token=([^"&<]+)/)![1]);
-    const completed = (await request(app.getHttpServer())
-      .post('/api/auth/account-setup/complete')
-      .send({ token, password: 'NewSecurePassword1' })
-      .expect(201)).body;
-    expect(completed.organizationMembershipsCreated).toBe(1);
+    expect(email.body).toContain('/login/organization?invited=1');
+    const newMemberToken = (await request(app.getHttpServer())
+      .post('/api/auth/register')
+      .send({ email: 'new-team-member@example.org', firstName: 'Yeni', lastName: 'Üye', password: 'NewSecurePassword1' })
+      .expect(201)).body.accessToken;
+    const newMemberAccess = (await request(app.getHttpServer())
+      .get('/api/organization-access')
+      .set('Authorization', `Bearer ${newMemberToken}`)
+      .expect(200)).body;
+    expect(newMemberAccess.invitations).toHaveLength(1);
+    await request(app.getHttpServer())
+      .post(`/api/organization-access/invitations/${invited.invitation.id}/accept`)
+      .set('Authorization', `Bearer ${newMemberToken}`)
+      .expect(201);
     expect(await prisma.organizationMembership.count({
       where: { organizationId: organization.id, role: 'FIELD_STAFF', user: { email: 'new-team-member@example.org' } },
     })).toBe(1);
