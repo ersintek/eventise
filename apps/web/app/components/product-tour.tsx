@@ -89,7 +89,9 @@ export function TourRedirector() {
   useEffect(() => {
     const listener = () => {
       if (document.querySelector('[data-tour-id="event-overview"]')) return;
-      const path = localStorage.getItem('eventise-last-event-path');
+      const eventLink = Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href^="/dashboard/events/"]'))
+        .find(link => link.getAttribute('href') !== '/dashboard/events/new');
+      const path = localStorage.getItem('eventise-last-event-path') || eventLink?.getAttribute('href');
       if (path) { sessionStorage.setItem('eventise-start-tour', 'true'); window.location.assign(path); }
       else window.location.assign('/dashboard#events');
     };
@@ -98,4 +100,3 @@ export function TourRedirector() {
   }, []);
   return null;
 }
-

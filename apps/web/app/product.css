@@ -13,8 +13,6 @@
 .usage-info p{margin:0;font-size:var(--fs-sm)}
 @media(max-width:650px){.usage-grid{grid-template-columns:1fr}}
 /* Product tour and contextual guidance */
-.app-nav .nav-tour-button{width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
-.app-nav .nav-tour-button:hover{background:var(--nav-hover,rgba(255,255,255,.06))}
 .tour-layer{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:24px;background:rgba(10,8,20,.68);backdrop-filter:blur(8px)}
 .tour-welcome{position:relative;width:min(620px,100%);padding:44px;border:1px solid rgba(255,255,255,.64);border-radius:28px;background:linear-gradient(145deg,#fff 0%,#faf8ff 58%,#f0ebff 100%);box-shadow:0 30px 90px rgba(24,13,52,.34);overflow:hidden}
 .tour-welcome:before{content:"";position:absolute;width:260px;height:260px;right:-100px;top:-120px;border-radius:50%;background:radial-gradient(circle,rgba(111,75,255,.24),transparent 68%)}

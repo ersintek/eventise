@@ -50,9 +50,10 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
     event.preventDefault();
     window.dispatchEvent(new Event('eventise:open-problem-reporter'));
   }}><Icon name="info"/><span>Sorun Bildir</span></a>;
-  const restartTour = <button type="button" className="nav-tour-button" title={collapsed ? 'Eventise turu' : undefined} aria-label="Eventise turunu başlat" onClick={() => {
+  const restartTour = <a href="#eventise-turu" title={collapsed ? 'Hızlı ürün turu' : undefined} aria-label="Hızlı ürün turunu başlat" onClick={event => {
+    event.preventDefault();
     window.dispatchEvent(new Event('eventise:start-product-tour'));
-  }}><Icon name="updates"/><span>Eventise turu</span></button>;
+  }}><Icon name="updates"/><span>Hızlı ürün turu</span></a>;
   const role = organization.memberships?.[0]?.role ?? 'MEMBER';
   return <aside className={`app-nav${collapsed ? ' collapsed' : ''}`}>
     <div className="brand-row"><Mark /><BetaNotice /><button className="nav-collapse" onClick={toggle} aria-label={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'} title={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}><Icon name="menu"/></button></div>
