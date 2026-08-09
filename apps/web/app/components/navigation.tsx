@@ -81,11 +81,6 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
   return <aside className={`app-nav${collapsed ? ' collapsed' : ''}`}>
     <div className="brand-row"><Mark /><BetaNotice /><button className="nav-collapse" onClick={toggle} aria-label={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'} title={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}><Icon name="menu"/></button></div>
     <div className="org-chip" title={`${organization.name} · ${viewerName}`}><span><Icon name="building"/></span><div><b>{organization.name}</b><strong>{viewerName}</strong><em>{roleNames[role] ?? role}</em></div></div>
-    <Link className={`participant-switch${active === 'participant' ? ' active' : ''}`} href="/participant" aria-current={active === 'participant' ? 'page' : undefined} title={collapsed ? 'Katılımcı alanım' : undefined}>
-      <span className="participant-switch-icon"><Icon name="users"/></span>
-      <span className="nav-item-copy"><b>Katılımcı alanım</b><small>Kişisel etkinliklerim ve belgelerim</small></span>
-      <Icon name="arrow"/>
-    </Link>
     <nav aria-label="Ana menü">
       <Link
         href="/dashboard/about/updates"
@@ -105,7 +100,10 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
       <div className="nav-group"><small>YARDIM VE DESTEK</small>{restartTour}{item('/yardim', 'Kullanım rehberi', 'Adım adım kullanım bilgileri', 'help', 'book')}{reportProblem}</div>
       <div className="nav-group"><small>EVENTISE</small>{item('/dashboard/about', 'Eventise hakkında', 'Ürün, yaklaşım ve iletişim', 'about', 'info')}</div>
     </nav>
-    <div className="nav-logout"><Icon name="logout"/><LogoutButton /></div>
+    <div className="nav-footer">
+      <div className="nav-logout"><Icon name="logout"/><LogoutButton /></div>
+      <Link className={`participant-footer${active === 'participant' ? ' active' : ''}`} href="/participant" aria-current={active === 'participant' ? 'page' : undefined} title="Katılımcı alanına geç"><Icon name="users"/><span>Katılımcı alanına geç</span></Link>
+    </div>
   </aside>;
 }
 
