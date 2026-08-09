@@ -1,5 +1,35 @@
 export const updates = [
   {
+    version: '0.20.0',
+    title: 'Daha kalıcı oturumlar ve güvenilir e-posta gönderimi',
+    changes: [
+      ['Oturum süresi uzatıldı; kurum yöneticilerinin kısa aralıklarla yeniden giriş yapma ihtiyacı azaltıldı.', 'Kesintiye uğramayan etkinlik yönetimi'],
+      ['Kurum çalışma alanı bulunan kullanıcıların Google ile giriş yaptıktan sonra yanlışlıkla katılımcı alanına yönlendirilmesi engellendi.', 'Her girişte doğru çalışma alanına ulaşma'],
+      ['Kurum çalışma alanı bulunan kullanıcıların yeniden kurum oluşturma adımına dönmesi engellendi.', 'Daha tutarlı ve güvenli yönlendirme'],
+      ['Başarısız e-posta gönderimleri yeniden denenebilir hâle getirildi; alıcı tarafından kabul edilmeyen iletiler artık başarılı sayılmıyor.', 'Daha güvenilir duyuru ve hatırlatmalar'],
+    ],
+  },
+  {
+    version: '0.19.0',
+    title: 'Eventise’ı adım adım tanıtan ürün turu',
+    changes: [
+      ['Etkinlik çalışma alanını ilk kez açan kurum ekipleri için kısa bir karşılama ve rehberli ürün turu eklendi.', 'Eventise’a daha hızlı alışma'],
+      ['Tur; kontrol merkezi, yayınlama, kayıt yönetimi, iletişim, kapı işlemleri ve sertifikalar boyunca kullanıcıyı adım adım yönlendiriyor.', 'Temel araçları yerinde keşfetme'],
+      ['Ürün turu ana menüden istenildiği zaman yeniden başlatılabilir hâle getirildi.', 'İhtiyaç duyulduğunda rehbere tekrar ulaşma'],
+      ['Tur adımları klavye ve küçük ekran kullanımı düşünülerek tasarlandı.', 'Daha erişilebilir bir tanıtım deneyimi'],
+    ],
+  },
+  {
+    version: '0.18.0',
+    title: 'Google ile girişte daha açık hesap seçimi',
+    changes: [
+      ['Google ile giriş ve yeni hesap oluşturma işlemleri birbirinden ayrıldı; giriş ekranı yalnızca mevcut Eventise hesaplarını açıyor.', 'İstenmeden yeni hesap oluşmasını önleme'],
+      ['Yeni kullanıcılar hesap oluşturmadan önce STK yöneticisi veya katılımcı olarak nasıl devam edeceklerini seçiyor.', 'İlk adımdan itibaren doğru deneyime yönelme'],
+      ['Hesap türlerinin açacağı çalışma alanları kayıt ekranında daha açık biçimde anlatılmaya başlandı.', 'Seçim yaparken ne olacağını önceden bilme'],
+      ['Kullanım koşulları kabul edildikten sonra kullanıcı seçtiği hesap türüne uygun alana yönlendiriliyor.', 'Kesintisiz ve tutarlı kayıt akışı'],
+    ],
+  },
+  {
     version: '0.17.0',
     title: 'Etkinlik özellikleri artık yaptığı işi anlatıyor',
     changes: [
