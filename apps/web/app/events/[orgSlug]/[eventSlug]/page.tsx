@@ -89,7 +89,8 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
       <span className="eventise-trust"><i>e</i> Eventise ile güvenli kayıt</span>
     </header>
 
-    <section className={`public-event-hero${event.coverImageUrl ? ' has-cover' : ''}`} style={event.coverImageUrl ? { backgroundImage: `url(${event.coverImageUrl})` } : undefined}>
+    <section className={`public-event-hero${event.coverImageUrl ? ' has-cover' : ''}`}>
+      {event.coverImageUrl && <div className="public-event-cover-art" aria-hidden="true"><img src={event.coverImageUrl} alt="" /></div>}
       <div className="public-event-hero-overlay" />
       <div className="public-event-hero-content">
         <div className="event-status-row"><span>{formatLabel}</span><span className={registrationOpen ? 'open' : 'closed'}>{registrationOpen ? 'Kayıt açık' : 'Kayıt kapalı'}</span></div>
@@ -108,7 +109,7 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
 
     <div className="public-event-layout" id="event-details">
       <div className="public-event-content">
-        <section className="public-content-section event-about"><p className="section-kicker">ETKİNLİK HAKKINDA</p><h2>Neden katılmalısınız?</h2>{event.description ? <MarkdownContent>{event.description}</MarkdownContent> : <p>{event.summary || 'Etkinlik ayrıntıları kurum tarafından yakında paylaşılacaktır.'}</p>}</section>
+        <section className="public-content-section event-about"><p className="section-kicker">NEDEN KATILMALISINIZ?</p><h2>Etkinlik hakkında</h2>{event.description ? <MarkdownContent>{event.description}</MarkdownContent> : <p>{event.summary || 'Etkinlik ayrıntıları kurum tarafından yakında paylaşılacaktır.'}</p>}</section>
         {event.venueAddress && event.format !== 'ONLINE' && <section className="public-content-section event-location"><p className="section-kicker">KONUM</p><h2>Buluşma noktası</h2><div className="location-card"><span>⌖</span><div><strong>{event.venueName}</strong><p>{event.venueAddress}</p><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venueAddress)}`} target="_blank" rel="noopener noreferrer">Haritada aç ↗</a></div></div></section>}
         <section className="public-content-section organizer-card" id="organizer"><div className="organizer-card-logo">{event.organization.logoUrl ? <img src={event.organization.logoUrl} alt=""/> : <b>{initials}</b>}</div><div><p className="section-kicker">DÜZENLEYEN KURUM</p><h2>{event.organization.name}</h2>{event.organization.description && <p>{event.organization.description}</p>}{event.organization.website && <a href={event.organization.website} target="_blank" rel="noopener noreferrer">Kurumun web sitesini ziyaret et ↗</a>}</div></section>
         {event.faqs.length > 0 && <section className="public-content-section event-faq"><p className="section-kicker">MERAK EDİLENLER</p><h2>Sık sorulan sorular</h2><div>{event.faqs.map(item => <details key={item.id}><summary>{item.question}<span>+</span></summary><p>{item.answer}</p></details>)}</div></section>}

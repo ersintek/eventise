@@ -19,7 +19,14 @@ type Props = {
   venueName?: string;
 };
 
-const colorChoices = ['#4F46E5', '#0F766E', '#B45309', '#BE123C', '#6D28D9', '#0369A1'];
+const colorChoices = [
+  { value: '#4F46E5', label: 'Gece mavisi' },
+  { value: '#0F766E', label: 'Adaçayı' },
+  { value: '#A16207', label: 'Kehribar' },
+  { value: '#9F1239', label: 'Bordo' },
+  { value: '#6B21A8', label: 'Erik' },
+  { value: '#075985', label: 'Okyanus' },
+];
 
 export function PageAppearanceEditor({ organizationId, eventId, organizationName, title, summary, startsAt, venueName }: Props) {
   const [appearance, setAppearance] = useState<Appearance>({ accentColor: '#4F46E5', organizationName, logoUrl: null, coverImageUrl: null });
@@ -101,7 +108,7 @@ export function PageAppearanceEditor({ organizationId, eventId, organizationName
       </article>
       <article className="appearance-setting-card">
         <div className="appearance-setting-heading"><span>3</span><div><h3>Vurgu rengi</h3><p>Butonlar ve önemli bilgiler bu rengi kullanır.</p></div></div>
-        <div className="color-choices" aria-label="Vurgu rengi seçenekleri">{colorChoices.map(color => <button type="button" key={color} aria-label={`${color} rengini seç`} aria-pressed={appearance.accentColor.toUpperCase() === color} className={appearance.accentColor.toUpperCase() === color ? 'selected' : ''} style={{ backgroundColor: color }} disabled={Boolean(busy)} onClick={() => saveColor(color)} />)}</div>
+        <div className="color-choices" aria-label="Vurgu rengi seçenekleri">{colorChoices.map(color => <button type="button" key={color.value} title={color.label} aria-label={`${color.label} temasını seç`} aria-pressed={appearance.accentColor.toUpperCase() === color.value} className={appearance.accentColor.toUpperCase() === color.value ? 'selected' : ''} style={{ backgroundColor: color.value }} disabled={Boolean(busy)} onClick={() => saveColor(color.value)} />)}</div>
       </article>
       <div className="automatic-sharing-note"><b>Paylaşım otomatik yönetilir</b><p>Herkese açık ve bağlantıya özel etkinliklerde paylaşım araçları otomatik görünür. Yalnız davetlilerde gösterilmez.</p></div>
       {message && <p className="notice" role="status">{message}</p>}
@@ -109,7 +116,7 @@ export function PageAppearanceEditor({ organizationId, eventId, organizationName
     <aside className="appearance-preview-shell" aria-label="Etkinlik sayfası önizlemesi">
       <div className="appearance-preview-label"><span>CANLI ÖNİZLEME</span><small>Masaüstü görünümü</small></div>
       <div className="appearance-preview" style={{ '--preview-accent': appearance.accentColor } as React.CSSProperties}>
-        <div className={`preview-cover${appearance.coverImageUrl ? '' : ' empty'}`} style={appearance.coverImageUrl ? { backgroundImage: `url(${appearance.coverImageUrl})` } : undefined}><span>KAYIT AÇIK</span></div>
+        <div className={`preview-cover${appearance.coverImageUrl ? '' : ' empty'}`}>{appearance.coverImageUrl && <img src={appearance.coverImageUrl} alt="" />}<span>KAYIT AÇIK</span></div>
         <div className="preview-body"><div className="preview-org">{appearance.logoUrl ? <img src={appearance.logoUrl} alt=""/> : <b>{initial}</b>}<span>{organizationName}</span></div><h3>{title}</h3><p>{summary || 'Etkinliğin kısa açıklaması burada görünür.'}</p><div className="preview-facts"><span>{date}</span><span>{venueName || 'Mekân daha sonra duyurulacak'}</span></div><button type="button" tabIndex={-1}>Kayıt ol</button></div>
       </div>
     </aside>
