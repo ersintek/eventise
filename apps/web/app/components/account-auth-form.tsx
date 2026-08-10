@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { SiciSignature } from './sici-signature';
+import { AuthBrand } from './auth-brand';
 
 type Context = 'participant' | 'organization';
 type Action = 'login' | 'register';
@@ -69,22 +69,21 @@ export function AccountAuthForm({ context, action }: { context: Context; action:
   }
 
   const heading = isLogin
-    ? isOrganization ? 'STK yönetim alanına giriş yapın' : 'Katılımcı alanına giriş yapın'
-    : isOrganization ? 'STK ekip hesabınızı oluşturun' : 'Katılımcı hesabınızı oluşturun';
+    ? isOrganization ? 'STK girişi' : 'Katılımcı girişi'
+    : isOrganization ? 'STK hesabı oluştur' : 'Katılımcı hesabı oluştur';
+
+  const brandTitle = isOrganization
+    ? isLogin ? <>STK hesabınızla<br />devam edin.</> : <>STK hesabınızı<br />oluşturun.</>
+    : isLogin ? <>Katılımcı hesabınızla<br />devam edin.</> : <>Katılımcı hesabınızı<br />oluşturun.</>;
+
+  const brandDescription = isOrganization
+    ? 'Kurumunuza bağlıysanız yöneticinizin davetini kullanabilirsiniz.'
+    : 'Etkinlik kayıtlarınıza ve sertifikalarınıza erişin.';
 
   return <main className="auth-shell">
-    <section className={`auth-brand ${isOrganization ? 'organization-auth-brand' : 'participant-auth-brand'}`}>
-      <div className="logo"><b>e</b>eventise</div>
-      <div>
-        <span>{isOrganization ? 'STK EKİP ALANI' : 'KATILIMCI ALANI'}</span>
-        <h1>{isOrganization ? <>Ekibinizle<br />etkinlikleri<br /><em>birlikte yönetin.</em></> : <>Etkinliklerinizi<br />tek bir yerde<br /><em>takip edin.</em></>}</h1>
-        <p>{isOrganization ? 'Kayıttan sonra kurum oluşturabilir veya yöneticinizin sizi kayıtlı e-posta adresinizle eklemesini bekleyebilirsiniz.' : 'Etkinlik kayıtlarınıza, programlarınıza ve sertifikalarınıza kolayca erişin.'}</p>
-      </div>
-      <SiciSignature className="auth-brand-foot" />
-    </section>
+    <AuthBrand context={context} title={brandTitle} description={brandDescription} />
     <section className="auth-panel"><form className="auth-card" onSubmit={submit}>
       <Link className="auth-context-link" href={isLogin ? '/login' : '/register'}>← Alan seçimine dön</Link>
-      <p className="eyebrow">{isOrganization ? 'STK EKİBİ' : 'KATILIMCI'} · {isLogin ? 'GİRİŞ' : 'KAYIT'}</p>
       <h2>{heading}</h2>
       {notice && <p className="notice" role="status">{notice}</p>}
       <a className="google-button" href={`/api/session/google?destination=${context}&createAccount=${isLogin ? '0' : '1'}`}><span className="google-mark">G</span>Google ile {isLogin ? 'giriş yap' : 'devam et'}</a>
