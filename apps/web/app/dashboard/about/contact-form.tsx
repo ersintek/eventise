@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 
-export function ContactForm({ organizationId }: { organizationId?: string }) {
+export function ContactForm({ organizationId, sourcePage = '/dashboard/about' }: { organizationId?: string; sourcePage?: string }) {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
   const [sent, setSent] = useState(false);
@@ -17,7 +17,7 @@ export function ContactForm({ organizationId }: { organizationId?: string }) {
       const response = await fetch('/api/backend/support-reports', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ ...(organizationId ? { organizationId } : {}), description, page: '/dashboard/about', type: 'CONTACT' }),
+        body: JSON.stringify({ ...(organizationId ? { organizationId } : {}), description, page: sourcePage, type: 'CONTACT' }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(Array.isArray(data.message) ? data.message.join(' ') : data.message);

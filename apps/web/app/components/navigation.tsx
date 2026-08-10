@@ -6,7 +6,8 @@ import { LogoutButton } from '../dashboard/logout-button';
 import { BetaNotice } from './beta-notice';
 
 type Organization = { name: string; memberships?: Array<{ role?: string }> };
-type IconName = 'home' | 'calendar' | 'plus' | 'users' | 'building' | 'usage' | 'shield' | 'book' | 'info' | 'updates' | 'logout' | 'menu' | 'arrow';
+type IconName = 'home' | 'calendar' | 'plus' | 'users' | 'building' | 'usage' | 'shield' | 'book' | 'info' | 'mail' | 'updates' | 'logout' | 'menu' | 'arrow' | 'chevron';
+type NavGroupName = 'start' | 'events' | 'organization' | 'admin' | 'support' | 'eventise';
 
 const roleNames: Record<string, string> = {
   ORGANIZATION_ADMIN: 'Kurum yöneticisi', OWNER: 'Kurum yöneticisi', ADMIN: 'Yönetici', EVENT_MANAGER: 'Etkinlik yetkilisi', FIELD_STAFF: 'Saha görevlisi', STAFF: 'Ekip üyesi', MEMBER: 'Üye', SYSTEM_ADMIN: 'Sistem yöneticisi',
@@ -22,10 +23,12 @@ const paths: Record<IconName, React.ReactNode> = {
   shield: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></>,
   book: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14Z"/><path d="M8 7h8M8 11h6"/></>,
   info: <><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></>,
+  mail: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></>,
   updates: <><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/></>,
   logout: <><path d="M10 17l5-5-5-5M15 12H3M15 3h5v18h-5"/></>,
   menu: <><path d="M4 7h16M4 12h16M4 17h16"/></>,
   arrow: <path d="m9 18 6-6-6-6"/>,
+  chevron: <path d="m8 10 4 4 4-4"/>,
 };
 
 function Icon({ name }: { name: IconName }) {
@@ -37,6 +40,18 @@ function Mark() { return <Link className="brand" href="/dashboard" aria-label="E
 export function AppNav({ organization, active, systemAdmin = false, compactDefault = false }: { organization: Organization; active: string; systemAdmin?: boolean; compactDefault?: boolean }) {
   const [collapsed, setCollapsed] = useState(compactDefault);
   const [viewerName, setViewerName] = useState('Kullanıcı');
+  const activeGroup: NavGroupName = active === 'events' || active === 'new'
+    ? 'events'
+    : active === 'settings' || active === 'quota'
+      ? 'organization'
+      : active === 'admin'
+        ? 'admin'
+        : active === 'help' || active === 'contact'
+          ? 'support'
+          : active === 'about' || active === 'updates'
+            ? 'eventise'
+            : 'start';
+  const [openGroup, setOpenGroup] = useState<NavGroupName | null>(activeGroup);
   useEffect(() => {
     const saved = localStorage.getItem('eventise-nav-collapsed');
     setCollapsed(saved === null ? compactDefault : saved === 'true');
@@ -58,6 +73,24 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
       localStorage.setItem('eventise-nav-collapsed', String(!value));
       return !value;
     });
+  }
+  function group(name: NavGroupName, label: string, children: React.ReactNode) {
+    const open = openGroup === name;
+    return <div className={`nav-group${open ? ' open' : ''}`}>
+      <button
+        type="button"
+        className="nav-group-toggle"
+        aria-expanded={open}
+        aria-controls={`nav-group-${name}`}
+        onClick={() => setOpenGroup(current => current === name ? null : name)}
+      >
+        <span>{label}</span>
+        <Icon name="chevron"/>
+      </button>
+      <div className="nav-group-content" id={`nav-group-${name}`}>
+        <div className="nav-group-content-inner">{children}</div>
+      </div>
+    </div>;
   }
   const item = (href: string, label: string, description: string, key: string, icon: IconName, emphasis = false) => <Link
     title={collapsed ? label : undefined}
@@ -93,12 +126,12 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
         <span className="nav-item-copy"><span><b>Yenilikler</b><em>YENİ</em></span><small>v0.28.0 · Neler değişti?</small></span>
         <Icon name="arrow"/>
       </Link>
-      <div className="nav-group"><small>BAŞLANGIÇ</small>{item('/dashboard', 'Ana sayfa', 'Günün özeti ve bekleyen işler', 'home', 'home')}</div>
-      <div className="nav-group"><small>ETKİNLİKLER</small>{item('/dashboard#events', 'Etkinlikler', 'Tüm etkinlikleri görüntüle', 'events', 'calendar')}{item('/dashboard/events/new', 'Yeni etkinlik', 'Adım adım etkinlik oluştur', 'new', 'plus', true)}</div>
-      <div className="nav-group"><small>KURUM</small>{item('/dashboard/settings', 'Kurum ve ekip', 'Bilgiler, üyeler ve yetkiler', 'settings', 'building')}{item('/dashboard/quota', 'Kullanım', 'Dosya ve depolama limitleri', 'quota', 'usage')}</div>
-      {systemAdmin && <div className="nav-group"><small>YÖNETİM</small>{item('/admin', 'Sistem yönetimi', 'Kurumlar, kullanıcılar ve planlar', 'admin', 'shield')}</div>}
-      <div className="nav-group"><small>YARDIM VE DESTEK</small>{restartTour}{item('/yardim', 'Kullanım rehberi', 'Adım adım kullanım bilgileri', 'help', 'book')}{reportProblem}</div>
-      <div className="nav-group"><small>EVENTISE</small>{item('/dashboard/about', 'Eventise hakkında', 'Ürün, yaklaşım ve iletişim', 'about', 'info')}</div>
+      {group('start', 'Başlangıç', item('/dashboard', 'Ana sayfa', 'Günün özeti ve bekleyen işler', 'home', 'home'))}
+      {group('events', 'Etkinlikler', <>{item('/dashboard#events', 'Etkinlikler', 'Tüm etkinlikleri görüntüle', 'events', 'calendar')}{item('/dashboard/events/new', 'Yeni etkinlik', 'Adım adım etkinlik oluştur', 'new', 'plus', true)}</>)}
+      {group('organization', 'Kurum', <>{item('/dashboard/settings', 'Kurum ve ekip', 'Bilgiler, üyeler ve yetkiler', 'settings', 'building')}{item('/dashboard/quota', 'Kullanım', 'Dosya ve depolama limitleri', 'quota', 'usage')}</>)}
+      {systemAdmin && group('admin', 'Yönetim', item('/admin', 'Sistem yönetimi', 'Kurumlar, kullanıcılar ve planlar', 'admin', 'shield'))}
+      {group('support', 'Yardım ve Destek', <>{restartTour}{item('/yardim', 'Kullanım rehberi', 'Adım adım kullanım bilgileri', 'help', 'book')}{item('/dashboard/contact', 'İletişim', 'Soru, öneri ve iş birliği için yazın', 'contact', 'mail')}{reportProblem}</>)}
+      {group('eventise', 'Eventise', item('/dashboard/about', 'Eventise hakkında', 'Ürünümüzü ve yaklaşımımızı tanıyın', 'about', 'info'))}
     </nav>
     <div className="nav-footer">
       <div className="nav-logout"><Icon name="logout"/><LogoutButton /></div>
