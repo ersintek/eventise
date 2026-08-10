@@ -1,5 +1,25 @@
 export const updates = [
   {
+    version: '0.28.0',
+    title: 'Etkinlik işlemleri artık daha görünür ve güvenli',
+    changes: [
+      ['Etkinlik sayfasını açma, katılımcılara duyuru gönderme ve silme işlemleri çalışma alanının üst bölümünde ayrı seçenekler olarak gösterilmeye başlandı.', 'Sık kullanılan işlemlere doğrudan erişim'],
+      ['Etkinlik sayfası ve duyuru seçeneklerine işlemin sonucunu anlatan kısa açıklamalar eklendi.', 'Doğru işlemi daha kolay seçme'],
+      ['Etkinlik silme işlemi, 30 günlük geri alma süresini açıklayan ayrı bir onay alanıyla güvenli hâle getirildi.', 'Yanlışlıkla silme riskini azaltma'],
+      ['Silme onayı alanı dışarı tıklama ve Escape tuşuyla kapatılabilir hâle getirildi.', 'Daha rahat ve erişilebilir kullanım'],
+    ],
+  },
+  {
+    version: '0.27.0',
+    title: 'Etkinlik vitrini görselleri daha doğru yansıtıyor',
+    changes: [
+      ['Kapak görselleri kırpılmadan, etkinlik sayfasının vurgu rengiyle uyumlu bir sunum alanında gösterilmeye başlandı.', 'Hazırlanan görselin bütününü koruma'],
+      ['Kurum logolarının açık ve koyu tasarımlarda daha okunaklı görünmesi için logo alanlarının kontrastı iyileştirildi.', 'Daha güçlü kurum görünürlüğü'],
+      ['Etkinlik sayfası renk seçenekleri anlaşılır tema adları ve daha dengeli tonlarla yenilendi.', 'Etkinliğe uygun görünümü daha kolay seçme'],
+      ['Kayıt formu, bilgi kartları ve mobil kapak yerleşimi seçilen vurgu rengiyle daha tutarlı hâle getirildi.', 'Bütünlüklü ve profesyonel etkinlik sayfası'],
+    ],
+  },
+  {
     version: '0.26.0',
     title: 'Katılımcı alanına daha sade geçiş',
     changes: [
