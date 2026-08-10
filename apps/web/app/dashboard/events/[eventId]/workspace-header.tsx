@@ -28,8 +28,8 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
   const [registration, setRegistration] = useState(registrationStatus);
   const [busy, setBusy] = useState(false);
   const [compact, setCompact] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
-  const moreRef = useRef<HTMLDivElement>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const deleteRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let frame = 0;
     const onScroll = () => {
@@ -41,14 +41,19 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
       });
     };
     const onPointerDown = (event: PointerEvent) => {
-      if (!moreRef.current?.contains(event.target as Node)) setMoreOpen(false);
+      if (!deleteRef.current?.contains(event.target as Node)) setDeleteOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setDeleteOpen(false);
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
     return () => {
       window.removeEventListener('scroll', onScroll);
       document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
@@ -79,7 +84,7 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
     setBusy(false);
   }
   async function removeEvent() {
-    if (!confirm('Bu etkinlik silinecek ve 30 gün boyunca geri alınabilecek. Devam edilsin mi?')) return;
+    if (!confirm('Etkinliği silme süreci başlatılsın mı? Etkinlik 30 gün boyunca geri alınabilir.')) return;
     setBusy(true);
     const response = await fetch(`/api/backend/organizations/${organizationId}/events/${eventId}/deletion`, { method: 'POST' });
     if (response.ok) router.push('/dashboard#events');
@@ -98,13 +103,13 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
       <button className={`event-action-toggle ${registration === 'OPEN' ? 'is-on' : ''}`} role="switch" aria-checked={registration === 'OPEN'} disabled={busy} onClick={() => update(publication === 'PUBLISHED' ? publication : 'PUBLISHED', registration === 'OPEN' ? 'CLOSED' : 'OPEN')} title="Katılımcıların kayıt formunu doldurup yeni başvuru gönderebilmesini açar veya kapatır.">
         <span className="action-icon">✓</span><span className="action-copy"><b>Kayıt Formu</b><small>{registration === 'OPEN' ? 'Yayında' : 'Yayın dışı'}</small></span><span className="action-switch"><i/></span>
       </button>
-      <span className="action-separator"/>
-      <Link className="event-action-button announce" href={`${base}/communication?subtab=notifications`} title="Kayıtlı katılımcılara hedefli bir etkinlik duyurusu gönderin."><span>✦</span>Duyuru Gönder</Link>
-      <div className="event-more" ref={moreRef}>
-        <button className="event-more-trigger" type="button" aria-haspopup="menu" aria-expanded={moreOpen} onClick={() => setMoreOpen(value => !value)} title="Diğer işlemler">•••<span className="sr-only">Diğer işlemler</span></button>
-        {moreOpen && <div className="event-more-menu" role="menu">
-          <a href={publicUrl} target="_blank" rel="noopener noreferrer" role="menuitem"><span>↗</span><span><b>Etkinlik sayfasını aç</b><small>Yeni sekmede görüntüle</small></span></a>
-          <button type="button" role="menuitem" className="danger-action" disabled={busy} onClick={removeEvent}><span>⌫</span><span><b>Etkinliği sil</b><small>30 gün geri alınabilir</small></span></button>
+      <a className="event-action-button public-page" href={publicUrl} target="_blank" rel="noopener noreferrer" title="Etkinlik sayfasını yeni sekmede görüntüleyin."><span className="action-icon">↗</span><span className="action-copy"><b>Etkinlik sayfasını aç</b><small>Yeni sekmede görüntüle</small></span></a>
+      <Link className="event-action-button announce" href={`${base}/communication?subtab=notifications`} title="Kayıtlı katılımcılara hedefli bir etkinlik duyurusu gönderin."><span className="action-icon">✦</span><span className="action-copy"><b>Duyuru gönder</b><small>Katılımcılara ulaş</small></span></Link>
+      <div className="event-delete" ref={deleteRef}>
+        <button className="event-action-button delete-trigger" type="button" aria-haspopup="dialog" aria-controls="event-delete-confirmation" aria-expanded={deleteOpen} disabled={busy} onClick={() => setDeleteOpen(value => !value)}><span className="action-icon">⌫</span><span className="action-copy"><b>Sil</b><small>Güvenli silme</small></span></button>
+        {deleteOpen && <div className="event-delete-popover" id="event-delete-confirmation" role="dialog" aria-labelledby="event-delete-title">
+          <div className="event-delete-warning"><span aria-hidden="true">!</span><div><b id="event-delete-title">Etkinliği silmek üzeresiniz</b><p>Etkinlik 30 gün boyunca geri alınabilir, ardından kalıcı olarak silinir.</p></div></div>
+          <div className="event-delete-actions"><button type="button" className="cancel-delete" onClick={() => setDeleteOpen(false)}>Vazgeç</button><button type="button" className="confirm-delete" disabled={busy} onClick={removeEvent}>{busy ? 'Siliniyor…' : 'Etkinliği sil'}</button></div>
         </div>}
       </div>
     </div>
