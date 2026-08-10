@@ -70,7 +70,7 @@ const sections: GuideSection[] = [
       },
       {
         q: 'Kayıt formunu ve onamları değiştirebilir miyim?',
-        a: 'Etkinlik Bilgileri bölümünde standart ad, soyad ve e-posta alanlarına ek sorular ekleyebilir; alanları zorunlu yapabilirsiniz. Etkinliğe özel katılım ve iletişim onamlarını da burada tanımlayabilirsiniz. Katılımcıya yalnızca gerçekten ihtiyaç duyduğunuz bilgileri sorun.',
+        a: 'Etkinlik Bilgileri bölümünde standart ad, soyad ve e-posta alanlarına ek sorular ekleyebilir; alanları zorunlu yapabilirsiniz. Katılımcının görüp onaylayacağı tek onam metnini de burada düzenleyebilirsiniz. Katılımcıya yalnızca gerçekten ihtiyaç duyduğunuz bilgileri sorun.',
         path: 'Etkinliği yönet → Etkinlik Bilgileri → Formlar ve Onam',
         check: 'Formu katılımcı bağlantısından bir kez deneyin ve yalnızca gerekli bilgileri istediğinizden emin olun.',
       },

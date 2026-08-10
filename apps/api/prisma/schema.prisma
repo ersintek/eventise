@@ -813,12 +813,12 @@ model ConsentVersion {
 }
 
 model EventConsentRequirement {
-  eventId String
+  eventId String @id
   definitionId String
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   definition ConsentDefinition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
   required Boolean @default(true)
-  @@id([eventId, definitionId])
+  @@index([definitionId])
 }
 
 model ConsentRecord {

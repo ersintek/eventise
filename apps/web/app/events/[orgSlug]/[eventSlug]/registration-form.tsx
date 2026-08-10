@@ -14,14 +14,15 @@ export function RegistrationForm({ orgSlug, eventSlug, open, consents, fields, s
   const [complete, setComplete] = useState(false);
   const user = session?.user;
   const existing = session?.registration;
-  const visibleConsents = consents.filter(item => item.definition.versions[0]);
-  const missingVersionConsents = consents.filter(item => item.required && !item.definition.versions[0]);
+  const eventConsent = consents[0];
+  const consentVersion = eventConsent?.definition.versions[0];
+  const missingConsentVersion = Boolean(eventConsent?.required && !consentVersion);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); setMessage('');
     const form = event.currentTarget;
     const data = new FormData(form);
-    const consentVersionIds = visibleConsents.filter(item => data.get(`consent-${item.definition.versions[0]?.id}`)).map(item => item.definition.versions[0].id);
+    const consentVersionIds = consentVersion && data.get('event-consent') ? [consentVersion.id] : [];
     const answers = Object.fromEntries(fields.map(field => [field.key, field.type === 'checkbox' ? data.get(field.key) === 'on' : data.get(field.key)]));
     const payload = { firstName: data.get('firstName'), lastName: data.get('lastName'), email: data.get('email'), answers, consentVersionIds, createAccount: user ? false : data.get('createAccount') === 'on' };
     try {
@@ -45,10 +46,10 @@ export function RegistrationForm({ orgSlug, eventSlug, open, consents, fields, s
     <label>E-posta<input name="email" type="email" autoComplete="email" required defaultValue={user?.email} readOnly={Boolean(user)}/></label>
     {fields.map(field => field.type === 'checkbox' ? <label className="consent custom-consent" key={field.key}><input name={field.key} type="checkbox" required={field.required}/><span><b>{field.label}</b></span></label> : <label key={field.key}>{field.label}{field.required && <span className="required-mark"> *</span>}{field.type === 'textarea' ? <textarea name={field.key} required={field.required}/> : field.type === 'select' ? <select name={field.key} required={field.required}><option value="">Seçin</option>{(field.options ?? []).map(option => <option key={option}>{option}</option>)}</select> : <input name={field.key} type={field.type === 'phone' ? 'tel' : field.type} required={field.required}/>}</label>)}
     {!user && <label className="consent account-consent"><input type="checkbox" name="createAccount" defaultChecked/><span><b>Katılımcı hesabımı da oluştur</b><small>Etkinliği takip etmeniz için güvenli bir hesap bağlantısı e-postanıza gönderilir.</small></span></label>}
-    {visibleConsents.map(item => { const version = item.definition.versions[0]; return <label className="consent" key={version.id}><input type="checkbox" name={`consent-${version.id}`} required={item.required}/><span><b>{item.definition.title}</b><small>{version.text}</small></span></label>; })}
-    {missingVersionConsents.length > 0 && <p className="error">Etkinliğin onam yapılandırmasında bir sorun var. Lütfen düzenleyen kurumla iletişime geçin.</p>}
+    {consentVersion && <label className="consent"><input type="checkbox" name="event-consent" required={eventConsent.required}/><span><b>Onamı kabul ediyorum</b><small>{consentVersion.text}</small></span></label>}
+    {missingConsentVersion && <p className="error">Etkinliğin onam yapılandırmasında bir sorun var. Lütfen düzenleyen kurumla iletişime geçin.</p>}
     {message && <p className="notice" role="status">{message}</p>}
-    <button className="event-submit-button" disabled={busy || missingVersionConsents.length > 0}>{busy ? 'Gönderiliyor…' : 'Başvuruyu tamamla'}<span>→</span></button>
+    <button className="event-submit-button" disabled={busy || missingConsentVersion}>{busy ? 'Gönderiliyor…' : 'Başvuruyu tamamla'}<span>→</span></button>
     <p className="registration-security"><span>✓</span> Bilgileriniz yalnızca bu etkinliğin kayıt süreci için kullanılır.</p>
   </form>;
 }
