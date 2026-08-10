@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { SiciSignature } from './sici-signature';
 
 type Context = 'participant' | 'organization';
 type Action = 'login' | 'register';
@@ -79,6 +80,7 @@ export function AccountAuthForm({ context, action }: { context: Context; action:
         <h1>{isOrganization ? <>Ekibinizle<br />etkinlikleri<br /><em>birlikte yönetin.</em></> : <>Etkinliklerinizi<br />tek bir yerde<br /><em>takip edin.</em></>}</h1>
         <p>{isOrganization ? 'Kayıttan sonra kurum oluşturabilir veya yöneticinizin sizi kayıtlı e-posta adresinizle eklemesini bekleyebilirsiniz.' : 'Etkinlik kayıtlarınıza, programlarınıza ve sertifikalarınıza kolayca erişin.'}</p>
       </div>
+      <SiciSignature className="auth-brand-foot" />
     </section>
     <section className="auth-panel"><form className="auth-card" onSubmit={submit}>
       <Link className="auth-context-link" href={isLogin ? '/login' : '/register'}>← Alan seçimine dön</Link>

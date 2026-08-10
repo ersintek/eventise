@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { AboutShell, getOrganizationId } from './about-shell';
 import { ContactForm } from './contact-form';
+import { SiciSignature } from '../../components/sici-signature';
 
 export const metadata: Metadata = { title: 'Hakkında — Eventise' };
 
@@ -21,7 +22,7 @@ export default async function AboutPage() {
         </div>
       </article>
       <aside className="about-principle">
-        <span aria-hidden="true">✦</span>
+        <SiciSignature />
         <h3>Sivil toplum için ücretsiz</h3>
         <p>Çünkü iyi işler yapan ekiplerin iyi araçlara erişebilmesi gerektiğine inanıyoruz.</p>
       </aside>

@@ -634,7 +634,13 @@ button{border-radius:var(--radius-sm)}
 .about-links a { display: inline-flex; gap: 18px; align-items: center; padding: 11px 15px; border: 1px solid #e1e4ea; border-radius: 12px; color: #344054; background: #fff; font-weight: 700; text-decoration: none; }
 .about-links a:hover { color: #6c5ce7; border-color: #bdb4ff; transform: translateY(-1px); }
 .about-principle { display: flex; flex-direction: column; justify-content: flex-end; min-height: 310px; padding: 30px; border-radius: 24px; color: #fff; background: linear-gradient(145deg, #6c5ce7, #4834d4); }
-.about-principle > span { margin-bottom: auto; font-size: 2rem; }
+.sici-signature { display: flex; align-items: center; gap: 14px; width: fit-content; color: #fff; }
+.sici-signature:hover { color: #fff; opacity: .88; }
+.sici-signature img { display: block; width: 76px; height: auto; object-fit: contain; }
+.sici-signature span { max-width: 190px; color: rgba(255,255,255,.82); font-size: .68rem; font-weight: 650; line-height: 1.45; letter-spacing: .01em; }
+.sici-signature small { display: block; margin-bottom: 2px; color: rgba(255,255,255,.58); font-size: .58rem; font-weight: 800; letter-spacing: .13em; }
+.about-principle > .sici-signature { margin-bottom: auto; }
+.about-principle > .sici-signature img { width: 104px; }
 .about-principle h3 { margin: 0 0 10px; font-size: 1.5rem; }
 .about-principle p { margin: 0; color: rgba(255,255,255,.82); line-height: 1.6; }
 .about-contact { display: grid; grid-template-columns: .85fr 1.15fr; gap: 50px; margin-top: 20px; padding: 38px 42px; border-radius: 24px; }
@@ -707,6 +713,8 @@ button{border-radius:var(--radius-sm)}
 .auth-brand h1{font-size:clamp(2.25rem,4vw,3rem);line-height:1.1;margin:1rem 0;font-family:var(--font-display);font-weight:700;letter-spacing:-.025em}
 .auth-brand h1 em{font-style:normal;background:var(--grad-text);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .auth-brand p{color:rgba(255,255,255,.85);line-height:1.65;max-width:28rem;font-size:var(--fs-md)}
+.auth-brand .sici-signature{position:relative;z-index:1}
+.auth-brand .sici-signature img{width:68px}
 .auth-panel{display:grid;place-items:center;padding:2rem 1.5rem;min-width:0}
 .auth-card{width:min(440px,100%);min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-xl);padding:2.25rem;box-shadow:var(--shadow-lg)}
 .auth-card h2{font-family:var(--font-display);font-size:1.75rem;margin:.5rem 0 1.75rem;font-weight:700;letter-spacing:-.02em;overflow-wrap:anywhere}

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { SiciSignature } from './sici-signature';
 
 type GatewayProps = { entry: 'login' | 'register' };
 
@@ -12,6 +13,7 @@ export function AuthGateway({ entry }: GatewayProps) {
         <h1>Etkinliğe katılın<br />veya ekibinizle<br /><em>etki yaratın.</em></h1>
         <p>Katılımcı ve STK işlemleri birbirinden ayrıdır. Size uygun alanı seçerek sade bir şekilde devam edin.</p>
       </div>
+      <SiciSignature className="auth-brand-foot" />
     </section>
     <section className="auth-panel">
       <div className="auth-card gateway-card">
