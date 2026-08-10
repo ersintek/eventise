@@ -22,8 +22,8 @@ import './operations.css';
 import './event-page.css';
 
 export const metadata: Metadata = {
-  title: 'Eventise — STK Etkinlik Yönetimi',
-  description: 'STK etkinliklerini uçtan uca yönetin.',
+  title: 'Eventise — Etki odaklı etkinlik yönetimi',
+  description: 'Etkinliklerinizi planlamadan katılımcı deneyimine kadar tek yerden yönetin.',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
