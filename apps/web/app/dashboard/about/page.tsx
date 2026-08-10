@@ -14,7 +14,7 @@ export default async function AboutPage() {
         <p className="eyebrow">MERHABA</p>
         <h2>İyi bir etkinlik düzenlemek zaten yeterince zor.</h2>
         <p>Bir de formlar, katılımcı listeleri, e-postalar ve sertifikalar arasında kaybolmayın diye Eventise’ı geliştiriyoruz.</p>
-        <p>Eventise, <strong>Social Institute of Change and Impact — SICI</strong> tarafından; sivil toplum kuruluşlarının işini biraz olsun kolaylaştırmak için geliştirilen ücretsiz bir etkinlik yönetim platformu.</p>
+        <p>Eventise, <strong>Social institute of change and impact — SICI</strong> tarafından; sivil toplum kuruluşlarının işini biraz olsun kolaylaştırmak için geliştirilen ücretsiz bir etkinlik yönetim platformu.</p>
         <p>Henüz yolun başındayız. Kullandıkça neyin iyi çalıştığını, nerede zorlandığınızı bize söyleyin; birlikte daha iyi hâle getirelim.</p>
         <div className="about-links">
           <a href="https://www.sici.uk" target="_blank" rel="noopener noreferrer">sici.uk <span>↗</span></a>
