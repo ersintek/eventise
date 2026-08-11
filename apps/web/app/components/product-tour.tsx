@@ -72,11 +72,11 @@ export function ProductTour({ eventPath }: { eventPath: string }) {
   if (!open) return null;
   if (welcome) return <div className="tour-layer" role="dialog" aria-modal="true" aria-labelledby="tour-welcome-title">
     <div className="tour-welcome">
-      <span className="tour-spark">✦</span><p className="eyebrow">EVENTISE'A HOŞ GELDİNİZ</p>
-      <h2 id="tour-welcome-title">İyi bir etkinlik, iyi bir akışla başlar.</h2>
-      <p>Başvurudan kapı girişine, iletişimden sertifikaya kadar bütün süreci tek merkezden yönetin.</p>
-      <div className="tour-value-row"><span>Başvuruları yönetin</span><span>Katılımı hızlandırın</span><span>Etkiyi görünür kılın</span></div>
-      <div className="tour-actions"><button type="button" className="tour-text-button" onClick={() => close(true)}>Kendim keşfedeceğim</button><button type="button" className="primary" onClick={() => { window.scrollTo({ top: 0, behavior: 'auto' }); setWelcome(false); }}>2 dakikada tanıyın <span>→</span></button></div>
+      <span className="tour-spark">e</span><p className="eyebrow">ETKİNLİK ÇALIŞMA ALANI</p>
+      <h2 id="tour-welcome-title">Hazırlıktan sonuca kadar tek, sakin bir akış.</h2>
+      <p>Yeni çalışma alanını kısa bir turla tanıyın; her bölümde ne yapacağınızı ve sırada ne olduğunu görün.</p>
+      <div className="tour-value-row"><span>Hazırlığı tamamlayın</span><span>Katılımı yönetin</span><span>Sonuçları paylaşın</span></div>
+      <div className="tour-actions"><button type="button" className="tour-text-button" onClick={() => close(true)}>Şimdi değil</button><button type="button" className="primary" onClick={() => { window.scrollTo({ top: 0, behavior: 'auto' }); setWelcome(false); }}>Kısa turu başlat <span>→</span></button></div>
     </div>
   </div>;
 

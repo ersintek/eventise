@@ -37,9 +37,14 @@ const sections: GuideSection[] = [
     items: [
       {
         q: 'Yeni etkinlik oluştururken hangi bilgiler istenir?',
-        a: 'Etkinliğin adı, kısa tanıtımı, açıklaması, başlangıç ve bitiş zamanı, etkinlik türü, yer veya çevrim içi bağlantı, görünürlük, kayıt yöntemi ve kapasite belirlenir. Etkinlik yüz yüze, çevrim içi veya hibrit olabilir.',
+        a: 'Akış dört sade adımda ilerler: temel bilgiler, zaman ve yer, başvuru ayarları ve son kontrol. Etkinliğin adı, tanıtımı, tarihleri, katılım biçimi, yer veya çevrim içi bağlantı, görünürlük, kayıt yöntemi ve kapasite belirlenir. Tamamlanan bir adıma istediğiniz zaman geri dönebilirsiniz.',
         path: 'Ana menü → Yeni etkinlik',
         check: 'Yayımlamadan önce tarih, saat ve katılımcıyla paylaşılacak bağlantıları yeniden gözden geçirin.',
+      },
+      {
+        q: 'Canlı önizleme neyi gösterir?',
+        a: 'Sağdaki önizleme etkinlik adını, kısa açıklamayı, tarihi, saati, katılım biçimini ve mekânı yazdığınız anda katılımcı sayfasına benzer biçimde gösterir. Bu alan yalnızca önizlemedir; etkinlik önce taslak olarak kaydedilir ve siz yayın kontrolünü açana kadar dışarıdan görünmez.',
+        path: 'Ana menü → Yeni etkinlik → Canlı önizleme',
       },
       {
         q: 'Bağlantı kısa adı nedir?',
@@ -52,8 +57,29 @@ const sections: GuideSection[] = [
     ],
   },
   {
+    id: 'sayfa-tasarimi',
+    title: '3. Etkinlik sayfasını tasarlayın',
+    intro: 'Katılımcının göreceği sayfayı az sayıda, etkili ayarla kurumunuza ait hâle getirin.',
+    items: [
+      {
+        q: 'Etkinlik sayfasının görünümünü nasıl düzenlerim?',
+        a: 'Kurum logonuzu ve etkinliğinizi anlatan yatay kapak görselini yükleyin, ardından butonlar ve önemli bilgiler için bir vurgu rengi seçin. Her değişikliği sağdaki masaüstü önizlemesinde anında görebilirsiniz.',
+        path: 'Etkinliği yönet → Etkinlik Bilgileri → Sayfa tasarımı',
+        check: 'Kapak görselinde okunaklı, yüksek çözünürlüklü ve etkinliği doğru temsil eden bir görsel kullanın.',
+      },
+      {
+        q: 'Hangi görsel boyutları ve dosya türleri uygundur?',
+        a: 'Logo ve kapak için PNG, JPG veya WebP kullanabilirsiniz. Kapak görselinde 1600 × 900 piksel yatay oran önerilir. Logo en fazla 5 MB, kapak görseli ise en fazla 15 MB olabilir.',
+      },
+      {
+        q: 'Sayfa tasarımını etkinliği yayınladıktan sonra değiştirebilir miyim?',
+        a: 'Evet. Logo, kapak ve vurgu rengini dilediğiniz zaman güncelleyebilirsiniz. Değişiklikler etkinlik sayfasına yansır; paylaşılmış bir etkinlikte değişiklikten sonra sayfayı önizlemeniz önerilir.',
+      },
+    ],
+  },
+  {
     id: 'yayin-kayit',
-    title: '3. Yayın, görünürlük ve kayıtlar',
+    title: '4. Yayın, görünürlük ve kayıtlar',
     intro: 'Etkinliğin kimler tarafından görüleceğini ve başvuruların nasıl sonuçlanacağını siz belirlersiniz.',
     items: [
       {
@@ -78,7 +104,7 @@ const sections: GuideSection[] = [
   },
   {
     id: 'basvurular',
-    title: '4. Başvurular ve katılımcılar',
+    title: '5. Başvurular ve katılımcılar',
     items: [
       {
         q: 'Başvuruları nereden yönetirim?',
@@ -98,7 +124,7 @@ const sections: GuideSection[] = [
   },
   {
     id: 'iletisim',
-    title: '5. Katılımcılarla iletişim',
+    title: '6. Katılımcılarla iletişim',
     intro: 'Başvuru öncesinden etkinlik sonrasına kadar mesajları aynı çalışma alanından yönetin.',
     items: [
       {
@@ -117,7 +143,7 @@ const sections: GuideSection[] = [
   },
   {
     id: 'moduller',
-    title: '6. Etkinlik Araçları',
+    title: '7. Etkinlik Araçları',
     intro: 'Ön test, son test, tanışma oyunu, geri bildirim ve grup araçlarını ihtiyacınıza göre kullanın.',
     items: [
       {
@@ -140,7 +166,7 @@ const sections: GuideSection[] = [
   },
   {
     id: 'etkinlik-gunu',
-    title: '7. Kapı ve Katılım',
+    title: '8. Kapı ve Katılım',
     intro: 'Kapı girişi ve katılım teyidi araçları her zaman erişilebilir; önceden deneyebilir ve ekibinizi hazırlayabilirsiniz.',
     items: [
       {
@@ -161,7 +187,7 @@ const sections: GuideSection[] = [
   },
   {
     id: 'sonrasi',
-    title: '8. Etkinlik sonrası ve sertifikalar',
+    title: '9. Etkinlik sonrası ve sertifikalar',
     items: [
       {
         q: 'Etkinlik sonrasında neleri görebilirim?',
@@ -181,7 +207,7 @@ const sections: GuideSection[] = [
   },
   {
     id: 'kurum-ekip',
-    title: '9. Kurum, ekip ve kullanım',
+    title: '10. Kurum, ekip ve kullanım',
     items: [
       {
         q: 'Ekip üyelerini ve katılma isteklerini nereden yönetirim?',
@@ -199,7 +225,7 @@ const sections: GuideSection[] = [
   },
   {
     id: 'katilimci',
-    title: '10. Katılımcı deneyimi',
+    title: '11. Katılımcı deneyimi',
     items: [
       {
         q: 'Katılımcılar etkinlikleri nasıl bulur?',

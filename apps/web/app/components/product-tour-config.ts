@@ -1,4 +1,4 @@
-export const EVENTISE_TOUR_VERSION = 'event-workspace-v2';
+export const EVENTISE_TOUR_VERSION = 'event-workspace-v3';
 
 export type TourStep = {
   id: string;
@@ -11,47 +11,47 @@ export type TourStep = {
 export const EVENTISE_TOUR_STEPS: TourStep[] = [
   {
     id: 'control-center', target: 'event-command-center', eyebrow: 'ETKİNLİK ÇALIŞMA ALANI',
-    title: 'Etkinliğinizin bütün yolculuğu burada.',
-    description: 'Üst bölüm etkinliğinizin kontrol merkezi. Yayın durumundan kayıt akışına, etkinlik gününden sonuçlara kadar her bölüme buradan ulaşırsınız.',
+    title: 'Bütün hazırlıklar tek bir merkezde.',
+    description: 'Etkinliğin kimliğini, tarihini ve güncel durumunu burada görür; hazırlık alanları arasında üst menüden geçersiniz.',
   },
   {
     id: 'publication', target: 'publication-controls', eyebrow: 'YAYIN KONTROLLERİ',
-    title: 'Hazır olduğunuz anda görünür olun.',
-    description: 'Etkinlik sayfası dışarıdan görünürlüğü, Kayıt Formu ise yeni başvuru almayı yönetir. İkisini ihtiyacınıza göre ayrı ayrı açıp kapatabilirsiniz.',
+    title: 'Sayfayı ve kayıtları ayrı ayrı yönetin.',
+    description: 'Etkinlik sayfasını görünür yapabilir, yeni başvuruları ise ihtiyacınıza göre ayrıca açıp kapatabilirsiniz.',
   },
   {
-    id: 'overview', target: 'overview-area', eyebrow: 'GENEL BAKIŞ',
-    title: 'Bugün neye bakmanız gerektiğini görün.',
-    description: 'Başvuru, kontenjan ve etkinlik durumunun kısa özeti burada. Eventise, mevcut aşamaya göre size tek bir anlamlı sonraki seçenek de sunar.',
+    id: 'overview', target: 'event-overview', eyebrow: 'GENEL BAKIŞ',
+    title: 'Önceliğiniz tek bakışta belli olsun.',
+    description: 'Başvuru, kontenjan ve hazırlık durumunu burada izler; mevcut aşamaya göre önerilen sıradaki adıma geçersiniz.',
   },
   {
-    id: 'registration', target: 'registration-area', eyebrow: 'KAYIT & BİLGİLER',
+    id: 'registration', target: 'registration-area', eyebrow: 'ETKİNLİK BİLGİLERİ',
     title: 'Katılımcının göreceği deneyimi hazırlayın.',
-    description: 'Etkinlik bilgilerini, kayıt formunu, başvuruları, SSS alanını ve gerekli onamları bu bölümden yönetirsiniz.',
+    description: 'Tanıtım metinlerini, sayfa tasarımını, kayıt formunu, başvuruları, SSS alanını ve onamları birlikte yönetin.',
   },
   {
     id: 'tools', target: 'tools-area', eyebrow: 'ETKİNLİK ARAÇLARI',
-    title: 'Katılımı daha etkileşimli hale getirin.',
-    description: 'Testler, tanışma oyunları ve grup araçlarını önceden hazırlayın. Etkinlik başladığında hepsi aynı çalışma alanından yönetilir.',
+    title: 'İhtiyacınız olan araçları seçin.',
+    description: 'Test, tanışma oyunu, geri bildirim ve grup araçlarını etkinlikten önce hazırlayıp aynı alandan yönetin.',
   },
   {
     id: 'communication', target: 'communication-area', eyebrow: 'DAVET & İLETİŞİM',
     title: 'Doğru mesajı doğru anda ulaştırın.',
-    description: 'Davetleri gönderin, hatırlatmaları planlayın, duyuruları hazırlayın ve otomatik e-posta metinlerini tek yerde düzenleyin.',
+    description: 'Davet gönderin, hatırlatma planlayın, duyuru hazırlayın; e-posta şablonlarını ve kaynakları tek yerde düzenleyin.',
   },
   {
     id: 'event-day', target: 'event-day-area', eyebrow: 'KAPI & KATILIM',
     title: 'Etkinlik günü akışını hızlandırın.',
-    description: 'QR ile giriş alın, katılımcı listesinden manuel teyit yapın ve kapıda kayıt ihtiyacını aynı ekrandan yönetin.',
+    description: 'QR ile giriş alın, katılımcıyı listeden teyit edin ve gerektiğinde kapıda yeni kayıt oluşturun.',
   },
   {
     id: 'results', target: 'results-area', eyebrow: 'SONUÇLAR',
     title: 'Etkinliğin etkisini görünür kılın.',
-    description: 'Katılım oranlarını inceleyin, raporları indirin ve etkinlik sonrası paylaşılacak kaynakları burada tamamlayın.',
+    description: 'Katılımı ve geri bildirimleri inceleyin, raporları indirin ve etkinlik sonrası paylaşılacak içerikleri tamamlayın.',
   },
   {
     id: 'certificates', target: 'certificate-area', eyebrow: 'SERTİFİKALAR',
     title: 'Katılımı kalıcı bir çıktıya dönüştürün.',
-    description: 'Katılımı teyit edilen kişiler için tasarımlı ve QR ile doğrulanabilir sertifikalar hazırlayıp üretebilirsiniz.',
+    description: 'Sertifikanızı canlı önizlemeyle tasarlayın; katılımı teyit edilen kişiler için QR ile doğrulanabilir belgeler üretin.',
   },
 ];

@@ -39,7 +39,7 @@ export function ParticipantArea({eventId,title,orgName,startsAt,certificates}:{e
         <small>{orgName}</small>
         <p>{fmtDate(startsAt)}</p>
       </div>
-      <button className="refresh-btn" onClick={()=>setRefreshKey(k=>k+1)} disabled={busy} title="Yenile">{busy?'⏳':'🔄'}</button>
+      <button className="refresh-btn" onClick={()=>setRefreshKey(k=>k+1)} disabled={busy} title="Yenile" aria-label="Etkinlik içeriğini yenile">{busy?'…':'↻'}</button>
     </div>
 
     {totalPending>0&&<p className="participant-summary"><b>{totalPending} bekleyen görevin</b> var. Tamamlamak için aşağıdaki kartları aç.</p>}
@@ -47,14 +47,14 @@ export function ParticipantArea({eventId,title,orgName,startsAt,certificates}:{e
     {message&&<p className="notice">{message}</p>}
 
     {!current&&<p className="friendly-status">Etkinlik içeriği yükleniyor…</p>}
-    {current&&totalPending===0&&current.notifications.length===0&&current.resources.length===0&&certificates.length===0&&<p className="friendly-status">Etkinlik içeriği henüz hazır değil. 🎉</p>}
+    {current&&totalPending===0&&current.notifications.length===0&&current.resources.length===0&&certificates.length===0&&<p className="friendly-status">Etkinlik içeriği henüz hazır değil.</p>}
 
     {current&&(totalPending>0||current.notifications.length>0||current.resources.length>0||current.games.length>0||current.assessments.length>0||current.feedback.length>0)&&(
       <div className="participant-modules">
 
         {pendingAssessments.length>0&&(
           <details className="module-block" open={firstOpenKey==='assessments'}>
-            <summary><span className="module-icon">📋</span> Testler{pendingAssessments.length>0&&<span className="module-count">{pendingAssessments.length}</span>}</summary>
+            <summary><span className="module-icon">01</span> Testler{pendingAssessments.length>0&&<span className="module-count">{pendingAssessments.length}</span>}</summary>
             <div className="module-body">
               {pendingAssessments.map(a=><form className="participant-task" key={a.id} onSubmit={e=>{e.preventDefault();const values=new FormData(e.currentTarget),answers=Object.fromEntries((a.schema.questions??[]).map((q:any)=>{if(q.type==='multiple')return[q.id,values.getAll(q.id)];return[q.id,values.get(q.id)]}));void send('participant/assessments/'+a.id+'/submissions',{answers})}}><h4>{a.title}</h4>{(a.schema.questions??[]).map((q:any)=><div key={q.id} className="test-question"><label>{q.label}</label>{q.type==='text'?<input name={q.id} required/>:q.type==='multiple'?(q.options??[]).map((opt:string,oi:number)=><label key={oi} className="test-option"><input type="checkbox" name={q.id} value={opt}/> {opt}</label>):<div>{(q.options??[]).map((opt:string,oi:number)=><label key={oi} className="test-option"><input type="radio" name={q.id} value={opt} required/> {opt}</label>)}</div>}</div>)}<button className="primary">{a.kind==='POST_TEST'?'Son testi gönder':'Testi gönder'}</button></form>)}
             </div>
@@ -63,7 +63,7 @@ export function ParticipantArea({eventId,title,orgName,startsAt,certificates}:{e
 
         {pendingFeedback.length>0&&(
           <details className="module-block" open={firstOpenKey==='feedback'}>
-            <summary><span className="module-icon">⭐</span> Geri Bildirim{pendingFeedback.length>0&&<span className="module-count">{pendingFeedback.length}</span>}</summary>
+            <summary><span className="module-icon">02</span> Geri Bildirim{pendingFeedback.length>0&&<span className="module-count">{pendingFeedback.length}</span>}</summary>
             <div className="module-body">
               {pendingFeedback.map(f=>{const questions=(f.schema?.questions??[]);return<form className="participant-task" key={f.id} onSubmit={e=>{e.preventDefault();const values=new FormData(e.currentTarget),answers=Object.fromEntries(questions.map((q:any)=>{if(q.type==='number'){const r=ratings[f.id+'_'+q.id]||0;if(!r){setMessage('Lütfen '+q.label+' için puan verin.');return['__invalid__',null]}return[q.id,r]}if(q.type==='textarea')return[q.id,String(values.get(q.id)??'')];return[q.id,String(values.get(q.id)??'')]}));if(answers['__invalid__']!==undefined)return;delete answers['__invalid__'];void send('participant/feedback/'+f.id+'/submissions',{answers,anonymous:false})}}><h4>{f.title}</h4>{questions.length===0&&<p className="friendly-status">Bu formda soru bulunmuyor.</p>}{questions.map((q:any)=><div key={q.id} className="test-question"><label>{q.label}</label>{q.type==='number'?<StarRating value={ratings[f.id+'_'+q.id]||0} onChange={v=>setRatings(r=>({...r,[f.id+'_'+q.id]:v}))}/>:q.type==='textarea'?<textarea name={q.id} required placeholder="Yanıtınız…"/>:<input name={q.id} required placeholder="Yanıtınız…"/>}</div>)}<button className="primary">Gönder</button></form>})}
             </div>
@@ -72,7 +72,7 @@ export function ParticipantArea({eventId,title,orgName,startsAt,certificates}:{e
 
         {current.games.length>0&&(
           <details className="module-block" open={firstOpenKey==='games'}>
-            <summary><span className="module-icon">🎮</span> Tanışma Oyunu{pendingGames.length>0&&<span className="module-count">{pendingGames.length}</span>}</summary>
+            <summary><span className="module-icon">03</span> Tanışma Oyunu{pendingGames.length>0&&<span className="module-count">{pendingGames.length}</span>}</summary>
             <div className="module-body">
               {current.games.map(game=><article className="participant-task" key={game.id}><h5>{game.title}</h5>{game.status==='OPEN'&&!game.responses.length&&<form onSubmit={e=>{e.preventDefault();void send('game-sessions/'+game.id+'/responses',{promptKey:'answer',answer:new FormData(e.currentTarget).get('answer')})}}><p>{game.assignments[0]?.prompt}</p><input name="answer" required placeholder="Yanıtınız…"/><button className="primary">Gönder</button></form>}{game.status==='OPEN'&&game.responses.length>0&&<p>Yanıtınız alındı. Gösterim başlayınca göreceksiniz.</p>}{game.status==='REVEAL'&&<><button className="primary" onClick={async()=>{const r=await fetch('/api/backend/game-sessions/'+game.id+'/reveal'),d=await r.json();if(r.ok)setReveals(v=>({...v,[game.id]:d.answer}))}}>Kartı aç</button>{reveals[game.id]&&<blockquote>{reveals[game.id]}</blockquote>}</>}</article>)}
             </div>
@@ -81,7 +81,7 @@ export function ParticipantArea({eventId,title,orgName,startsAt,certificates}:{e
 
         {current.notifications.length>0&&(
           <details className="module-block" open={firstOpenKey==='notifications'}>
-            <summary><span className="module-icon">📢</span> Duyurular{unreadNotifications.length>0&&<span className="module-count">{unreadNotifications.length}</span>}</summary>
+            <summary><span className="module-icon">04</span> Duyurular{unreadNotifications.length>0&&<span className="module-count">{unreadNotifications.length}</span>}</summary>
             <div className="module-body">
               {current.notifications.map(n=><article className={'participant-notice'+(n===current.notifications[0]?' featured':'')} key={n.id}><b>{n.title}</b><small>{fmtDate(n.createdAt)}</small><p>{n.body}</p></article>)}
             </div>
@@ -90,15 +90,15 @@ export function ParticipantArea({eventId,title,orgName,startsAt,certificates}:{e
 
         {current.resources.length>0&&(
           <details className="module-block">
-            <summary><span className="module-icon">📎</span> Dosyalar ve Bağlantılar</summary>
+            <summary><span className="module-icon">05</span> Dosyalar ve Bağlantılar</summary>
             <div className="module-body">
-              {current.resources.map(r=><span className="resource-link" key={r.id}>{r.externalUrl?<a href={r.externalUrl} target="_blank" rel="noopener noreferrer">{r.title} →</a>:<><span className="pill">📎 {r.title}</span><small>Dosya</small></>}</span>)}
+              {current.resources.map(r=><span className="resource-link" key={r.id}>{r.externalUrl?<a href={r.externalUrl} target="_blank" rel="noopener noreferrer">{r.title} →</a>:<><span className="pill">{r.title}</span><small>Dosya</small></>}</span>)}
             </div>
           </details>
         )}
 
         <details className="module-block">
-          <summary><span className="module-icon">📷</span> Fotoğraf Paylaş</summary>
+          <summary><span className="module-icon">06</span> Fotoğraf Paylaş</summary>
           <div className="module-body">
             <form onSubmit={upload} className="participant-photo-form"><input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required/><input name="caption" placeholder="Açıklama (opsiyonel)"/><button className="primary">Gönder</button></form>
           </div>
@@ -109,7 +109,7 @@ export function ParticipantArea({eventId,title,orgName,startsAt,certificates}:{e
 
     {certificates.length>0&&(
       <details className="module-block">
-        <summary><span className="module-icon">🎓</span> Sertifikalar<span className="module-count">{certificates.length}</span></summary>
+        <summary><span className="module-icon">07</span> Sertifikalar<span className="module-count">{certificates.length}</span></summary>
         <div className="module-body">
           <div className="certificate-grid">{certificates.map(c=><article key={c.id}><span>✓</span><div><b>{c.event.title}</b><a href={c.downloadUrl}>PDF indir</a></div></article>)}</div>
         </div>

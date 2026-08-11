@@ -73,7 +73,7 @@ export function ParticipantHub({ me, history, upcomingEvents, certificates, init
   }
 
   return <>
-    <header className="participant-welcome"><div><p className="eyebrow">KATILIMCI ALANI</p><h1>Merhaba {me.firstName} 👋</h1><p>Yeni etkinlikleri keşfedin ve katılımlarınızı tek yerden yönetin.</p></div><button className="participant-avatar" onClick={()=>setTab('profile')} aria-label="Profilimi aç">{me.firstName?.[0]}{me.lastName?.[0]}</button></header>
+    <header className="participant-welcome"><div><p className="eyebrow">KATILIMCI ALANI</p><h1>Merhaba {me.firstName}</h1><p>Yeni etkinlikleri keşfedin ve katılımlarınızı tek yerden yönetin.</p></div><button className="participant-avatar" onClick={()=>setTab('profile')} aria-label="Profilimi aç">{me.firstName?.[0]}{me.lastName?.[0]}</button></header>
     <nav className="participant-tabs" aria-label="Katılımcı alanı bölümleri">
       <button className={tab==='discover'?'active':''} onClick={()=>setTab('discover')}>Yaklaşan Etkinlikler</button>
       <button className={tab==='events'?'active':''} onClick={()=>setTab('events')}>Etkinliklerim</button>

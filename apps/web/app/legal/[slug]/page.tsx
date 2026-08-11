@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
 const documents: Record<string, { title: string; sections: Array<[string,string]> }> = {
   'kullanici-sozlesmesi': { title: 'Eventise Kullanıcı Sözleşmesi', sections: [
@@ -29,5 +30,5 @@ const documents: Record<string, { title: string; sections: Array<[string,string]
 
 export default async function LegalDocumentPage({ params }: { params: Promise<{ slug: string }> }) {
   const document = documents[(await params).slug]; if (!document) notFound();
-  return <main className="center-shell"><article className="onboarding-card"><div className="logo dark"><b>e</b>eventise</div><p className="eyebrow">HUKUKİ METİN</p><h1>{document.title}</h1>{document.sections.map(([title,body])=><section key={title}><h2>{title}</h2><p>{body}</p></section>)}</article></main>;
+  return <main className="legal-page"><article className="legal-document"><header className="legal-document-header"><Link href="/login" className="legal-back">‹ Eventise&apos;a dön</Link><div className="logo dark"><b>e</b>eventise</div><p className="eyebrow">HUKUKİ METİN · SÜRÜM 1.0</p><h1>{document.title}</h1><p>Metni daha kolay inceleyebilmeniz için konu başlıklarına ayırdık.</p></header><div className="legal-document-sections">{document.sections.map(([title,body],index)=><section key={title}><span>{String(index+1).padStart(2,'0')}</span><div><h2>{title}</h2><p>{body}</p></div></section>)}</div><footer>Son güncelleme · 25 Temmuz 2026</footer></article></main>;
 }

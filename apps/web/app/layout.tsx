@@ -23,8 +23,26 @@ import './event-page.css';
 import './visual-refresh.css';
 
 export const metadata: Metadata = {
-  title: 'Eventise — Etki odaklı etkinlik yönetimi',
+  metadataBase: new URL('https://eventise.sici.dev'),
+  title: {
+    default: 'Eventise — Etki odaklı etkinlik yönetimi',
+    template: '%s | Eventise',
+  },
   description: 'Etkinliklerinizi planlamadan katılımcı deneyimine kadar tek yerden yönetin.',
+  openGraph: {
+    type: 'website',
+    locale: 'tr_TR',
+    siteName: 'Eventise',
+    title: 'Eventise — Etki odaklı etkinlik yönetimi',
+    description: 'Etkinliklerinizi planlamadan katılımcı deneyimine kadar tek yerden yönetin.',
+    images: [{ url: '/eventise-social-card.png', width: 1728, height: 864, alt: 'Eventise etkinlik yönetimi çalışma alanı' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Eventise — Etki odaklı etkinlik yönetimi',
+    description: 'Etkinliklerinizi planlamadan katılımcı deneyimine kadar tek yerden yönetin.',
+    images: ['/eventise-social-card.png'],
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

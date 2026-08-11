@@ -1,5 +1,18 @@
 export const updates = [
   {
+    version: '0.35.0',
+    title: 'Eventise’ın bütün yüzeyleri ortak ve daha sakin bir görsel sistemde buluştu',
+    changes: [
+      ['Yönetim, etkinlik operasyonu, katılımcı, herkese açık etkinlik, destek ve sistem ekranları aynı renk, tipografi, boşluk ve yüzey sistemiyle yenilendi.', 'Sayfalar arasında daha tutarlı ve tanıdık kullanım'],
+      ['Formlar, tablolar, sekmeler, durum mesajları, boş alanlar, hata ve yüklenme görünümleri daha belirgin bir hiyerarşiyle düzenlendi.', 'Her ekranda sıradaki işlemi daha kolay ayırt etme'],
+      ['Etkinlik oluşturma ve sayfa tasarımı deneyimleri canlı önizleme, sade adımlar ve anlaşılır görsel kontrollerle ortak bir akışa bağlandı.', 'Katılımcı görünümünü yayınlamadan önce güvenle hazırlama'],
+      ['Ürün tanıtım turunun menü hedefleri ve anlatımı yeni etkinlik çalışma alanına göre güncellendi.', 'Yenilenen çalışma alanını kısa bir turla tanıma'],
+      ['Kullanım rehberine canlı önizleme, sayfa tasarımı, görsel boyutlar ve güncel menü yolları eklendi; hızlı yardım bağlantıları yenilendi.', 'Yeni iş akışlarında doğru yanıta daha hızlı ulaşma'],
+      ['Hukuki metin, sertifika doğrulama, hesap tamamlama, 404 ve genel hata sayfaları ürünün yeni görsel diliyle yeniden tasarlandı.', 'Ana akışların dışında da bütünlüklü deneyim'],
+      ['Mobil yerleşimler, klavye odakları ve dokunma hedefleri ortak erişilebilirlik kurallarıyla güçlendirildi.', 'Telefon, tablet ve klavyeyle daha rahat kullanım'],
+    ],
+  },
+  {
     version: '0.34.0',
     title: 'Yeni etkinlik akışı canlı önizleme ve daha kapsamlı yönlendirmeyle yenilendi',
     changes: [
