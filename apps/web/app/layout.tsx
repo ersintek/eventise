@@ -20,6 +20,7 @@ import './participant.css';
 import './admin.css';
 import './operations.css';
 import './event-page.css';
+import './visual-refresh.css';
 
 export const metadata: Metadata = {
   title: 'Eventise — Etki odaklı etkinlik yönetimi',

@@ -59,6 +59,9 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
   }, []);
   const base = `/dashboard/events/${eventId}`;
   const publicUrl = `/events/${organizationSlug}/${eventSlug}`;
+  const eventDate = new Date(startsAt);
+  const eventDay = eventDate.getDate();
+  const eventMonth = eventDate.toLocaleDateString('tr-TR', { month: 'short' });
   const current = pathname === base ? 'overview' : pathname.includes('/settings') ? 'info' : pathname.includes('/modules') ? 'tools' : pathname.includes('/communication') ? 'communication' : pathname.includes('/day') ? 'door' : pathname.includes('/post-event') ? 'results' : 'certificate';
   const links = [
     [base, 'Genel Bakış', 'overview'],
@@ -96,6 +99,10 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
       <Link className="event-back" href="/dashboard#events"><span>←</span> Tüm Etkinlikler</Link>
       <span className="workspace-label">ETKİNLİK KONTROL MERKEZİ</span>
     </div>
+    <div className="event-identity">
+      <div className="event-identity-date" aria-hidden="true"><strong>{eventDay}</strong><span>{eventMonth}</span></div>
+      <div><span>{organizationName}</span><h1>{title}</h1><p>{formatDateLong(startsAt)}</p></div>
+    </div>
     <div className="event-quick-actions" aria-label="Etkinlik hızlı işlemleri" data-tour-id="publication-controls">
       <button className={`event-action-toggle ${publication === 'PUBLISHED' ? 'is-on' : ''}`} role="switch" aria-checked={publication === 'PUBLISHED'} disabled={busy} onClick={() => update(publication === 'PUBLISHED' ? 'UNPUBLISHED' : 'PUBLISHED', registration)} title="Katılımcıların etkinliğin herkese açık tanıtım sayfasını görüp göremeyeceğini belirler.">
         <span className="action-icon">◉</span><span className="action-copy"><b>Etkinlik Sayfası</b><small>{publication === 'PUBLISHED' ? 'Yayında' : 'Yayın dışı'}</small></span><span className="action-switch"><i/></span>
@@ -112,10 +119,6 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
           <div className="event-delete-actions"><button type="button" className="cancel-delete" onClick={() => setDeleteOpen(false)}>Vazgeç</button><button type="button" className="confirm-delete" disabled={busy} onClick={removeEvent}>{busy ? 'Siliniyor…' : 'Etkinliği sil'}</button></div>
         </div>}
       </div>
-    </div>
-    <div className="event-identity">
-      <div className="event-identity-mark">E</div>
-      <div><span>{organizationName}</span><h1>{title}</h1><p>📅 {formatDateLong(startsAt)}</p></div>
     </div>
     <nav className="event-primary-nav" aria-label="Etkinlik ana menüsü">
       {links.map(([href, label, key]) => <Link data-tour-id={`${key === 'info' ? 'registration' : key === 'door' ? 'event-day' : key}-area`} key={key} href={href} className={current === key ? 'active' : ''} aria-current={current === key ? 'page' : undefined}><Icon name={key}/><span>{label}</span></Link>)}
