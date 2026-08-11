@@ -1,5 +1,80 @@
 export const updates = [
   {
+    version: '0.34.0',
+    title: 'Yeni etkinlik akışı canlı önizleme ve daha kapsamlı yönlendirmeyle yenilendi',
+    changes: [
+      ['Yeni etkinlik oluşturma alanı; temel bilgiler, zaman ve yer, başvuru ve son kontrol adımlarını daha belirgin bir ilerleme düzeninde bir araya getirecek şekilde yenilendi.', 'Nerede olduğunu bilerek daha rahat ilerleme'],
+      ['Tamamlanan adımlara geri dönme ve son kontrol ekranından ilgili bilgi grubunu doğrudan düzenleme seçenekleri eklendi.', 'Bilgileri baştan başlamadan gözden geçirme'],
+      ['Etkinlik adı, kısa açıklama, tarih, saat, katılım biçimi ve mekân bilgileri yazıldıkça katılımcı sayfasının canlı önizlemesinde gösterilmeye başlandı.', 'Etkinliği oluşturmadan önce katılımcı görünümünü görme'],
+      ['Yüz yüze, çevrim içi ve hibrit etkinlik seçenekleri; mekân, adres ve çevrim içi katılım bağlantısı alanlarıyla birlikte oluşturma akışına eklendi.', 'Etkinlik biçimini ilk kurulumda eksiksiz tanımlama'],
+      ['Hazır bir duyuru metninden etkinlik adı, özet, açıklama, tarih, mekân ve kontenjan bilgilerini taslağa aktarma alanı daha görünür ve anlaşılır hâle getirildi.', 'Mevcut içerikten daha hızlı etkinlik taslağı hazırlama'],
+      ['Önümüzdeki hafta ve önümüzdeki ay için hızlı tarih seçimleri ile otomatik etkinlik bağlantısı oluşturma seçenekleri düzenlendi.', 'Tekrarlayan tarih ve bağlantı işlemlerini hızlandırma'],
+      ['Onaylı başvuru ve doğrudan kayıt seçenekleri; kontenjan, görünürlük ve kişisel veri yönlendirmeleriyle aynı adımda toplandı.', 'Başvuru modelini sonuçlarını bilerek seçme'],
+      ['Etkinliğin önce taslak olarak kaydedileceği açıkça anlatıldı; doğrulama ve bağlantı hatalarında girilen bilgilerin korunması sürdürüldü.', 'Yayınlama baskısı olmadan güvenle hazırlık yapma'],
+    ],
+  },
+  {
+    version: '0.33.0',
+    title: 'Yönetim ekranları ve etkinlik kontrol merkezi ortak bir görsel dilde buluştu',
+    changes: [
+      ['Başlangıç ekranındaki sıcak, sakin ve odaklı görsel dil yönetim sayfalarına; renkler, yüzeyler, gölgeler ve tipografi üzerinden taşındı.', 'Ürün genelinde daha bütünlüklü deneyim'],
+      ['Ana eylemler, ikincil düğmeler, form alanları ve klavye odak durumları daha belirgin ve tutarlı hâle getirildi.', 'İşlemleri ve aktif alanı daha kolay ayırt etme'],
+      ['Ana menü, bilgi kartları, sekmeler, tablolar ve durum yüzeyleri aynı tasarım sistemine göre yenilendi.', 'Sayfalar arasında görsel alışkanlığı koruma'],
+      ['Etkinlik kontrol merkezi koyu ve odaklı yeni bir üst alana kavuştu; etkinlik adı, kurum, tarih ve saat daha güçlü bir kimlik düzeninde gösterilmeye başlandı.', 'Yönetilen etkinliği tek bakışta tanıma'],
+      ['Etkinlik tarihi gün ve ayı öne çıkaran ayrı bir tarih kartıyla gösterilirken hızlı işlemler yayın ve kayıt durumlarını daha anlaşılır biçimde yansıtmaya başladı.', 'Tarih ve canlı durum bilgisine daha hızlı erişim'],
+      ['Genel bakış, sıradaki işler, ölçümler ve etkinlik bilgi kartları yeni kontrol merkeziyle uyumlu yüzeylere dönüştürüldü.', 'Hazırlık ve takip işlerini daha rahat okuma'],
+      ['Yeni görsel düzenin dar ekran, tablet ve mobil davranışları iyileştirildi.', 'Farklı ekran boyutlarında tutarlı yönetim'],
+    ],
+  },
+  {
+    version: '0.32.0',
+    title: 'Ana sayfa bugünün önceliklerini, sıradaki etkinliği ve genel tabloyu birlikte gösteriyor',
+    changes: [
+      ['Ana sayfa günün tarihini ve saate göre değişen kişisel karşılamayı gösterecek şekilde baştan tasarlandı.', 'Çalışma alanına daha doğal ve anlaşılır başlangıç'],
+      ['Öne çıkan görev alanı; yayın bekleyen taslağa, sıradaki etkinliğe veya ilk etkinlik oluşturma adımına mevcut duruma göre otomatik yönlendiriyor.', 'O anda en önemli işe doğrudan odaklanma'],
+      ['Sıradaki etkinliğin tarihi, başlama zamanı, başvuru sayısı ve göreli zamanı ayrı bir özet kartında bir araya getirildi.', 'Yaklaşan etkinliği tek bakışta takip etme'],
+      ['Yaklaşan etkinlik, toplam başvuru ve yayındaki etkinlik ölçümleri daha sade bir özet şeridinde gösterilmeye başlandı.', 'Genel durumu hızlı değerlendirme'],
+      ['Etkinlik listesi tarihe göre sıralandı; yayın durumu, başvuru sayısı ve “bugün”, “yarın” veya “gün sonra” bilgileri satır düzeyinde görünür hâle geldi.', 'Takvimi ve hareketliliği daha kolay okuma'],
+      ['Henüz etkinliği olmayan kurumlar için ne yapılacağını anlatan yeni bir başlangıç alanı hazırlandı.', 'İlk etkinliğe daha kolay başlama'],
+      ['Ana sayfanın masaüstü, tablet ve telefon yerleşimleri yeni bilgi yoğunluğuna göre ayrı ayrı düzenlendi.', 'Her ekranda önemli bilgileri kaybetmeden çalışma'],
+    ],
+  },
+  {
+    version: '0.31.0',
+    title: 'Yeni İletişim sayfası ve açılır menü grupları desteğe erişimi kolaylaştırdı',
+    changes: [
+      ['Ana menüdeki Başlangıç, Etkinlikler, Kurum, Yönetim, Yardım ve Destek ile Eventise grupları açılıp kapatılabilir hâle getirildi.', 'Uzun menüde daha az kalabalıkla gezinme'],
+      ['Bulunulan sayfanın ait olduğu menü grubu otomatik olarak açık gösterilmeye başlandı.', 'Mevcut konumu ve ilgili seçenekleri kaybetmeme'],
+      ['Soru, öneri ve iş birliği mesajları için Yardım ve Destek altında ayrı bir İletişim sayfası eklendi.', 'Ekibe doğru kanaldan daha kolay ulaşma'],
+      ['İletişim formuna hangi konularda kullanılabileceğini anlatan yönlendirmeler ve yanıtın hesap e-posta adresine geleceği bilgisi eklendi.', 'Mesaj göndermeden önce süreci bilme'],
+      ['Teknik sorunlar için “Sorun bildir”, kullanım soruları için rehber, genel mesajlar için İletişim seçenekleri birbirinden ayrıldı.', 'İhtiyaca uygun destek yolunu daha kolay seçme'],
+      ['Açılır menü grupları ile iletişim alanının daraltılmış menü ve küçük ekran görünümleri iyileştirildi.', 'Masaüstü ve telefonda tutarlı destek erişimi'],
+    ],
+  },
+  {
+    version: '0.30.0',
+    title: 'Etkinlik onamı tek metin, güvenli sürümleme ve sade katılımcı kabulüyle yenilendi',
+    changes: [
+      ['Her etkinlik için birden fazla dağınık onam yerine katılımcının görüp kabul edeceği tek bir etkinlik onamı kullanılmaya başlandı.', 'Onam sürecini daha açık ve yönetilebilir tutma'],
+      ['Onam metni aynı düzenleme alanından oluşturulabilir ve güncellenebilir hâle geldi; her değişiklik yeni sürüm olarak korunuyor.', 'Metni çoğaltmadan güncel tutma'],
+      ['Eski etkinliklerde birden fazla onam bulunması durumunda en güncel kayıt korunacak şekilde veri yapısı güvenli biçimde düzenlendi.', 'Mevcut etkinliklerde tutarlı onam yapısı'],
+      ['Katılımcı kayıt formunda etkinliğe ait tek onam metni açık bir kabul seçeneğiyle gösterilmeye başlandı.', 'Başvuru sırasında daha anlaşılır karar verme'],
+      ['Eksik, geçersiz veya eski onam sürümleriyle kayıt tamamlanması engellendi ve hata mesajları sadeleştirildi.', 'Güncel metne dayanan daha güvenilir kayıt'],
+      ['Kullanım Rehberi, tek etkinlik onamının nereden düzenleneceğini anlatacak şekilde güncellendi.', 'Yeni yapıyı doğru yerden yönetme'],
+    ],
+  },
+  {
+    version: '0.29.0',
+    title: 'Giriş yolları sadeleşti, katılımcı ve STK ekranlarında SİCİ kimliği güçlendi',
+    changes: [
+      ['Giriş ve hesap oluşturma başlangıcında katılımcı ile STK seçenekleri daha kısa açıklamalar ve tek, belirgin eylemle yeniden düzenlendi.', 'Doğru hesap yolunu daha hızlı seçme'],
+      ['Katılımcı ve STK için giriş ile hesap oluşturma ekranlarının başlıkları yapılacak işlemi doğrudan anlatacak şekilde sadeleştirildi.', 'Ekranın amacını ilk bakışta anlama'],
+      ['STK daveti ve katılımcı etkinlikleri gibi bağlama özel yönlendirmeler ilgili giriş ekranlarında gösterilmeye başlandı.', 'Hesap işleminden sonra ne olacağını önceden bilme'],
+      ['Giriş alanlarında ortak SİCİ logosu ve daha güçlü bir marka yüzeyi kullanılmaya başlandı; kurum adı yazımı ürün genelinde “SİCİ” olarak standartlaştırıldı.', 'Daha tutarlı ürün ve kurum kimliği'],
+      ['Yeni giriş düzeni küçük ekranlarda logo, başlık ve form alanlarını koruyacak şekilde uyarlanlandı.', 'Telefonda daha rahat hesap erişimi'],
+    ],
+  },
+  {
     version: '0.28.0',
     title: 'Etkinlik işlemleri artık daha görünür ve güvenli',
     changes: [
