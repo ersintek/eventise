@@ -16,7 +16,7 @@ export default function UpdatesPage() {
           <span className="update-version">
             <span>Güncelleme</span>
             <strong>{update.version}</strong>
-            {index === 0 && <small>En yeni</small>}
+            {index === 0 && <small>{'label' in update ? update.label : 'En yeni'}</small>}
           </span>
           <span className="update-heading">
             <strong>{update.title}</strong>
