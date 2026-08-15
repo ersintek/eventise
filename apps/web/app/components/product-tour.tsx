@@ -73,9 +73,9 @@ export function ProductTour({ eventPath }: { eventPath: string }) {
   if (welcome) return <div className="tour-layer" role="dialog" aria-modal="true" aria-labelledby="tour-welcome-title">
     <div className="tour-welcome">
       <span className="tour-spark">e</span><p className="eyebrow">ETKİNLİK ÇALIŞMA ALANI</p>
-      <h2 id="tour-welcome-title">Hazırlıktan sonuca kadar tek, sakin bir akış.</h2>
-      <p>Yeni çalışma alanını kısa bir turla tanıyın; her bölümde ne yapacağınızı ve sırada ne olduğunu görün.</p>
-      <div className="tour-value-row"><span>Hazırlığı tamamlayın</span><span>Katılımı yönetin</span><span>Sonuçları paylaşın</span></div>
+      <h2 id="tour-welcome-title">Bölümleri ve durumları tanıyın.</h2>
+      <p>Bu tur, etkinliği hangi bölümden yöneteceğinizi ve durum kontrollerinin ne yaptığını gösterir.</p>
+      <div className="tour-value-row"><span>Etkinlik öncesi</span><span>Etkinlik sırasında</span><span>Etkinlik sonrası</span></div>
       <div className="tour-actions"><button type="button" className="tour-text-button" onClick={() => close(true)}>Şimdi değil</button><button type="button" className="primary" onClick={() => { window.scrollTo({ top: 0, behavior: 'auto' }); setWelcome(false); }}>Kısa turu başlat <span>→</span></button></div>
     </div>
   </div>;
@@ -88,7 +88,7 @@ export function ProductTour({ eventPath }: { eventPath: string }) {
       <div className="tour-popover-top"><span>{index + 1} / {EVENTISE_TOUR_STEPS.length}</span><button type="button" onClick={() => close()} aria-label="Turu kapat">×</button></div>
       <p className="tour-step-eyebrow">{step.eyebrow}</p><h2 id="tour-step-title">{step.title}</h2><p>{step.description}</p>
       <div className="tour-dots" aria-hidden="true">{EVENTISE_TOUR_STEPS.map((item, dot) => <i className={dot === index ? 'active' : ''} key={item.id}/>)}</div>
-      <div className="tour-actions">{index > 0 ? <button type="button" className="tour-text-button" onClick={() => setIndex(index - 1)}>Geri</button> : <button type="button" className="tour-text-button" onClick={() => close()}>Turu kapat</button>}<button type="button" className="primary" onClick={() => finish ? close(true) : setIndex(index + 1)}>{finish ? 'Keşfetmeye başla' : 'Devam'} <span>→</span></button></div>
+      <div className="tour-actions">{index > 0 ? <button type="button" className="tour-text-button" onClick={() => setIndex(index - 1)}>Geri</button> : <button type="button" className="tour-text-button" onClick={() => close()}>Turu kapat</button>}<button type="button" className="primary" onClick={() => finish ? close(true) : setIndex(index + 1)}>{finish ? 'Turu tamamla' : 'Devam'} <span>→</span></button></div>
     </section>
   </div>;
 }

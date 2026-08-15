@@ -37,13 +37,13 @@ const sections: GuideSection[] = [
     items: [
       {
         q: 'Yeni etkinlik oluştururken hangi bilgiler istenir?',
-        a: 'Akış dört sade adımda ilerler: temel bilgiler, zaman ve yer, başvuru ayarları ve son kontrol. Etkinliğin adı, tanıtımı, tarihleri, katılım biçimi, yer veya çevrim içi bağlantı, görünürlük, kayıt yöntemi ve kapasite belirlenir. Tamamlanan bir adıma istediğiniz zaman geri dönebilirsiniz.',
+        a: 'Akış dört adımda ilerler: başlangıç, zaman ve yer, kayıt ve görünüm. Elinizde bir duyuru metni varsa ilk ekranda Otomatik Doldur ile başlık, açıklama, tarih, saat ve mekân bilgilerini çıkarabilirsiniz. Görsel ve vurgu rengi isteğe bağlıdır.',
         path: 'Ana menü → Yeni etkinlik',
-        check: 'Yayımlamadan önce tarih, saat ve katılımcıyla paylaşılacak bağlantıları yeniden gözden geçirin.',
+        check: 'Etkinliği Yayında durumuna geçirmeden önce tarih, saat ve katılımcıyla paylaşılacak bağlantıları yeniden gözden geçirin.',
       },
       {
         q: 'Canlı önizleme neyi gösterir?',
-        a: 'Sağdaki önizleme etkinlik adını, kısa açıklamayı, tarihi, saati, katılım biçimini ve mekânı yazdığınız anda katılımcı sayfasına benzer biçimde gösterir. Bu alan yalnızca önizlemedir; etkinlik önce taslak olarak kaydedilir ve siz yayın kontrolünü açana kadar dışarıdan görünmez.',
+        a: 'Sağdaki önizleme etkinlik adını, kısa açıklamayı, tarihi, saati, katılım biçimini ve varsa mekânı yazdığınız anda gösterir. Bu alan yalnızca önizlemedir; etkinlik önce Taslak olarak kaydedilir ve Yayında durumuna geçirilene kadar dışarıdan görünmez.',
         path: 'Ana menü → Yeni etkinlik → Canlı önizleme',
       },
       {
@@ -64,7 +64,7 @@ const sections: GuideSection[] = [
       {
         q: 'Etkinlik sayfasının görünümünü nasıl düzenlerim?',
         a: 'Kurum logonuzu ve etkinliğinizi anlatan yatay kapak görselini yükleyin, ardından butonlar ve önemli bilgiler için bir vurgu rengi seçin. Her değişikliği sağdaki masaüstü önizlemesinde anında görebilirsiniz.',
-        path: 'Etkinliği yönet → Etkinlik Bilgileri → Sayfa tasarımı',
+        path: 'Etkinliği yönet → Etkinlik Bilgileri → Sayfa Görünümü',
         check: 'Kapak görselinde okunaklı, yüksek çözünürlüklü ve etkinliği doğru temsil eden bir görsel kullanın.',
       },
       {
@@ -72,7 +72,7 @@ const sections: GuideSection[] = [
         a: 'Logo ve kapak için PNG, JPG veya WebP kullanabilirsiniz. Kapak görselinde 1600 × 900 piksel yatay oran önerilir. Logo en fazla 5 MB, kapak görseli ise en fazla 15 MB olabilir.',
       },
       {
-        q: 'Sayfa tasarımını etkinliği yayınladıktan sonra değiştirebilir miyim?',
+        q: 'Sayfa görünümünü etkinlik Yayındayken değiştirebilir miyim?',
         a: 'Evet. Logo, kapak ve vurgu rengini dilediğiniz zaman güncelleyebilirsiniz. Değişiklikler etkinlik sayfasına yansır; paylaşılmış bir etkinlikte değişiklikten sonra sayfayı önizlemeniz önerilir.',
       },
     ],
@@ -83,21 +83,21 @@ const sections: GuideSection[] = [
     intro: 'Etkinliğin kimler tarafından görüleceğini ve başvuruların nasıl sonuçlanacağını siz belirlersiniz.',
     items: [
       {
-        q: 'Taslak, yayın ve kayıt durumu arasındaki fark nedir?',
-        a: 'Taslak etkinlik katılımcılara gösterilmez. Etkinliği yayımladığınızda tanıtım sayfası erişilebilir olur. Kayıtları ayrıca açıp kapatabilirsiniz; böylece sayfa yayında kalırken yeni başvuruları durdurabilirsiniz.',
+        q: 'Etkinlik durumu ile kayıt formu durumu arasındaki fark nedir?',
+        a: 'Etkinlik Taslak veya Yayında olabilir. Kayıt formu ise Açık veya Kapalı olabilir. Böylece etkinlik sayfası Yayında kalırken yeni başvuruları durdurabilirsiniz.',
       },
       {
         q: 'Görünürlük seçenekleri ne anlama gelir?',
         a: '“Herkese açık” etkinlikler katılımcıların Yaklaşan Etkinlikler alanında keşfedilebilir. “Bağlantıya sahip olanlar” yalnızca paylaştığınız adres üzerinden ulaşır. “Yalnız davetliler” seçeneğinde ise yalnızca davet edilen kişiler kayıt olabilir.',
       },
       {
-        q: 'Doğrudan kayıt ve onaylı başvuru arasındaki fark nedir?',
-        a: 'Doğrudan kayıtta uygun başvuru otomatik kabul edilir. Onaylı başvuruda her başvuruyu inceleyip kabul veya reddedersiniz. Kontrollü ya da seçimli etkinliklerde onaylı başvuru daha uygundur.',
+        q: 'Otomatik kabul ve başvuru onayı arasındaki fark nedir?',
+        a: 'Otomatik kabul seçildiğinde uygun başvuru kontenjan dolana kadar kabul edilir. Başvuru onayı seçildiğinde her başvuruyu inceleyip kabul, ret veya yedek liste kararı verirsiniz.',
       },
       {
         q: 'Kayıt formunu ve onamları değiştirebilir miyim?',
-        a: 'Etkinlik Bilgileri bölümünde standart ad, soyad ve e-posta alanlarına ek sorular ekleyebilir; alanları zorunlu yapabilirsiniz. Katılımcının görüp onaylayacağı tek onam metnini de burada düzenleyebilirsiniz. Katılımcıya yalnızca gerçekten ihtiyaç duyduğunuz bilgileri sorun.',
-        path: 'Etkinliği yönet → Etkinlik Bilgileri → Formlar ve Onam',
+        a: 'Kayıt Formu bölümünde değiştirilemeyen ad, soyad ve e-posta alanlarına ek sorular ekleyebilir; bu soruları zorunlu yapabilirsiniz. Katılımcının onaylayacağı onam metnini de burada düzenleyebilirsiniz. Yalnızca gerekli bilgileri sorun.',
+        path: 'Etkinliği yönet → Etkinlik Bilgileri → Kayıt Formu',
         check: 'Formu katılımcı bağlantısından bir kez deneyin ve yalnızca gerekli bilgileri istediğinizden emin olun.',
       },
     ],
@@ -109,7 +109,7 @@ const sections: GuideSection[] = [
       {
         q: 'Başvuruları nereden yönetirim?',
         a: 'Etkinlik çalışma alanındaki başvuru listesinden katılımcı bilgilerini ve başvuru yanıtlarını görebilirsiniz. Onaylı başvuru kullanıyorsanız başvuruları buradan kabul veya reddedersiniz.',
-        path: 'Etkinliği yönet → Etkinlik Bilgileri → Başvurular',
+        path: 'Etkinliği yönet → Başvurular',
         check: 'İşlem yapmadan önce doğru etkinliği ve katılımcıyı seçtiğinizi kontrol edin.',
       },
       {
@@ -133,7 +133,7 @@ const sections: GuideSection[] = [
       },
       {
         q: 'Hatırlatma planlanabilir mi?',
-        a: 'Evet. Davet ve İletişim bölümünde mesaj şablonlarını kullanabilir, hatırlatmaları ileri bir tarih ve saate planlayabilir, gönderilmiş ve planlanmış iletileri takip edebilirsiniz.',
+        a: 'Evet. İletişim bölümünde mesaj şablonlarını kullanabilir, hatırlatmaları ileri bir tarih ve saate planlayabilir, gönderilmiş ve planlanmış iletileri takip edebilirsiniz.',
       },
       {
         q: 'Duyurular nerede görünür?',
@@ -156,7 +156,7 @@ const sections: GuideSection[] = [
       },
       {
         q: 'Kaynak veya dosya paylaşabilir miyim?',
-        a: 'Evet. Davet ve İletişim bölümündeki Kaynak Paylaşımı alanından bir web bağlantısı ekleyebilir veya doğrudan dosya yükleyebilirsiniz. Yüklenen dosyalar kurumunuzun kullanım kotasına dâhildir.',
+        a: 'Evet. İletişim bölümündeki Kaynak Paylaşımı alanından bir web bağlantısı ekleyebilir veya doğrudan dosya yükleyebilirsiniz. Yüklenen dosyalar kurumunuzun kullanım kotasına dâhildir.',
       },
       {
         q: 'Geri bildirim formunda hangi sorular kullanılabilir?',
@@ -166,17 +166,17 @@ const sections: GuideSection[] = [
   },
   {
     id: 'etkinlik-gunu',
-    title: '8. Kapı ve Katılım',
+    title: '8. Katılım',
     intro: 'Kapı girişi ve katılım teyidi araçları her zaman erişilebilir; önceden deneyebilir ve ekibinizi hazırlayabilirsiniz.',
     items: [
       {
         q: 'Etkinliği ayrıca “canlıya almam” gerekir mi?',
-        a: 'Hayır. Etkinliğin “Yaklaşan”, “Devam ediyor” ve “Tamamlandı” dönemleri tarihlerden otomatik hesaplanır ve hiçbir aracı kilitlemez. Kapı ve Katılım ekranını önceden açıp prova yapabilirsiniz.',
+        a: 'Hayır. Etkinliğin “Yaklaşan”, “Devam ediyor” ve “Tamamlandı” dönemleri tarihlerden otomatik hesaplanır ve hiçbir aracı kilitlemez. Katılım ekranını önceden açıp prova yapabilirsiniz.',
       },
       {
         q: 'Katılım teyidi nasıl yapılır?',
-        a: 'Kapı ve Katılım ekranındaki QR kodu veya bağlantıyı kullanabilir, katılımcıyı listeden bulup girişini kaydedebilirsiniz. Önceden kaydı olmayan kişiler için kapıda kayıt akışı da kullanılabilir.',
-        path: 'Etkinliği yönet → Kapı ve Katılım',
+        a: 'Katılım ekranındaki QR kodu veya bağlantıyı kullanabilir, katılımcıyı listeden bulup girişini kaydedebilirsiniz. Önceden kaydı olmayan kişiler için kapıda kayıt akışı da kullanılabilir.',
+        path: 'Etkinliği yönet → Katılım',
         check: 'Etkinlikten önce QR bağlantısını farklı bir telefonda açarak kısa bir prova yapın.',
       },
       {
@@ -225,7 +225,7 @@ const sections: GuideSection[] = [
   },
   {
     id: 'katilimci',
-    title: '11. Katılımcı deneyimi',
+    title: '11. Katılımcı alanı',
     items: [
       {
         q: 'Katılımcılar etkinlikleri nasıl bulur?',

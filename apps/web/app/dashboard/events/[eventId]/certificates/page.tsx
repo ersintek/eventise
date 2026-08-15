@@ -1,6 +1,5 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { EventNav } from '../../../../components/navigation';
 import { CertificateManager } from './certificate-manager';
 
 async function api<T>(path: string, token: string): Promise<T> {
@@ -25,8 +24,7 @@ export default async function CertificatesPage({ params }: { params: Promise<{ e
     api<{ checkedIn: number }>(`organizations/${organization.id}/events/${eventId}/reports/summary`, token),
   ]);
   return <main className="builder-shell">
-    <header><div><p className="eyebrow">SERTİFİKALAR</p><h1>{event.title}</h1><p>Katılım sertifikanızı hazırlayın ve katılanlara birkaç adımda ulaştırın.</p></div></header>
-    <EventNav eventId={eventId} active="certificates"/>
+    <div className="workspace-page-heading"><div><p className="eyebrow">ETKİNLİK SONRASI</p><h2>Sertifikalar</h2><p>Katılım sertifikanızı hazırlayın ve katılanlara birkaç adımda ulaştırın.</p></div></div>
     <CertificateManager organizationId={organization.id} organizationName={organization.name} eventId={eventId} eventName={event.title} eventDate={event.startsAt} eligibleCount={summary.checkedIn} initialTemplates={templates}/>
   </main>;
 }

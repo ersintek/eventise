@@ -12,6 +12,7 @@
     "test:cov": "npm run test:cov -w @eventise/api",
     "test:web": "playwright test",
     "lint": "npm run lint -w @eventise/api",
+    "check:language": "node scripts/check-product-language.mjs",
     "db:generate": "npm run db:generate -w @eventise/api",
     "db:migrate": "npm run db:migrate -w @eventise/api",
     "dev:api": "npm run start:dev -w @eventise/api",

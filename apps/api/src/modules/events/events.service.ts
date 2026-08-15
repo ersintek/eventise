@@ -33,21 +33,51 @@ export class EventsService {
     });
     await this.audit.record({ actorId: userId, organizationId, action: 'event.created', resourceType: 'event', resourceId: event.id }); return event;
   }
-  async list(userId: string, organizationId: string) { const membership=await this.access.requireMembership(userId,organizationId);return this.prisma.event.findMany({where:{organizationId,...(membership.role==='ORGANIZATION_ADMIN'?{}:{staffAssignments:{some:{membershipId:membership.id}}})},include:{faqs:true,form:{include:{versions:{where:{publishedAt:{not:null}},orderBy:{version:'desc'},take:1,select:{id:true,version:true,schema:true}}}},_count:{select:{registrations:true}}},orderBy:{startsAt:'desc'}}); }
+  async list(userId: string, organizationId: string) {
+    const membership = await this.access.requireMembership(userId, organizationId);
+    const events = await this.prisma.event.findMany({
+      where: { organizationId, ...(membership.role === 'ORGANIZATION_ADMIN' ? {} : { staffAssignments: { some: { membershipId: membership.id } } }) },
+      include: {
+        faqs: true,
+        form: { include: { versions: { where: { publishedAt: { not: null } }, orderBy: { version: 'desc' }, take: 1, select: { id: true, version: true, schema: true } } } },
+        registrations: { select: { applicationStatus: true } },
+        _count: { select: { registrations: true } },
+      },
+      orderBy: { startsAt: 'desc' },
+    });
+    return events.map(({ registrations, ...event }) => ({
+      ...event,
+      registrationSummary: {
+        total: registrations.length,
+        pending: registrations.filter(item => item.applicationStatus === 'SUBMITTED' || item.applicationStatus === 'PENDING').length,
+        accepted: registrations.filter(item => item.applicationStatus === 'ACCEPTED').length,
+        waitlisted: registrations.filter(item => item.applicationStatus === 'WAITLISTED').length,
+        rejected: registrations.filter(item => item.applicationStatus === 'REJECTED').length,
+      },
+    }));
+  }
   async update(userId:string,organizationId:string,eventId:string,dto:UpdateEventDto){
     await this.access.requireEventAccess(userId,organizationId,eventId,['ORGANIZATION_ADMIN','EVENT_MANAGER']);
     const event=await this.prisma.event.findFirst({where:{id:eventId,organizationId}});if(!event)throw new NotFoundException('Etkinlik bulunamadı.');
     const startsAt=new Date(dto.startsAt),endsAt=new Date(dto.endsAt);assertEventDates(startsAt,endsAt);
     const limits=await this.tiers.limitsFor(userId,organizationId);if(dto.capacity>limits.maxParticipantsPerEvent)throw new BadRequestException('Katılımcı kapasitesi tier limitini aşıyor.');
     if(dto.formId&&!await this.prisma.form.findFirst({where:{id:dto.formId,organizationId}}))throw new BadRequestException('Kayıt formu bu kuruma ait değil.');
-    const updated=await this.prisma.$transaction(async tx=>{await tx.eventFaqItem.deleteMany({where:{eventId}});return tx.event.update({where:{id:eventId},data:{title:dto.title.trim(),summary:dto.summary,description:dto.description,venueName:dto.venueName,venueAddress:dto.venueAddress,format:dto.format,onlineLink:dto.onlineLink,startsAt,endsAt,capacity:dto.capacity,visibility:dto.visibility,registrationMode:dto.registrationMode,formId:dto.formId||null,faqs:{create:dto.faqs.map((faq,index)=>({...faq,sortOrder:index}))}},include:{faqs:true,_count:{select:{registrations:true}}}})});
+    const updated=await this.prisma.$transaction(async tx=>{if(dto.faqs!==undefined)await tx.eventFaqItem.deleteMany({where:{eventId}});return tx.event.update({where:{id:eventId},data:{title:dto.title.trim(),summary:dto.summary,description:dto.description,venueName:dto.venueName,venueAddress:dto.venueAddress,format:dto.format,onlineLink:dto.onlineLink,startsAt,endsAt,capacity:dto.capacity,visibility:dto.visibility,registrationMode:dto.registrationMode,...(dto.formId!==undefined?{formId:dto.formId||null}:{}),...(dto.faqs!==undefined?{faqs:{create:dto.faqs.map((faq,index)=>({...faq,sortOrder:index}))}}:{})},include:{faqs:true,_count:{select:{registrations:true}}}})});
     await this.audit.record({actorId:userId,organizationId,action:'event.updated',resourceType:'event',resourceId:eventId});return updated;
+  }
+  async updateFaqs(userId:string,organizationId:string,eventId:string,faqs:Array<{question:string;answer:string}>){
+    await this.access.requireEventAccess(userId,organizationId,eventId,['ORGANIZATION_ADMIN','EVENT_MANAGER']);
+    if(!await this.prisma.event.findFirst({where:{id:eventId,organizationId},select:{id:true}}))throw new NotFoundException('Etkinlik bulunamadı.');
+    const items=await this.prisma.$transaction(async tx=>{await tx.eventFaqItem.deleteMany({where:{eventId}});if(faqs.length)await tx.eventFaqItem.createMany({data:faqs.map((faq,index)=>({eventId,question:faq.question.trim(),answer:faq.answer.trim(),sortOrder:index}))});return tx.eventFaqItem.findMany({where:{eventId},orderBy:{sortOrder:'asc'}})});
+    await this.audit.record({actorId:userId,organizationId,action:'event.faqs_updated',resourceType:'event',resourceId:eventId,metadata:{count:items.length}});return items;
   }
   async setState(userId: string, organizationId: string, eventId: string, dto: EventStateDto) {
     await this.access.requireEventAccess(userId, organizationId, eventId, ['ORGANIZATION_ADMIN','EVENT_MANAGER']);
     const event = await this.prisma.event.findFirst({ where: { id: eventId, organizationId } }); if (!event) throw new NotFoundException('Etkinlik bulunamadı.');
     if (!Object.values(EventPublicationStatus).includes(dto.publicationStatus as EventPublicationStatus) || !canTransitionPublication(event.publicationStatus, dto.publicationStatus)) throw new BadRequestException('Geçersiz yayın durumu geçişi.');
-    const updated = await this.prisma.event.update({ where: { id: eventId }, data: { publicationStatus: dto.publicationStatus as EventPublicationStatus, registrationStatus: dto.registrationStatus } });
+    const nextRegistration = dto.registrationStatus ?? event.registrationStatus;
+    if (dto.publicationStatus !== 'PUBLISHED' && nextRegistration === 'OPEN') throw new BadRequestException('Kayıt formunu açmadan önce etkinliği yayınlayın.');
+    const updated = await this.prisma.event.update({ where: { id: eventId }, data: { publicationStatus: dto.publicationStatus as EventPublicationStatus, registrationStatus: nextRegistration } });
     await this.audit.record({ actorId: userId, organizationId, action: 'event.state_changed', resourceType: 'event', resourceId: eventId, metadata: { from: event.publicationStatus, to: updated.publicationStatus } }); return updated;
   }
   async publicGet(orgSlug: string, eventSlug: string) {

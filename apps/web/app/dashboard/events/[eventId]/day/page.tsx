@@ -2,7 +2,6 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import QRCode from 'qrcode';
 import { FieldOperations } from './field-operations';
-import { EventNav } from '../../../../components/navigation';
 
 type Stats = { registered: number; checkedIn: number; remaining: number };
 type RosterItem = { id: string; firstName: string; lastName: string; email: string; attendance: null | { status: string; confirmedAt: string; method: string } };
@@ -34,5 +33,5 @@ export default async function EventDay({ params }: { params: Promise<{ eventId: 
   if (!event) redirect('/dashboard');
   const url = `${process.env.PUBLIC_APP_URL ?? 'http://localhost:3001'}/check-in/${activation.eventToken}`;
   const qr = await QRCode.toDataURL(url, { width: 420, margin: 2, color: { dark: '#17493a', light: '#ffffff' } });
-  return <main className="builder-shell"><header><div><p className="eyebrow">KAPI VE KATILIM</p><h1>{event.title}</h1><p>Kapı girişlerini, katılım teyidini ve kapıda kaydı tek ekrandan yönetin.</p></div></header><EventNav eventId={eventId} active="day"/><section className="day-layout"><aside className="checkin-panel"><div><p className="eyebrow">KATILIM QR KODU</p><h2>Girişte okutun</h2><p>Katılımcı kodu okutup e-posta adresiyle girişini doğrular.</p></div><img src={qr} alt="Katılım teyidi QR kodu"/><details><summary>Bağlantıyı göster</summary><code>{url}</code></details></aside><FieldOperations organizationId={organizationId} eventId={eventId} initialStats={stats} initialRoster={roster} initialFeatures={features}/></section></main>;
+  return <main className="builder-shell"><div className="workspace-page-heading"><div><p className="eyebrow">ETKİNLİK SIRASINDA</p><h2>Katılım</h2><p>Kapı girişlerini, katılım teyidini ve kapıda kaydı yönetin.</p></div></div><section className="day-layout"><aside className="checkin-panel"><div><p className="eyebrow">KATILIM QR KODU</p><h2>Girişte okutun</h2><p>Katılımcı kodu okutup e-posta adresiyle girişini doğrular.</p></div><img src={qr} alt="Katılım teyidi QR kodu"/><details><summary>Bağlantıyı göster</summary><code>{url}</code></details></aside><FieldOperations organizationId={organizationId} eventId={eventId} initialStats={stats} initialRoster={roster} initialFeatures={features}/></section></main>;
 }

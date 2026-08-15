@@ -23,6 +23,7 @@ export default async function EventLayout({
         startsAt={event.startsAt}
         publicationStatus={event.publicationStatus}
         registrationStatus={event.registrationStatus}
+        registrationCount={event._count?.registrations ?? 0}
       />
       <div className="event-workspace-content">{children}</div>
     </main>

@@ -180,7 +180,7 @@ export function ModuleManager(p: {
         {tab === 'feedback' && (
           <>
             <form className="workspace-card" onSubmit={createFeedback}>
-              <div className="section-intro"><h2>Geri bildirim formu oluştur</h2><p>Etkinlik deneyimini değerlendirmek için katılımcılara sorular hazırlayın.</p></div>
+              <div className="section-intro"><h2>Geri bildirim formu oluştur</h2><p>Etkinliği değerlendirmek için katılımcılara sorular hazırlayın.</p></div>
               <label>Form başlığı<input name="title" defaultValue="Etkinlik geri bildirimi" required /></label>
               <FeedbackEditor />
               <button className="primary" disabled={busy}>{busy ? 'Oluşturuluyor…' : 'Formu oluştur ve aç'}</button>

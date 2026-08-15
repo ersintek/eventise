@@ -1,13 +1,6 @@
-import { EventNav } from '../../../components/navigation';
-import { EventWorkspace } from './event-workspace';
-import { loadEventData } from './event-data';
+import { redirect } from 'next/navigation';
 
 export default async function EventDashboard({ params }: { params: Promise<{ eventId: string }> }) {
   const { eventId } = await params;
-  const { organization, event, registrations, forms, templates, consents, reminders } = await loadEventData(eventId);
-  return <main className="builder-shell">
-    <header><div><p className="eyebrow">ETKİNLİK YÖNETİMİ</p><h1>{event.title}</h1></div></header>
-    <EventNav eventId={eventId} active="dashboard" />
-    <EventWorkspace organization={organization} event={event} initialRegistrations={registrations} forms={forms} templates={templates} consents={consents} initialReminders={reminders} section="dashboard" />
-  </main>;
+  redirect(`/dashboard/events/${eventId}/settings?subtab=info`);
 }

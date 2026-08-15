@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { formatDateLong } from '@/lib/datetime';
+import { publicationLabel, registrationLabel } from '@/lib/product-language';
+import { ActionFeedback, type FeedbackState } from '../../../components/action-feedback';
 
 const icons: Record<string, React.ReactNode> = {
-  overview: <><path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z"/></>,
   info: <><path d="M5 4h14v16H5z"/><path d="M9 8h6M9 12h6M9 16h4"/></>,
+  applications: <><path d="M8 4h8M9 2h6v4H9z"/><path d="M5 5h14v16H5zM8 11h8M8 15h5"/></>,
   tools: <><path d="m14.7 6.3 3-3a4 4 0 0 1-5 5l-7.4 7.4a2 2 0 1 1-3-3l7.4-7.4a4 4 0 0 1 5-5l-3 3 3 3Z"/></>,
   communication: <><path d="M4 5h16v11H8l-4 4V5Z"/><path d="m7 8 5 4 5-4"/></>,
   door: <><path d="M5 21h14M7 21V4l10-2v19"/><circle cx="14" cy="12" r=".8"/></>,
@@ -19,17 +21,32 @@ function Icon({ name }: { name: string }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{icons[name]}</svg>;
 }
 
-export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug, organizationName, title, eventSlug, startsAt, publicationStatus, registrationStatus }: {
-  eventId: string; organizationId: string; organizationSlug: string; organizationName: string; title: string; eventSlug: string; startsAt: string; publicationStatus: string; registrationStatus: string;
-}) {
+type Props = {
+  eventId: string;
+  organizationId: string;
+  organizationSlug: string;
+  organizationName: string;
+  title: string;
+  eventSlug: string;
+  startsAt: string;
+  publicationStatus: string;
+  registrationStatus: string;
+  registrationCount?: number;
+};
+
+export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug, organizationName, title, eventSlug, startsAt, publicationStatus, registrationStatus, registrationCount = 0 }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const [publication, setPublication] = useState(publicationStatus);
   const [registration, setRegistration] = useState(registrationStatus);
   const [busy, setBusy] = useState(false);
   const [compact, setCompact] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [feedback, setFeedback] = useState<FeedbackState>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const deleteRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     let frame = 0;
     const onScroll = () => {
@@ -37,14 +54,15 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
       frame = window.requestAnimationFrame(() => {
         frame = 0;
         const y = window.scrollY;
-        setCompact(current => current ? y > 32 : y > 160);
+        setCompact(current => current ? y > 32 : y > 150);
       });
     };
     const onPointerDown = (event: PointerEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
       if (!deleteRef.current?.contains(event.target as Node)) setDeleteOpen(false);
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setDeleteOpen(false);
+      if (event.key === 'Escape') { setMenuOpen(false); setDeleteOpen(false); }
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -57,71 +75,117 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
+
   const base = `/dashboard/events/${eventId}`;
   const publicUrl = `/events/${organizationSlug}/${eventSlug}`;
   const eventDate = new Date(startsAt);
-  const eventDay = eventDate.getDate();
-  const eventMonth = eventDate.toLocaleDateString('tr-TR', { month: 'short' });
-  const current = pathname === base ? 'overview' : pathname.includes('/settings') ? 'info' : pathname.includes('/modules') ? 'tools' : pathname.includes('/communication') ? 'communication' : pathname.includes('/day') ? 'door' : pathname.includes('/post-event') ? 'results' : 'certificate';
-  const links = [
-    [base, 'Genel Bakış', 'overview'],
-    [`${base}/settings`, 'Kayıt & Bilgiler', 'info'],
-    [`${base}/modules`, 'Etkinlik Araçları', 'tools'],
-    [`${base}/communication`, 'Davet & İletişim', 'communication'],
-    [`${base}/day`, 'Kapı & Katılım', 'door'],
-    [`${base}/post-event`, 'Sonuçlar', 'results'],
-    [`${base}/certificates`, 'Sertifikalar', 'certificate'],
+  const current = pathname.includes('/applications') ? 'applications'
+    : pathname.includes('/settings') ? 'info'
+      : pathname.includes('/modules') ? 'tools'
+        : pathname.includes('/communication') ? 'communication'
+          : pathname.includes('/day') ? 'door'
+            : pathname.includes('/post-event') ? 'results'
+              : pathname.includes('/certificates') ? 'certificate' : 'info';
+  const groups = [
+    { label: 'Etkinlik öncesi', links: [
+      [`${base}/settings?subtab=info`, 'Etkinlik Bilgileri', 'info'],
+      [`${base}/applications`, 'Başvurular', 'applications'],
+      [`${base}/communication`, 'İletişim', 'communication'],
+      [`${base}/modules`, 'Araçlar', 'tools'],
+    ] },
+    { label: 'Etkinlik sırasında', links: [[`${base}/day`, 'Katılım', 'door']] },
+    { label: 'Etkinlik sonrası', links: [
+      [`${base}/post-event`, 'Sonuçlar', 'results'],
+      [`${base}/certificates`, 'Sertifikalar', 'certificate'],
+    ] },
   ];
-  async function update(nextPublication: string, nextRegistration: string) {
-    setBusy(true);
-    const response = await fetch(`/api/backend/organizations/${organizationId}/events/${eventId}/state`, {
-      method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ publicationStatus: nextPublication, registrationStatus: nextRegistration }),
-    });
-    if (response.ok) {
-      setPublication(nextPublication);
-      setRegistration(nextRegistration);
+
+  async function update(nextPublication: string, nextRegistration: string, success: string) {
+    setBusy(true); setFeedback(null);
+    try {
+      const response = await fetch(`/api/backend/organizations/${organizationId}/events/${eventId}/state`, {
+        method: 'PATCH', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ publicationStatus: nextPublication, registrationStatus: nextRegistration }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(Array.isArray(data.message) ? data.message.join(' ') : data.message ?? 'Durum güncellenemedi.');
+      setPublication(nextPublication); setRegistration(nextRegistration);
+      setFeedback({ kind: 'success', message: success });
       router.refresh();
-    }
-    setBusy(false);
+    } catch (error) {
+      setFeedback({ kind: 'error', message: error instanceof Error ? error.message : 'Durum güncellenemedi.' });
+    } finally { setBusy(false); }
   }
+
+  async function togglePublication() {
+    if (publication === 'PUBLISHED') {
+      const closesRegistration = registration === 'OPEN';
+      if (closesRegistration && !window.confirm('Etkinlik taslağa alınacak ve kayıt formu kapatılacak. Devam edilsin mi?')) return;
+      await update('UNPUBLISHED', closesRegistration ? 'CLOSED' : registration, closesRegistration ? 'Etkinlik taslağa alındı ve kayıt formu kapatıldı.' : 'Etkinlik taslağa alındı.');
+      return;
+    }
+    await update('PUBLISHED', registration, 'Etkinlik yayınlandı.');
+  }
+
+  async function toggleRegistration() {
+    if (registration === 'OPEN') {
+      await update(publication, 'CLOSED', 'Kayıt formu kapatıldı.');
+      return;
+    }
+    if (publication !== 'PUBLISHED') {
+      if (!window.confirm('Kayıt formunu açmak için etkinlik de yayınlanacak. İki işlemi birlikte yapmak istiyor musunuz?')) return;
+      await update('PUBLISHED', 'OPEN', 'Etkinlik yayınlandı ve kayıt formu açıldı.');
+      return;
+    }
+    await update(publication, 'OPEN', 'Kayıt formu açıldı.');
+  }
+
   async function removeEvent() {
-    if (!confirm('Etkinliği silme süreci başlatılsın mı? Etkinlik 30 gün boyunca geri alınabilir.')) return;
+    if (!window.confirm('Etkinlik silme süreci başlatılsın mı? Etkinlik 30 gün boyunca geri alınabilir.')) return;
     setBusy(true);
     const response = await fetch(`/api/backend/organizations/${organizationId}/events/${eventId}/deletion`, { method: 'POST' });
     if (response.ok) router.push('/dashboard#events');
-    else setBusy(false);
+    else { setBusy(false); setFeedback({ kind: 'error', message: 'Etkinlik silinemedi.' }); }
   }
 
-  return <header className={`event-command-center${compact ? ' is-compact' : ''}`} data-tour-id="event-command-center">
+  return <header className={`event-command-center simplified${compact ? ' is-compact' : ''}`} data-tour-id="event-command-center">
+    <ActionFeedback feedback={feedback} onDismiss={() => setFeedback(null)} />
     <div className="event-topline">
-      <Link className="event-back" href="/dashboard#events"><span>←</span> Tüm Etkinlikler</Link>
-      <span className="workspace-label">ETKİNLİK KONTROL MERKEZİ</span>
+      <Link className="event-back" href="/dashboard#events"><span>←</span> Tüm etkinlikler</Link>
+      <span className="workspace-label">ETKİNLİK YÖNETİMİ</span>
     </div>
-    <div className="event-identity">
-      <div className="event-identity-date" aria-hidden="true"><strong>{eventDay}</strong><span>{eventMonth}</span></div>
-      <div><span>{organizationName}</span><h1>{title}</h1><p>{formatDateLong(startsAt)}</p></div>
-    </div>
-    <div className="event-quick-actions" aria-label="Etkinlik hızlı işlemleri" data-tour-id="publication-controls">
-      <button className={`event-action-toggle ${publication === 'PUBLISHED' ? 'is-on' : ''}`} role="switch" aria-checked={publication === 'PUBLISHED'} disabled={busy} onClick={() => update(publication === 'PUBLISHED' ? 'UNPUBLISHED' : 'PUBLISHED', registration)} title="Katılımcıların etkinliğin herkese açık tanıtım sayfasını görüp göremeyeceğini belirler.">
-        <span className="action-icon">◉</span><span className="action-copy"><b>Etkinlik Sayfası</b><small>{publication === 'PUBLISHED' ? 'Yayında' : 'Yayın dışı'}</small></span><span className="action-switch"><i/></span>
-      </button>
-      <button className={`event-action-toggle ${registration === 'OPEN' ? 'is-on' : ''}`} role="switch" aria-checked={registration === 'OPEN'} disabled={busy} onClick={() => update(publication === 'PUBLISHED' ? publication : 'PUBLISHED', registration === 'OPEN' ? 'CLOSED' : 'OPEN')} title="Katılımcıların kayıt formunu doldurup yeni başvuru gönderebilmesini açar veya kapatır.">
-        <span className="action-icon">✓</span><span className="action-copy"><b>Kayıt Formu</b><small>{registration === 'OPEN' ? 'Yayında' : 'Yayın dışı'}</small></span><span className="action-switch"><i/></span>
-      </button>
-      <a className="event-action-button public-page" href={publicUrl} target="_blank" rel="noopener noreferrer" title="Etkinlik sayfasını yeni sekmede görüntüleyin."><span className="action-icon">↗</span><span className="action-copy"><b>Etkinlik sayfasını aç</b><small>Yeni sekmede görüntüle</small></span></a>
-      <Link className="event-action-button announce" href={`${base}/communication?subtab=notifications`} title="Kayıtlı katılımcılara hedefli bir etkinlik duyurusu gönderin."><span className="action-icon">✦</span><span className="action-copy"><b>Duyuru gönder</b><small>Katılımcılara ulaş</small></span></Link>
-      <div className="event-delete" ref={deleteRef}>
-        <button className="event-action-button delete-trigger" type="button" aria-haspopup="dialog" aria-controls="event-delete-confirmation" aria-expanded={deleteOpen} disabled={busy} onClick={() => setDeleteOpen(value => !value)}><span className="action-icon">⌫</span><span className="action-copy"><b>Sil</b><small>Güvenli silme</small></span></button>
-        {deleteOpen && <div className="event-delete-popover" id="event-delete-confirmation" role="dialog" aria-labelledby="event-delete-title">
-          <div className="event-delete-warning"><span aria-hidden="true">!</span><div><b id="event-delete-title">Etkinliği silmek üzeresiniz</b><p>Etkinlik 30 gün boyunca geri alınabilir, ardından kalıcı olarak silinir.</p></div></div>
-          <div className="event-delete-actions"><button type="button" className="cancel-delete" onClick={() => setDeleteOpen(false)}>Vazgeç</button><button type="button" className="confirm-delete" disabled={busy} onClick={removeEvent}>{busy ? 'Siliniyor…' : 'Etkinliği sil'}</button></div>
-        </div>}
+    <div className="event-command-main">
+      <div className="event-identity">
+        <div className="event-identity-date" aria-hidden="true"><strong>{eventDate.getDate()}</strong><span>{eventDate.toLocaleDateString('tr-TR', { month: 'short' })}</span></div>
+        <div><span>{organizationName}</span><h1>{title}</h1><p>{formatDateLong(startsAt)}</p></div>
+      </div>
+      <div className="event-state-actions" aria-label="Etkinlik durumları" data-tour-id="publication-controls">
+        <button className={`event-state-button ${publication === 'PUBLISHED' ? 'is-on' : ''}`} disabled={busy} onClick={togglePublication}>
+          <span><small>Etkinlik</small><b>{publicationLabel(publication)}</b></span><i aria-hidden="true" />
+        </button>
+        <button className={`event-state-button ${registration === 'OPEN' ? 'is-on' : ''}`} disabled={busy} onClick={toggleRegistration}>
+          <span><small>Kayıt formu</small><b>{registrationLabel(registration)}</b></span><i aria-hidden="true" />
+        </button>
+        <a className="event-preview-button" href={publication === 'PUBLISHED' ? publicUrl : `${base}/settings?subtab=appearance`} target={publication === 'PUBLISHED' ? '_blank' : undefined} rel="noopener noreferrer">
+          <span aria-hidden="true">↗</span><b>{publication === 'PUBLISHED' ? 'Etkinlik sayfasını aç' : 'Sayfa görünümünü düzenle'}</b>
+        </a>
+        <div className="event-more" ref={menuRef}>
+          <button type="button" aria-haspopup="menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}>•••<span className="sr-only">Diğer işlemler</span></button>
+          {menuOpen && <div className="event-more-menu" role="menu">
+            <Link role="menuitem" href={`${base}/communication?subtab=notifications`}>Duyuru gönder</Link>
+            <Link role="menuitem" href={`${base}/settings?subtab=appearance`}>Sayfa görünümü</Link>
+            <button role="menuitem" type="button" onClick={() => { setMenuOpen(false); setDeleteOpen(true); }}>Etkinliği sil</button>
+          </div>}
+        </div>
       </div>
     </div>
-    <nav className="event-primary-nav" aria-label="Etkinlik ana menüsü">
-      {links.map(([href, label, key]) => <Link data-tour-id={`${key === 'info' ? 'registration' : key === 'door' ? 'event-day' : key}-area`} key={key} href={href} className={current === key ? 'active' : ''} aria-current={current === key ? 'page' : undefined}><Icon name={key}/><span>{label}</span></Link>)}
+    {deleteOpen && <div className="event-delete-inline" ref={deleteRef} role="dialog" aria-labelledby="event-delete-title">
+      <div><b id="event-delete-title">Etkinliği silmek üzeresiniz</b><p>Etkinlik 30 gün boyunca geri alınabilir, ardından kalıcı olarak silinir.</p></div>
+      <button type="button" onClick={() => setDeleteOpen(false)}>Vazgeç</button>
+      <button type="button" className="danger" disabled={busy} onClick={removeEvent}>{busy ? 'Siliniyor…' : 'Etkinliği sil'}</button>
+    </div>}
+    <nav className="event-primary-nav grouped" aria-label="Etkinlik bölümleri">
+      {groups.map(group => <div className="event-nav-group" key={group.label}><small>{group.label}</small><div>{group.links.map(([href, label, key]) => <Link data-tour-id={`${key}-area`} key={key} href={href} className={current === key ? 'active' : ''} aria-current={current === key ? 'page' : undefined}><Icon name={key}/><span>{label}</span>{key === 'applications' && registrationCount > 0 && <em>{registrationCount}</em>}</Link>)}</div></div>)}
     </nav>
   </header>;
 }

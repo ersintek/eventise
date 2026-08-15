@@ -227,6 +227,12 @@ describe('Phase 1 identity, organization and tenant isolation', () => {
     await request(app.getHttpServer())
       .patch(`/api/organizations/${organizationId}/events/${createdEvent.body.id}/state`)
       .set('Authorization', `Bearer ${token}`)
+      .send({ publicationStatus: 'DRAFT', registrationStatus: 'OPEN' })
+      .expect(400);
+
+    await request(app.getHttpServer())
+      .patch(`/api/organizations/${organizationId}/events/${createdEvent.body.id}/state`)
+      .set('Authorization', `Bearer ${token}`)
       .send({ publicationStatus: 'PUBLISHED', registrationStatus: 'OPEN' })
       .expect(200);
     const submit = (email: string) => request(app.getHttpServer())

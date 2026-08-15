@@ -1,5 +1,18 @@
 export const updates = [
   {
+    version: '0.36.0',
+    title: 'Etkinlik yönetimi daha açık durumlar ve doğrudan işlem yollarıyla sadeleşti',
+    changes: [
+      ['Etkinlik çalışma alanı; Etkinlik Bilgileri ve Başvurularla başlayan, etkinlik öncesi, sırası ve sonrası olarak gruplanan tek bir menüye dönüştürüldü.', 'Yapılacak işi ve doğru bölümü daha hızlı bulma'],
+      ['Etkinlik durumu Taslak veya Yayında; kayıt formu durumu Açık veya Kapalı olarak birbirinden ayrıldı ve her değişiklik ekranda doğrulanmaya başladı.', 'İşlemden sonra ne olduğunu açıkça görme'],
+      ['Kayıt formunda ad, soyad ve e-posta değiştirilemeyen standart alanlar olarak gösterildi; ek soruların anahtarları ve sıraları korunacak biçimde düzenlendi.', 'Formu tekrar kurmadan güvenle güncelleme'],
+      ['SSS düzenleyicisi mobil uyumlu hâle getirildi, bağımsız Güncelle işlemi ve görünür kayıt bildirimi eklendi; etkinlik sayfasına SSS bağlantısı kondu.', 'SSS değişikliğinin kaydedildiğini bilme ve yanıtlara kolay erişme'],
+      ['Yeni etkinlik akışında duyuru metninden Otomatik Doldur ilk adıma taşındı; tarih, saat, mekân, bağlantı ve kontenjan çıkarımı genişletildi.', 'Mevcut duyurudan daha az veri girişiyle başlama'],
+      ['Beşten fazla ek sorusu olan kayıt formları, etkinlik sayfasından ayrı ve odaklı bir kayıt sayfasında açılmaya başladı.', 'Uzun formu telefon ve masaüstünde daha rahat tamamlama'],
+      ['Ana sayfadaki öneri, gerçek etkinlik ve başvuru durumuna göre ilgili bölüme doğrudan yönlendirecek şekilde yenilendi.', 'Sıradaki işi tahmin etmeden ilerleme'],
+    ],
+  },
+  {
     version: '0.35.0',
     title: 'Eventise’ın bütün yüzeyleri ortak ve daha sakin bir görsel sistemde buluştu',
     changes: [

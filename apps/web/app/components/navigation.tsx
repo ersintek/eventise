@@ -119,11 +119,11 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
         href="/dashboard/about/updates"
         className={`nav-updates-spotlight${active === 'updates' ? ' active' : ''}`}
         aria-current={active === 'updates' ? 'page' : undefined}
-        aria-label="Yenilikler: 0.34.0 sürümünde neler değişti?"
+        aria-label="Yenilikler: 0.36.0 sürümünde neler değişti?"
         title={collapsed ? 'Yenilikler' : undefined}
       >
         <span className="nav-updates-icon"><Icon name="updates"/><i aria-hidden="true" /></span>
-        <span className="nav-item-copy"><span><b>Yenilikler</b><em>YENİ</em></span><small>v0.34.0 · Neler değişti?</small></span>
+        <span className="nav-item-copy"><span><b>Yenilikler</b><em>YENİ</em></span><small>v0.36.0 · Neler değişti?</small></span>
         <Icon name="arrow"/>
       </Link>
       {group('start', 'Başlangıç', item('/dashboard', 'Ana sayfa', 'Günün özeti ve bekleyen işler', 'home', 'home'))}
@@ -142,21 +142,4 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
 
 export function MobileTopBar({ backHref = '/dashboard', backLabel = 'Ana sayfa' }: { backHref?: string; backLabel?: string }) {
   return <div className="mobile-topbar"><Mark /><Link href={backHref}>← {backLabel}</Link></div>;
-}
-
-export function EventNav({ eventId, active, enabled = {} }: { eventId: string; active: string; enabled?: Record<string, boolean> }) {
-  const base = `/dashboard/events/${eventId}`;
-  const item = (href: string, label: string, key: string) => (enabled[key] ?? true) ? <Link className={active === key ? 'active' : ''} href={href} aria-current={active === key ? 'page' : undefined}>{label}</Link> : null;
-  return <nav className="event-nav" aria-label="Etkinlik bölümleri">
-    <div className="event-nav-top"><Link href="/dashboard">← Tüm etkinlikler</Link><span>Etkinlik çalışma alanı</span></div>
-    <div className="event-nav-links">
-      {item(base, 'Genel Bakış', 'dashboard')}
-      {item(`${base}/settings`, 'Etkinlik Bilgileri', 'settings')}
-      {item(`${base}/modules`, 'Etkinlik Araçları', 'modules')}
-      {item(`${base}/communication`, 'Davet ve İletişim', 'communication')}
-      {item(`${base}/day`, 'Kapı ve Katılım', 'day')}
-      {item(`${base}/post-event`, 'Sonuçlar', 'post')}
-      {item(`${base}/certificates`, 'Sertifikalar', 'certificates')}
-    </div>
-  </nav>;
 }

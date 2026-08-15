@@ -18,15 +18,18 @@ export function EventShare({ title }: { title: string }) {
 
   async function shareToApps() {
     if (navigator.share) {
-      try { await navigator.share({ title, text: `${title} etkinliğine göz at`, url: window.location.href }); setMessage('Paylaşım menüsü açıldı.'); } catch { /* Kullanıcı paylaşım penceresini kapatabilir. */ }
+      try {
+        await navigator.share({ title, text: `${title} etkinliğine göz at`, url: window.location.href });
+        setMessage('Paylaşım menüsü açıldı.');
+      } catch { /* Kullanıcı paylaşım penceresini kapatabilir. */ }
     } else {
       await copy();
-      setMessage('Bağlantı kopyalandı; Instagram veya istediğiniz uygulamada paylaşabilirsiniz.');
+      setMessage('Bağlantı kopyalandı; istediğiniz uygulamada paylaşabilirsiniz.');
     }
   }
 
   return <section className="event-share" aria-labelledby="share-title">
-    <div><p className="eyebrow">ETKİNLİĞİ YAYIN</p><h2 id="share-title">Birlikte daha çok kişiye ulaşın</h2></div>
+    <div><p className="eyebrow">PAYLAŞ</p><h2 id="share-title">Etkinliği paylaşın</h2></div>
     <div className="share-actions">
       <a className="share-link linkedin" href={url ? `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}` : '#'} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn'de paylaş"><b>in</b><span>LinkedIn</span></a>
       <a className="share-link whatsapp" href={url ? `https://wa.me/?text=${encodedText}%20${encodedUrl}` : '#'} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp'ta paylaş"><b>WA</b><span>WhatsApp</span></a>

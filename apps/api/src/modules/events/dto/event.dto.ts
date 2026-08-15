@@ -4,6 +4,7 @@ import { IsArray, IsDateString, IsEnum, IsInt, IsOptional, IsString, Length, Mat
 import { Type } from 'class-transformer';
 
 export class FaqDto { @IsString() @MaxLength(300) question!: string; @IsString() @MaxLength(5000) answer!: string; }
+export class UpdateFaqsDto { @IsArray() @ValidateNested({ each: true }) @Type(() => FaqDto) faqs!: FaqDto[]; }
 export class CreateEventDto {
   @IsString() @Length(2, 160) title!: string;
   @IsString() @Length(2, 80) @Matches(/^[a-z0-9-]+$/) slug!: string;
@@ -39,5 +40,5 @@ export class UpdateEventDto {
   @IsEnum(EventVisibility) visibility!:EventVisibility;
   @IsEnum(RegistrationMode) registrationMode!:RegistrationMode;
   @IsOptional() @IsString() formId?:string;
-  @IsArray() @ValidateNested({each:true}) @Type(()=>FaqDto) faqs!:FaqDto[];
+  @IsOptional() @IsArray() @ValidateNested({each:true}) @Type(()=>FaqDto) faqs?:FaqDto[];
 }

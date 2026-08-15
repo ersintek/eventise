@@ -3,6 +3,8 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AppNav, MobileTopBar } from '../components/navigation';
 import { formatDate, formatTime } from '@/lib/datetime';
+import { nextEventTask } from '@/lib/event-readiness';
+import { publicationLabel, registrationLabel } from '@/lib/product-language';
 
 type EventSummary = {
   id: string;
@@ -11,6 +13,7 @@ type EventSummary = {
   endsAt: string;
   publicationStatus: string;
   registrationStatus: string;
+  registrationSummary?: { total: number; pending: number; accepted: number; waitlisted: number; rejected: number };
   _count?: { registrations?: number };
 };
 
@@ -23,16 +26,6 @@ async function api<T>(path: string, token: string): Promise<T> {
   if (!response.ok) throw new Error('Veriler alınamadı.');
   return response.json();
 }
-
-const statusName: Record<string, string> = {
-  PUBLISHED: 'Yayında',
-  UNPUBLISHED: 'Taslak',
-  DRAFT: 'Taslak',
-  ARCHIVED: 'Arşivlendi',
-  OPEN: 'Başvuru açık',
-  CLOSED: 'Başvuru kapalı',
-  NOT_OPEN: 'Başlamadı',
-};
 
 function greeting(hour: number) {
   if (hour < 12) return 'Günaydın';
@@ -68,37 +61,22 @@ export default async function Dashboard() {
   const orderedEvents = [...events].sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
   const upcoming = orderedEvents.filter(event => new Date(event.endsAt).getTime() >= now);
   const nextEvent = upcoming[0];
-  const drafts = events.filter(event => event.publicationStatus === 'DRAFT' || event.publicationStatus === 'UNPUBLISHED');
-  const firstDraft = drafts[0];
   const published = events.filter(event => event.publicationStatus === 'PUBLISHED').length;
   const registrations = events.reduce((total, event) => total + (event._count?.registrations ?? 0), 0);
   const today = new Date(now);
   const firstName = me.firstName?.trim();
   const longDate = new Intl.DateTimeFormat('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' }).format(today);
 
-  const focus = firstDraft
-    ? {
-        eyebrow: 'YAYINA HAZIRLIK',
-        title: `${drafts.length} etkinlik sizden son dokunuşu bekliyor.`,
-        body: 'Taslak ayrıntılarını gözden geçirip etkinlik sayfanızı katılımcılarla buluşturabilirsiniz.',
-        href: `/dashboard/events/${firstDraft.id}`,
-        action: 'Taslağı tamamla',
-      }
-    : nextEvent
-      ? {
-          eyebrow: 'SIRADAKİ ETKİNLİK',
-          title: `${nextEvent.title} için her şey hazır mı?`,
-          body: `${relativeDay(nextEvent.startsAt, now)} başlayacak etkinliğin başvurularını ve saha hazırlıklarını tek yerde kontrol edin.`,
-          href: `/dashboard/events/${nextEvent.id}`,
-          action: 'Hazırlıkları gözden geçir',
-        }
-      : {
-          eyebrow: 'YENİ BİR BAŞLANGIÇ',
-          title: 'İlk etkinliğiniz için alan hazır.',
-          body: 'Temel bilgileri girin; başvuru, iletişim ve etkinlik günü araçlarını ihtiyaç oldukça açın.',
-          href: '/dashboard/events/new',
-          action: 'İlk etkinliği oluştur',
-        };
+  const focus = events.length > 0
+    ? events.map(event => nextEventTask(event, now)).sort((a, b) => b.priority - a.priority)[0]
+    : {
+        eyebrow: 'İLK ADIM',
+        title: 'İlk etkinliğinizi oluşturun.',
+        body: 'Duyuru metnini yapıştırarak veya temel bilgileri girerek başlayabilirsiniz.',
+        href: '/dashboard/events/new',
+        action: 'Etkinlik oluştur',
+        priority: 0,
+      };
 
   return <main className="app-shell">
     <AppNav organization={organization} active="home" systemAdmin={me.systemRole === 'SYSTEM_ADMIN'} />
@@ -109,7 +87,7 @@ export default async function Dashboard() {
         <div>
           <p className="home-date"><span aria-hidden="true" />{longDate}</p>
           <h1>{greeting(today.getHours())}{firstName ? `, ${firstName}` : ''}.</h1>
-          <p>Bugünün önemli işlerini görün, etkinliklerinizi güvenle ilerletin.</p>
+          <p>Öncelikli işi görün ve doğrudan ilgili bölüme geçin.</p>
         </div>
         <Link className="home-create-button" href="/dashboard/events/new">
           <span aria-hidden="true">＋</span> Yeni etkinlik
@@ -140,12 +118,12 @@ export default async function Dashboard() {
                 <p>{formatTime(nextEvent.startsAt)} · {nextEvent._count?.registrations ?? 0} başvuru</p>
               </div>
             </div>
-            <Link href={`/dashboard/events/${nextEvent.id}`}>Etkinlik merkezini aç <span aria-hidden="true">↗</span></Link>
+            <Link href={`/dashboard/events/${nextEvent.id}/settings?subtab=info`}>Etkinlik bilgilerini aç <span aria-hidden="true">↗</span></Link>
           </> : <>
             <div className="home-next-topline"><span>Etkinlik takvimi</span><em>Hazır</em></div>
             <div className="home-calendar-empty" aria-hidden="true"><span>e</span></div>
-            <h3>Yeni bir etki alanı açın.</h3>
-            <p>Planlamaya başladığınızda sıradaki etkinliğiniz burada görünecek.</p>
+            <h3>Henüz etkinlik yok.</h3>
+            <p>İlk etkinliğinizi oluşturduğunuzda tarih ve başvuru durumu burada görünecek.</p>
           </>}
         </aside>
       </section>
@@ -164,7 +142,7 @@ export default async function Dashboard() {
         <article>
           <span className="metric-label"><i className="metric-dot coral" />Yayında</span>
           <b>{published}</b>
-          <small>katılımcılara açık</small>
+          <small>etkinlik sayfası yayında</small>
         </article>
       </section>
 
@@ -172,15 +150,15 @@ export default async function Dashboard() {
         <div className="home-section-heading">
           <div>
             <p className="eyebrow">ETKİNLİKLER</p>
-            <h2>Planınız, tek bakışta.</h2>
-            <p>Yaklaşan tarihler ve katılımcı hareketleri.</p>
+            <h2>Tüm etkinlikler</h2>
+            <p>Tarih, etkinlik durumu ve kayıt formu durumu.</p>
           </div>
           <span>{events.length} etkinlik</span>
         </div>
 
         {events.length === 0 ? <section className="home-empty-state">
           <div className="home-empty-mark" aria-hidden="true">＋</div>
-          <div><h3>İlk etkinliğinizi birlikte kuralım.</h3><p>Birkaç temel bilgiyle başlayın; ayrıntıları dilediğiniz zaman tamamlayın.</p></div>
+          <div><h3>İlk etkinliğinizi oluşturun.</h3><p>Duyuru metnini otomatik doldurun veya temel bilgileri kendiniz girin.</p></div>
           <Link className="home-outline-button" href="/dashboard/events/new">Etkinlik oluştur <span aria-hidden="true">→</span></Link>
         </section> : <div className="home-event-list">
           {orderedEvents.map(event => {
@@ -194,7 +172,10 @@ export default async function Dashboard() {
               <div className="home-event-main">
                 <div className="home-event-titleline">
                   <h3>{event.title}</h3>
-                  <span className={`home-status ${event.publicationStatus.toLowerCase()}`}>{statusName[event.publicationStatus] ?? event.publicationStatus}</span>
+                  <span className="home-event-statuses">
+                    <span className={`home-status ${event.publicationStatus.toLowerCase()}`}>Etkinlik: {publicationLabel(event.publicationStatus)}</span>
+                    <span className={`home-status registration-${event.registrationStatus.toLowerCase()}`}>Form: {registrationLabel(event.registrationStatus)}</span>
+                  </span>
                 </div>
                 <p>{formatDate(event.startsAt)} · {formatTime(event.startsAt)}</p>
               </div>
@@ -203,8 +184,8 @@ export default async function Dashboard() {
                 <span>başvuru</span>
               </div>
               <span className="home-event-relative">{isPast ? 'Tamamlandı' : relativeDay(event.startsAt, now)}</span>
-              <Link className="home-event-manage" href={`/dashboard/events/${event.id}`} aria-label={`${event.title} etkinliğini yönet`}>
-                Yönet <span aria-hidden="true">→</span>
+              <Link className="home-event-manage" href={`/dashboard/events/${event.id}/settings?subtab=info`} aria-label={`${event.title} etkinlik bilgilerini aç`}>
+                Aç <span aria-hidden="true">→</span>
               </Link>
             </article>;
           })}
