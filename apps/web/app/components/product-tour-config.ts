@@ -1,4 +1,4 @@
-export const EVENTISE_TOUR_VERSION = 'event-workspace-v4';
+export const EVENTISE_TOUR_VERSION = 'event-workspace-v5';
 
 export type TourStep = {
   id: string;
@@ -11,47 +11,27 @@ export type TourStep = {
 export const EVENTISE_TOUR_STEPS: TourStep[] = [
   {
     id: 'control-center', target: 'event-command-center', eyebrow: 'ETKİNLİK ÇALIŞMA ALANI',
-    title: 'Etkinliği bu alandan yönetin.',
-    description: 'Etkinliğin adı, tarihi ve menüsü burada sabit kalır. Yapacağınız işe göre aşağıdaki bölümlerden birini açın.',
+    title: 'Etkinliğinizi tek yerden yönetin.',
+    description: 'Etkinliğin adı, tarihi, durumları ve bütün yönetim bölümleri bu çalışma alanında bir arada kalır.',
   },
   {
-    id: 'publication', target: 'publication-controls', eyebrow: 'DURUMLAR',
-    title: 'Etkinlik ve kayıt formu ayrı durumlardır.',
-    description: 'Etkinlik Taslak veya Yayında; kayıt formu ise Açık veya Kapalı olabilir. Yaptığınız değişikliğin sonucu ekranda doğrulanır.',
+    id: 'publication', target: 'publication-controls', eyebrow: 'YAYIN VE KAYIT',
+    title: 'Yayın ve kayıt durumlarını ayrı yönetin.',
+    description: 'Etkinlik Taslak veya Yayında; kayıt formu Açık veya Kapalı olabilir. Taslaktaki bir etkinliğin kayıt formunu açarsanız iki durum birlikte güncellenir.',
   },
   {
-    id: 'info', target: 'info-area', eyebrow: 'ETKİNLİK ÖNCESİ',
-    title: 'Etkinlik Bilgileri',
-    description: 'Başlık, tarih, mekân, görünüm, kayıt formu ve SSS alanlarını buradan güncelleyin.',
+    id: 'before-event', target: 'pre-event-area', eyebrow: 'ETKİNLİK ÖNCESİ',
+    title: 'Hazırlıkları dört bölümde tamamlayın.',
+    description: 'Etkinlik Bilgileri, Başvurular, İletişim ve Araçlar; yayından katılımcı iletişimine kadar bütün hazırlıkları kapsar.',
   },
   {
-    id: 'applications', target: 'applications-area', eyebrow: 'ETKİNLİK ÖNCESİ',
-    title: 'Başvurular',
-    description: 'Gelen başvuruları inceleyin; kabul, ret veya yedek liste kararını burada verin.',
+    id: 'during-event', target: 'during-event-area', eyebrow: 'ETKİNLİK SIRASINDA',
+    title: 'Katılımı buradan takip edin.',
+    description: 'QR kodu, katılımcı listesi veya kapıda kayıt ile girişleri doğrulayın; etkinlikten önce kısa bir prova yapın.',
   },
   {
-    id: 'communication', target: 'communication-area', eyebrow: 'ETKİNLİK ÖNCESİ',
-    title: 'İletişim',
-    description: 'Davet, hatırlatma, duyuru ve katılımcı kaynaklarını buradan yönetin.',
-  },
-  {
-    id: 'tools', target: 'tools-area', eyebrow: 'ETKİNLİK ÖNCESİ',
-    title: 'Araçlar',
-    description: 'Test, geri bildirim, tanışma ve grup araçlarını gerektiğinde etkinleştirin.',
-  },
-  {
-    id: 'event-day', target: 'door-area', eyebrow: 'ETKİNLİK SIRASINDA',
-    title: 'Katılım',
-    description: 'QR koduyla veya listeden katılımcı girişlerini doğrulayın.',
-  },
-  {
-    id: 'results', target: 'results-area', eyebrow: 'ETKİNLİK SONRASI',
-    title: 'Sonuçlar',
-    description: 'Katılım ve geri bildirim sonuçlarını inceleyin; raporları buradan alın.',
-  },
-  {
-    id: 'certificates', target: 'certificate-area', eyebrow: 'ETKİNLİK SONRASI',
-    title: 'Sertifikalar',
-    description: 'Katılımı doğrulanan kişiler için sertifika tasarlayın ve oluşturun.',
+    id: 'after-event', target: 'post-event-area', eyebrow: 'ETKİNLİK SONRASI',
+    title: 'Sonuçları alın ve sertifikaları hazırlayın.',
+    description: 'Katılım ve geri bildirim sonuçlarını inceleyin, raporları indirin ve uygun katılımcılar için sertifika oluşturun.',
   },
 ];

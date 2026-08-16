@@ -37,9 +37,9 @@ const sections: GuideSection[] = [
     items: [
       {
         q: 'Yeni etkinlik oluştururken hangi bilgiler istenir?',
-        a: 'Akış dört adımda ilerler: başlangıç, zaman ve yer, kayıt ve görünüm. Elinizde bir duyuru metni varsa ilk ekranda Otomatik Doldur ile başlık, açıklama, tarih, saat ve mekân bilgilerini çıkarabilirsiniz. Görsel ve vurgu rengi isteğe bağlıdır.',
+        a: 'Akış dört adımda ilerler: başlangıç, zaman ve yer, kayıt ve görünüm. Elinizde bir duyuru metni varsa ilk ekranda Otomatik Doldur ile başlık, açıklama, tarih, saat ve mekân bilgilerini çıkarabilirsiniz. Emin olunmayan bilgiler kontrol etmeniz için işaretlenir; görsel ve vurgu rengi isteğe bağlıdır.',
         path: 'Ana menü → Yeni etkinlik',
-        check: 'Etkinliği Yayında durumuna geçirmeden önce tarih, saat ve katılımcıyla paylaşılacak bağlantıları yeniden gözden geçirin.',
+        check: 'Otomatik doldurulan alanları, özellikle tarih, saat, mekân ve çevrim içi bağlantıyı etkinliği Yayında durumuna geçirmeden önce yeniden gözden geçirin.',
       },
       {
         q: 'Canlı önizleme neyi gösterir?',
@@ -84,7 +84,9 @@ const sections: GuideSection[] = [
     items: [
       {
         q: 'Etkinlik durumu ile kayıt formu durumu arasındaki fark nedir?',
-        a: 'Etkinlik Taslak veya Yayında olabilir. Kayıt formu ise Açık veya Kapalı olabilir. Böylece etkinlik sayfası Yayında kalırken yeni başvuruları durdurabilirsiniz.',
+        a: 'Etkinlik Taslak veya Yayında olabilir. Kayıt formu ise Açık veya Kapalı olabilir. Taslaktaki bir etkinliğin kayıt formunu açmayı seçerseniz sistem onayınızı alarak etkinliği de yayınlar. Yayındaki etkinliği Taslak durumuna almak ise açık kayıt formunu kapatır.',
+        path: 'Etkinliği yönet → Üst bölüm → Etkinlik / Kayıt formu',
+        check: 'Durum değişikliğinden sonra ekrandaki başarı bildirimini ve iki durum düğmesinin güncel değerini kontrol edin.',
       },
       {
         q: 'Görünürlük seçenekleri ne anlama gelir?',
@@ -108,9 +110,9 @@ const sections: GuideSection[] = [
     items: [
       {
         q: 'Başvuruları nereden yönetirim?',
-        a: 'Etkinlik çalışma alanındaki başvuru listesinden katılımcı bilgilerini ve başvuru yanıtlarını görebilirsiniz. Onaylı başvuru kullanıyorsanız başvuruları buradan kabul veya reddedersiniz.',
+        a: 'Başvurular bölümündeki özet alanı toplam, bekleyen, kabul edilen, kalan yer ve kontenjan doluluğunu birlikte gösterir. Listeyi Tümü, Bekleyen, Kabul edilen veya Yedek liste durumuna göre süzebilir; başvuruyu kabul edebilir, reddedebilir veya yedek listeye alabilirsiniz.',
         path: 'Etkinliği yönet → Başvurular',
-        check: 'İşlem yapmadan önce doğru etkinliği ve katılımcıyı seçtiğinizi kontrol edin.',
+        check: 'İşlem yapmadan önce doğru katılımcıyı seçin; işlemden sonra görünür sonuç bildirimini ve güncel durum etiketini kontrol edin.',
       },
       {
         q: 'Kontenjan dolarsa ne olur?',
@@ -118,7 +120,8 @@ const sections: GuideSection[] = [
       },
       {
         q: 'Etkinlik sayfasındaki SSS alanı ne işe yarar?',
-        a: 'Ulaşım, erişilebilirlik, katılım ücreti veya gerekli malzemeler gibi tekrar sorulan konuları etkinlik ayarlarından ekleyebilirsiniz. Bu yanıtlar tanıtım sayfasında görünür ve ekibinizin mesaj yükünü azaltır.',
+        a: 'Ulaşım, erişilebilirlik, katılım ücreti veya gerekli malzemeler gibi tekrar sorulan konuları ekleyip sıralayabilirsiniz. Sorular etkinlik sayfasındaki görünür SSS bağlantısından açılır; her soruyu diğer etkinlik bilgilerine dokunmadan güncelleyebilirsiniz.',
+        path: 'Etkinliği yönet → Etkinlik Bilgileri → SSS',
       },
     ],
   },
@@ -129,11 +132,14 @@ const sections: GuideSection[] = [
     items: [
       {
         q: 'Kimlere mesaj gönderebilirim?',
-        a: 'Tüm kayıtlılar, kabul edilenler veya check-in yapanlar gibi hedef gruplar seçebilirsiniz. Mesajı göndermeden önce doğru etkinliği ve hedef grubu kontrol edin.',
+        a: 'Duyuruları Kabul edilenler, Katılım teyidi verenler veya Tüm başvurular gruplarından birine gönderebilirsiniz. Gönderim tamamlandığında ulaşılan kişi sayısı ekranda gösterilir.',
+        path: 'Etkinliği yönet → İletişim → Duyurular',
+        check: 'Göndermeden önce doğru etkinliği, hedef grubu, başlığı ve mesajı son kez kontrol edin.',
       },
       {
         q: 'Hatırlatma planlanabilir mi?',
-        a: 'Evet. İletişim bölümünde mesaj şablonlarını kullanabilir, hatırlatmaları ileri bir tarih ve saate planlayabilir, gönderilmiş ve planlanmış iletileri takip edebilirsiniz.',
+        a: 'Evet. E-posta şablonunu seçip konu ve mesajı düzenleyerek ileri bir tarih ve saate hatırlatma planlayabilirsiniz. Planlandı, Kuyrukta, Gönderildi, Gönderilemedi ve İptal edildi durumları aynı ekranda takip edilir.',
+        path: 'Etkinliği yönet → İletişim → Hatırlatmalar',
       },
       {
         q: 'Duyurular nerede görünür?',
@@ -175,9 +181,14 @@ const sections: GuideSection[] = [
       },
       {
         q: 'Katılım teyidi nasıl yapılır?',
-        a: 'Katılım ekranındaki QR kodu veya bağlantıyı kullanabilir, katılımcıyı listeden bulup girişini kaydedebilirsiniz. Önceden kaydı olmayan kişiler için kapıda kayıt akışı da kullanılabilir.',
+        a: 'Katılım ekranındaki QR kodu veya bağlantıyı kullanabilir, katılımcıyı isim ya da e-posta ile bulup görevli olarak teyit edebilirsiniz. Önceden kaydı olmayan kişiler için kapıda kayıt akışı da kullanılabilir.',
         path: 'Etkinliği yönet → Katılım',
         check: 'Etkinlikten önce QR bağlantısını farklı bir telefonda açarak kısa bir prova yapın.',
+      },
+      {
+        q: 'İnternet bağlantısı kesilirse nasıl hazırlanırım?',
+        a: 'Katılımcı listesinin imza formu PDF dosyasını etkinlikten önce indirip yazdırın. Bağlantı yeniden geldiğinde imza veren kişilerin katılımını listeden görevli olarak teyit edebilirsiniz.',
+        path: 'Etkinliği yönet → Katılım → Katılımcı listesi → İmza formu PDF',
       },
       {
         q: 'Saha ekibi nasıl çalışır?',
@@ -191,7 +202,8 @@ const sections: GuideSection[] = [
     items: [
       {
         q: 'Etkinlik sonrasında neleri görebilirim?',
-        a: 'Katılım kayıtlarını, test ve geri bildirim sonuçlarını inceleyebilir; etkinlik raporu hazırlayabilir ve kaynakları paylaşmaya devam edebilirsiniz. Etkinlik tarihi geçmiş olsa da bu araçlar kapanmaz.',
+        a: 'Katılım sayılarını ve oranını, test ve geri bildirim sonuçlarını inceleyebilir; katılımcı listesini CSV veya Excel, etkinlik özetini PDF olarak indirebilirsiniz. Kaynak paylaşımı ve fotoğraf moderasyonu etkinlik tarihi geçtikten sonra da kullanılabilir.',
+        path: 'Etkinliği yönet → Sonuçlar',
       },
       {
         q: 'Sertifika nasıl hazırlanır?',
@@ -215,7 +227,7 @@ const sections: GuideSection[] = [
       },
       {
         q: 'Eventise ücretli mi?',
-        a: 'Eventise sivil toplum kuruluşları ve aktivistler için ücretsizdir. Mevcut planda kurum başına 20 aktif etkinlik ve etkinlik başına 500 katılımcı sınırı bulunur. Geçici olarak daha yüksek bir limite ihtiyacınız varsa Eventise ekibine ulaşabilirsiniz.',
+        a: 'Eventise sivil toplum kuruluşları ve aktivistler için ücretsizdir. Standart başlangıç planında kurum başına 20 aktif etkinlik ve etkinlik başına 500 katılımcı sınırı bulunur; kuruma tanımlanan plan veya geçici istisna bu sınırları değiştirebilir. Daha yüksek bir limite ihtiyacınız varsa Eventise ekibine ulaşabilirsiniz.',
       },
       {
         q: 'Fotoğraf ve dosya kullanımımı nereden görürüm?',
@@ -233,7 +245,7 @@ const sections: GuideSection[] = [
       },
       {
         q: 'Katılımcı kendi alanında neleri görür?',
-        a: 'Yaklaşan, devam eden ve geçmiş etkinliklerini; başvuru durumunu, duyuruları, testleri, geri bildirimleri, paylaşılan kaynakları ve hazır olduğunda sertifikalarını tek yerde görür.',
+        a: 'Yaklaşan, devam eden ve geçmiş etkinliklerini; başvuru durumunu, duyuruları, testleri, geri bildirimleri, paylaşılan kaynakları ve hazır olduğunda sertifikalarını tek yerde görür. Beşten fazla ek sorusu olan kayıt formları telefonda ve masaüstünde daha rahat doldurulması için ayrı bir kayıt sayfasında açılır.',
       },
       {
         q: 'Katılımcı verileri ve onamlar nasıl yönetilir?',
@@ -289,7 +301,7 @@ export default async function YardimPage() {
           <p className="eyebrow">STK’LAR İÇİN KULLANIM REHBERİ</p>
           <h1>Eventise’ı adım adım kullanın</h1>
           <p className="help-lead">
-            Kurum hesabınızı oluşturmaktan etkinlik sonrası rapor ve sertifikalara kadar ihtiyaç duyacağınız temel bilgileri burada bulabilirsiniz. Baştan sona okuyabilir veya aradığınız başlığa doğrudan geçebilirsiniz.
+            Eventise 1.0 beta ile güncel bu rehberde kurum hesabından etkinlik sonrası rapor ve sertifikalara kadar ihtiyaç duyacağınız temel bilgileri bulabilirsiniz. Baştan sona okuyabilir veya aradığınız başlığa doğrudan geçebilirsiniz.
           </p>
         </section>
 

@@ -87,14 +87,14 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
             : pathname.includes('/post-event') ? 'results'
               : pathname.includes('/certificates') ? 'certificate' : 'info';
   const groups = [
-    { label: 'Etkinlik öncesi', links: [
+    { label: 'Etkinlik öncesi', tourId: 'pre-event-area', links: [
       [`${base}/settings?subtab=info`, 'Etkinlik Bilgileri', 'info'],
       [`${base}/applications`, 'Başvurular', 'applications'],
       [`${base}/communication`, 'İletişim', 'communication'],
       [`${base}/modules`, 'Araçlar', 'tools'],
     ] },
-    { label: 'Etkinlik sırasında', links: [[`${base}/day`, 'Katılım', 'door']] },
-    { label: 'Etkinlik sonrası', links: [
+    { label: 'Etkinlik sırasında', tourId: 'during-event-area', links: [[`${base}/day`, 'Katılım', 'door']] },
+    { label: 'Etkinlik sonrası', tourId: 'post-event-area', links: [
       [`${base}/post-event`, 'Sonuçlar', 'results'],
       [`${base}/certificates`, 'Sertifikalar', 'certificate'],
     ] },
@@ -185,7 +185,7 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
       <button type="button" className="danger" disabled={busy} onClick={removeEvent}>{busy ? 'Siliniyor…' : 'Etkinliği sil'}</button>
     </div>}
     <nav className="event-primary-nav grouped" aria-label="Etkinlik bölümleri">
-      {groups.map(group => <div className="event-nav-group" key={group.label}><small>{group.label}</small><div>{group.links.map(([href, label, key]) => <Link data-tour-id={`${key}-area`} key={key} href={href} className={current === key ? 'active' : ''} aria-current={current === key ? 'page' : undefined}><Icon name={key}/><span>{label}</span>{key === 'applications' && registrationCount > 0 && <em>{registrationCount}</em>}</Link>)}</div></div>)}
+      {groups.map(group => <div className="event-nav-group" data-tour-id={group.tourId} key={group.label}><small>{group.label}</small><div>{group.links.map(([href, label, key]) => <Link data-tour-id={`${key}-area`} key={key} href={href} className={current === key ? 'active' : ''} aria-current={current === key ? 'page' : undefined}><Icon name={key}/><span>{label}</span>{key === 'applications' && registrationCount > 0 && <em>{registrationCount}</em>}</Link>)}</div></div>)}
     </nav>
   </header>;
 }

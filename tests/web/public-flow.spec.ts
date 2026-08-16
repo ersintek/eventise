@@ -40,17 +40,17 @@ test('public shell exposes working account entry points', async ({ page }) => {
   await expect(page).toHaveTitle(/Eventise/i);
 
   await page.goto('/register');
-  await expect(page.getByRole('heading', { name: /Hangi alan için devam ediyorsunuz/i })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'STK kaydı' })).toHaveAttribute('href', '/register/organization');
-  await expect(page.getByRole('link', { name: 'Kayıt ol' })).toHaveAttribute('href', '/register/participant');
+  await expect(page.getByRole('heading', { name: /Etkinliklere katılın.*STK’nızı yönetin/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'STK hesabı oluştur' })).toHaveAttribute('href', '/register/organization');
+  await expect(page.getByRole('link', { name: 'Katılımcı hesabı oluştur' })).toHaveAttribute('href', '/register/participant');
 
   await page.goto('/login/participant');
-  await expect(page.getByRole('heading', { name: /Katılımcı alanına giriş yapın/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Katılımcı girişi' })).toBeVisible();
   await expect(page.getByLabel(/e-posta/i)).toBeVisible();
   await expect(page.getByLabel(/şifre/i)).toBeVisible();
 
   await page.goto('/login/organization');
-  await expect(page.getByRole('heading', { name: /STK yönetim alanına giriş yapın/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'STK girişi' })).toBeVisible();
 });
 
 test('unauthenticated protected routes return to login on desktop and mobile', async ({ page }) => {

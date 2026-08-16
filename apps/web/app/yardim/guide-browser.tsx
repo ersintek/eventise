@@ -7,7 +7,7 @@ export type GuideSection = { id: string; title: string; intro?: string; items: G
 
 const shortcuts = [
   ['İlk etkinliğimi oluşturacağım', 'ilk-etkinlik', '01'],
-  ['Etkinlik sayfasını tasarlayacağım', 'sayfa-tasarimi', '02'],
+  ['Yayın ve kayıtları yöneteceğim', 'yayin-kayit', '02'],
   ['Başvuruları yöneteceğim', 'basvurular', '03'],
   ['Etkinlik gününe hazırlanıyorum', 'etkinlik-gunu', '04'],
   ['Sertifika hazırlayacağım', 'sonrasi', '05'],
