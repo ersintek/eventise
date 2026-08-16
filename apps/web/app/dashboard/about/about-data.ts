@@ -1,5 +1,23 @@
 export const updates = [
   {
+    version: '1.0.0-beta.2',
+    label: 'Beta güncellemesi',
+    title: 'Ürün turu ve 1.0 beta kullanım rehberi güncel etkinlik akışlarıyla yenilendi',
+    changes: [
+      ['Etkinlik çalışma alanının tanıtım turu, bütün menü seçeneklerini tek tek saymak yerine yönetim mantığını anlatan beş odaklı adıma dönüştürüldü.', 'Ürünü daha kısa sürede ve bütünüyle tanıma'],
+      ['Yeni tur; kontrol merkezi, yayın ve kayıt durumları, etkinlik öncesi hazırlıklar, etkinlik sırasındaki katılım ve etkinlik sonrası sonuçlar olarak yaşam döngüsüne göre düzenlendi.', 'Hangi işi ne zaman ve nerede yapacağını daha kolay kavrama'],
+      ['Yayın ile kayıt formu durumlarının ayrı yönetildiği; gerektiğinde etkinliğin yayınlanması veya formun kapatılmasının birlikte gerçekleşeceği turda ve rehberde açıklandı.', 'Durum değişikliklerinin sonucunu önceden bilerek ilerleme'],
+      ['Tur, ekranda bulunmayan bir hedefe rastladığında uygun sonraki adıma güvenle geçecek ve son adımda doğru biçimde tamamlanacak şekilde güçlendirildi.', 'Farklı yetki ve ekranlarda yarıda kalmayan tanıtım'],
+      ['Klavye okları, Escape tuşu, kapatma davranışı ve odak çerçevesinin ekran sınırları iyileştirildi.', 'Masaüstü, mobil ve klavyeyle daha rahat tur kullanımı'],
+      ['Kullanım Rehberi Eventise 1.0 beta iş akışlarıyla güncellendi; hızlı başlangıç bağlantılarına yayın ve kayıt yönetimi eklendi.', 'Aranan konuya güncel menü yolu üzerinden daha hızlı ulaşma'],
+      ['Otomatik Doldur tarafından çıkarılan tarih, saat, mekân ve çevrim içi bağlantı gibi belirsiz bilgilerin nasıl kontrol edileceği ayrıntılandırıldı.', 'Etkinliği yayınlamadan önce otomatik taslaktaki olası hataları yakalama'],
+      ['Başvuru özeti, durum filtreleri, kabul veya yedek liste kararları ve SSS düzenleme yolları rehbere güncel ekran davranışlarıyla eklendi.', 'Başvuru ve katılımcı sorularını doğru bölümden güvenle yönetme'],
+      ['Duyuru hedef grupları, ulaşılan kişi sayısı ve planlanan hatırlatmaların işlem durumları daha açık biçimde anlatıldı.', 'Katılımcı iletişimini gönderim sonucuyla birlikte takip etme'],
+      ['İnternet kesintisine karşı imza formu PDF hazırlığı, görevli katılım teyidi ve etkinlik sonrası CSV, Excel ve PDF rapor yolları rehbere eklendi.', 'Saha ve raporlama süreçlerine önceden hazırlanma'],
+      ['Rehber kısayolları, güncel ürün terimleri, arama sonuçları, boş sonuç davranışı ve mobil ekran taşmaları otomatik kontrollerle güvence altına alındı.', 'Rehber değiştikçe doğru ve erişilebilir kullanımın korunması'],
+    ],
+  },
+  {
     version: '1.0.0-beta.1',
     label: 'Ana güncelleme · Beta',
     title: 'Eventise 1.0 beta: etkinlik oluşturma, yönetim ve katılımcı deneyimi baştan sona yenilendi',

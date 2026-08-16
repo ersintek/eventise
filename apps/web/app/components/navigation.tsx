@@ -119,11 +119,11 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
         href="/dashboard/about/updates"
         className={`nav-updates-spotlight${active === 'updates' ? ' active' : ''}`}
         aria-current={active === 'updates' ? 'page' : undefined}
-        aria-label="Yenilikler: 1.0.0-beta.1 sürümünde neler değişti?"
+        aria-label="Yenilikler: 1.0.0-beta.2 sürümünde neler değişti?"
         title={collapsed ? 'Yenilikler' : undefined}
       >
         <span className="nav-updates-icon"><Icon name="updates"/><i aria-hidden="true" /></span>
-        <span className="nav-item-copy"><span><b>Yenilikler</b><em>BETA</em></span><small>v1.0.0-beta.1 · Ana güncelleme</small></span>
+        <span className="nav-item-copy"><span><b>Yenilikler</b><em>BETA</em></span><small>v1.0.0-beta.2 · Tur ve rehber</small></span>
         <Icon name="arrow"/>
       </Link>
       {group('start', 'Başlangıç', item('/dashboard', 'Ana sayfa', 'Günün özeti ve bekleyen işler', 'home', 'home'))}
