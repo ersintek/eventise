@@ -5,6 +5,7 @@ import { AppNav, MobileTopBar } from '../components/navigation';
 import { formatDate, formatTime } from '@/lib/datetime';
 import { nextEventTask } from '@/lib/event-readiness';
 import { publicationLabel, registrationLabel } from '@/lib/product-language';
+import { EventPublicationToggle } from './event-publication-toggle';
 
 type EventSummary = {
   id: string;
@@ -184,9 +185,18 @@ export default async function Dashboard() {
                 <span>başvuru</span>
               </div>
               <span className="home-event-relative">{isPast ? 'Tamamlandı' : relativeDay(event.startsAt, now)}</span>
-              <Link className="home-event-manage" href={`/dashboard/events/${event.id}/settings?subtab=info`} aria-label={`${event.title} etkinlik bilgilerini aç`}>
-                Aç <span aria-hidden="true">→</span>
-              </Link>
+              <div className="home-event-actions">
+                <EventPublicationToggle
+                  eventId={event.id}
+                  eventTitle={event.title}
+                  organizationId={organization.id}
+                  publicationStatus={event.publicationStatus}
+                  registrationStatus={event.registrationStatus}
+                />
+                <Link className="home-event-manage" href={`/dashboard/events/${event.id}/settings?subtab=info`} aria-label={`${event.title} etkinlik bilgilerini aç`}>
+                  Aç <span aria-hidden="true">→</span>
+                </Link>
+              </div>
             </article>;
           })}
         </div>}
