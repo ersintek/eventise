@@ -41,6 +41,7 @@ export function RegistrationForm({ orgSlug, eventSlug, open, consents, fields, f
   const eventConsent = consents[0];
   const consentVersion = eventConsent?.definition.versions[0];
   const missingConsentVersion = Boolean(eventConsent?.required && !consentVersion);
+  const consentHref = `/events/${orgSlug}/${eventSlug}-onam`;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -108,7 +109,7 @@ export function RegistrationForm({ orgSlug, eventSlug, open, consents, fields, f
     <fieldset className="registration-form-section registration-preferences">
       <legend>Onaylar</legend>
       {!user && <label className="consent account-consent"><input type="checkbox" name="createAccount" defaultChecked/><span><b>Katılımcı hesabımı oluştur</b><small>Etkinliği takip etmeniz için güvenli hesap bağlantısı e-postanıza gönderilir.</small></span></label>}
-      {consentVersion && <label className="consent"><input type="checkbox" name="event-consent" required={eventConsent.required}/><span><b>Onamı kabul ediyorum</b><small>{consentVersion.text}</small></span></label>}
+      {consentVersion && <label className="consent"><input type="checkbox" name="event-consent" required={eventConsent.required}/><span><b>Onamı kabul ediyorum</b><a className="consent-view-link" href={consentHref} target="_blank" rel="noopener noreferrer">(Onamı görüntülemek için tıklayın)</a></span></label>}
       {missingConsentVersion && <p className="error">Etkinliğin onam yapılandırmasında bir sorun var. Lütfen düzenleyen kurumla iletişime geçin.</p>}
     </fieldset>
     {message && <p className="notice" role="status">{message}</p>}

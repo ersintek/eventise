@@ -21,7 +21,7 @@ export interface EventData {
   faqs: Array<{ id: string; question: string; answer: string }>;
 }
 
-type Consent = { required: boolean; definition: { title: string; versions: Array<{ id: string; text: string }> } };
+export type Consent = { required: boolean; definition: { title: string; versions: Array<{ id: string; text: string }> } };
 type Session = { user: { email: string; firstName: string; lastName: string }; registration: { applicationStatus: string } | null } | null;
 
 export async function getPublicEvent(orgSlug: string, eventSlug: string): Promise<EventData | null> {
@@ -31,13 +31,17 @@ export async function getPublicEvent(orgSlug: string, eventSlug: string): Promis
   return response.json();
 }
 
+export async function getEventConsents(eventId: string): Promise<Consent[]> {
+  const response = await fetch(`${process.env.API_INTERNAL_URL}/api/public/event-consents/${eventId}`, { cache: 'no-store' });
+  return response.ok ? response.json() : [];
+}
+
 export async function getRegistrationContext(eventId: string): Promise<{ consents: Consent[]; fields: RegistrationField[]; formVersionId?: string; session: Session }> {
   const base = `${process.env.API_INTERNAL_URL}/api`;
-  const [consentResponse, formResponse] = await Promise.all([
-    fetch(`${base}/public/event-consents/${eventId}`, { cache: 'no-store' }),
+  const [consents, formResponse] = await Promise.all([
+    getEventConsents(eventId),
     fetch(`${base}/public/event-forms/${eventId}`, { cache: 'no-store' }),
   ]);
-  const consents = consentResponse.ok ? await consentResponse.json() as Consent[] : [];
   const form = formResponse.ok ? await formResponse.json() as { id?: string; schema: { fields?: RegistrationField[] } } : { schema: { fields: [] } };
   const token = (await cookies()).get('eventise_session')?.value;
   let session: Session = null;
