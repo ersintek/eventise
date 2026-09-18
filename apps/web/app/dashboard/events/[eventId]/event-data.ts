@@ -36,6 +36,6 @@ export async function loadEventData(eventId: string): Promise<EventData> {
     optional(`public/event-consents/${eventId}`, token, []),
     optional(`organizations/${organization.id}/events/${eventId}/reminders`, token, []),
   ]);
-  const forms = event.form ? [{ id: event.form.id, name: event.title + ' kayıt formu', versions: event.form.versions }] : [];
+  const forms = event.form ? [{ id: event.form.id, name: event.title + ' başvuru formu', versions: event.form.versions }] : [];
   return { organization, event, registrations, forms, templates, consents, reminders };
 }

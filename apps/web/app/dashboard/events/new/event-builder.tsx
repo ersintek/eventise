@@ -25,7 +25,7 @@ type FormState = {
 const steps = [
   { label: 'Başlangıç', title: 'Etkinliği tanımlayın', description: 'Duyuru metninden otomatik doldurun veya temel bilgileri elle girin.' },
   { label: 'Zaman ve yer', title: 'Zamanı ve katılım biçimini belirleyin', description: 'Tarih, saat, mekân veya çevrim içi katılım bilgilerini kontrol edin.' },
-  { label: 'Kayıt', title: 'Kayıt ayarlarını belirleyin', description: 'Kontenjanı ve başvuruların nasıl kabul edileceğini seçin.' },
+  { label: 'Başvuru', title: 'Başvuru ayarlarını belirleyin', description: 'Kontenjanı ve başvuruların nasıl kabul edileceğini seçin.' },
   { label: 'Görünüm', title: 'Görünümü tamamlayın', description: 'İsterseniz kapak görseli ve renk seçin; etkinlik taslak olarak oluşturulur.' },
 ];
 
@@ -50,7 +50,7 @@ const formatLabels: Record<EventFormat, string> = {
   HYBRID: 'Hibrit',
 };
 
-export function EventBuilder({ organization, afterCreateBase = '/dashboard/events' }: { organization: { id: string; slug: string; name: string }; afterCreateBase?: string }) {
+export function EventBuilder({ organization }: { organization: { id: string; slug: string; name: string } }) {
   const [text, setText] = useState('');
   const [form, setForm] = useState<FormState>({
     title: '',
@@ -203,7 +203,7 @@ export function EventBuilder({ organization, afterCreateBase = '/dashboard/event
           if (!confirmed.ok) throw new Error('Kapak görseli doğrulanamadı.');
         }
       } catch { appearanceFailed = true; }
-      location.href = `${afterCreateBase}/${data.id}/settings?subtab=info&created=1${appearanceFailed ? '&appearance=failed' : ''}`;
+      location.href = `/dashboard/events/${data.id}/settings?subtab=info&created=1${appearanceFailed ? '&appearance=failed' : ''}`;
     } catch {
       setMessage('Bağlantı kurulamadı. Bilgileriniz korunuyor; lütfen yeniden deneyin.');
     } finally {
@@ -300,12 +300,12 @@ export function EventBuilder({ organization, afterCreateBase = '/dashboard/event
           </div></fieldset>
           <label className="capacity-field"><span><b>Kontenjan</b><small>Etkinliğe kabul edilecek en fazla kişi sayısı</small></span><div><input required min="1" type="number" inputMode="numeric" value={form.capacity} onChange={event => set('capacity', Number(event.target.value))}/><span>kişi</span></div></label>
           <label className="select-row"><span><b>Görünürlük</b><small>Etkinliği kimlerin bulabileceğini seçin</small></span><select value={form.visibility} onChange={event => set('visibility', event.target.value)}><option value="PUBLIC">Herkese açık</option><option value="LINK_ONLY">Bağlantıya sahip olanlar</option><option value="INVITE_ONLY">Yalnız davetliler</option></select></label>
-          <div className="privacy-note"><span aria-hidden="true">i</span><p><b>Kişisel verileri ölçülü tutun.</b> Özel nitelikli bilgi gerekiyorsa katılımcıları ayrıca aydınlatın. Onam metnini Etkinlik Bilgileri → Kayıt Formu bölümünden düzenleyebilirsiniz.</p></div>
+          <div className="privacy-note"><span aria-hidden="true">i</span><p><b>Kişisel verileri ölçülü tutun.</b> Özel nitelikli bilgi gerekiyorsa katılımcıları ayrıca aydınlatın. Onam metnini Etkinlik Bilgileri → Başvuru Formu bölümünden düzenleyebilirsiniz.</p></div>
         </div>}
 
         {step === 3 && <div className="create-step-fields review-step">
           <section className="creation-appearance">
-            <div className="creation-appearance-heading"><div><p className="eyebrow">İSTEĞE BAĞLI</p><h3>Sayfa görünümü</h3><p>Bu adımı boş bırakabilir ve daha sonra tamamlayabilirsiniz.</p></div><span>Atlanabilir</span></div>
+            <div className="creation-appearance-heading"><div><p className="eyebrow">İSTEĞE BAĞLI</p><h3>Başvuru Sayfası Görünümü</h3><p>Bu adımı boş bırakabilir ve daha sonra tamamlayabilirsiniz.</p></div><span>Atlanabilir</span></div>
             <label className="creation-cover-upload"><span>{coverPreview?<img src={coverPreview} alt="Seçilen kapak görseli"/>:<b>16:9</b>}</span><div><strong>{coverFile?coverFile.name:'Kapak görseli ekleyin'}</strong><small>PNG, JPG veya WebP · en fazla 15 MB</small><em>{coverFile?'Görseli değiştir':'Görsel seç'}</em></div><input type="file" accept="image/jpeg,image/png,image/webp" onChange={chooseCover}/></label>
             <fieldset className="creation-color-field"><legend>Vurgu rengi</legend><div>{colorChoices.map(color=><button type="button" key={color.value} title={color.label} aria-label={`${color.label} rengini seç`} aria-pressed={accentColor===color.value} className={accentColor===color.value?'selected':''} style={{backgroundColor:color.value}} onClick={()=>setAccentColor(color.value)}/>)}</div></fieldset>
           </section>
@@ -316,7 +316,7 @@ export function EventBuilder({ organization, afterCreateBase = '/dashboard/event
             <div><dt>Kayıt</dt><dd>{form.registrationMode === 'APPROVAL' ? 'Başvuru onayı' : 'Otomatik kabul'} · {form.capacity} kişi</dd><button type="button" onClick={() => goToStep(2)}>Düzenle</button></div>
             <div><dt>Görünürlük</dt><dd>{visibilityLabels[form.visibility]}</dd><button type="button" onClick={() => goToStep(2)}>Düzenle</button></div>
           </dl>
-          <p className="draft-explainer"><span aria-hidden="true">●</span><span><b>Etkinlik taslak olarak oluşturulur.</b> Sonraki ekranda kayıt formu, SSS ve diğer özellikleri isteğe bağlı olarak tamamlayabilirsiniz.</span></p>
+          <p className="draft-explainer"><span aria-hidden="true">●</span><span><b>Etkinlik taslak olarak oluşturulur.</b> Sonraki ekranda başvuru formu, SSS ve diğer özellikleri isteğe bağlı olarak tamamlayabilirsiniz.</span></p>
         </div>}
 
         {message && <p className="notice create-event-notice" role="status">{message}</p>}
@@ -335,10 +335,10 @@ export function EventBuilder({ organization, afterCreateBase = '/dashboard/event
             <h2>{form.title || 'Etkinlik adınız'}</h2>
             <p>{form.summary || 'Kısa açıklamanız burada görünecek ve katılımcılara etkinliğinizi anlatacak.'}</p>
             <div className="create-preview-facts"><article><small>TARİH VE SAAT</small><b>{previewDate}</b><span>{previewTime}</span></article><article><small>KATILIM</small><b>{previewLocation}</b><span>{formatLabels[form.format]}</span></article></div>
-            <button type="button" tabIndex={-1}>Kayıt ol <span>→</span></button>
+            <button type="button" tabIndex={-1}>Başvur <span>→</span></button>
           </div>
         </div>
-        <p className="create-preview-note"><span aria-hidden="true">i</span> Bu önizleme yalnızca size görünür. Etkinlik oluşturulduğunda kayıt formu kapalı kalır.</p>
+        <p className="create-preview-note"><span aria-hidden="true">i</span> Bu önizleme yalnızca size görünür. Etkinlik oluşturulduğunda başvuru formu kapalı kalır.</p>
       </aside>
     </div>
   </main>;

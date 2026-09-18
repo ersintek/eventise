@@ -56,24 +56,24 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
       {event.coverImageUrl && <div className="public-event-cover-art" aria-hidden="true"><img src={event.coverImageUrl} alt="" /></div>}
       <div className="public-event-hero-overlay" />
       <div className="public-event-hero-content">
-        <div className="event-status-row"><span>{formatLabel}</span><span className={registrationOpen ? 'open' : 'closed'}>{registrationOpen ? 'Kayıt formu açık' : 'Kayıt formu kapalı'}</span></div>
+        <div className="event-status-row"><span>{formatLabel}</span><span className={registrationOpen ? 'open' : 'closed'}>{registrationOpen ? 'Başvuru formu açık' : 'Başvuru formu kapalı'}</span></div>
         <h1>{event.title}</h1>
         {event.summary && <p className="event-lead">{event.summary}</p>}
-        <div className="hero-actions">{registrationOpen && <a className="event-register-button" href={registrationHref}>Kayıt ol <span>→</span></a>}<a className="event-details-link" href="#event-details">Etkinlik bilgileri</a></div>
+        <div className="hero-actions">{registrationOpen && <a className="event-register-button" href={registrationHref}>Başvur <span>→</span></a>}<a className="event-details-link" href="#event-details">Etkinlik bilgileri</a></div>
       </div>
     </section>
 
     <section className="event-fact-strip" aria-label="Etkinlik özeti">
       <article><span className="fact-icon">01</span><div><small>TARİH VE SAAT</small><strong>{formatDateLong(event.startsAt)}</strong><p>{sameDay ? `${formatTime(event.startsAt)}–${formatTime(event.endsAt)}` : `${formatTime(event.startsAt)} – ${formatDateLong(event.endsAt)}, ${formatTime(event.endsAt)}`}</p></div></article>
       <article><span className="fact-icon">02</span><div><small>{event.format === 'OFFLINE' ? 'MEKÂN' : 'KATILIM'}</small><strong>{event.format === 'ONLINE' ? 'Çevrim içi' : event.venueName || formatLabel}</strong>{event.venueAddress && event.format !== 'ONLINE' && <p>{event.venueAddress}</p>}{event.format === 'HYBRID' && <p className="hybrid-participation-label">{hybridParticipationLabel}</p>}</div></article>
-      <article><span className="fact-icon">03</span><div><small>KONTENJAN</small><strong>{event.capacity} katılımcı</strong><p>{event.registrationMode === 'APPROVAL' ? 'Başvurular değerlendirilir' : 'Kayıt sırasına göre'}</p></div></article>
+      <article><span className="fact-icon">03</span><div><small>KONTENJAN</small><strong>{event.capacity} katılımcı</strong><p>{event.registrationMode === 'APPROVAL' ? 'Başvurular değerlendirilir' : 'Başvuru sırasına göre'}</p></div></article>
     </section>
 
     <nav className="public-section-nav" aria-label="Etkinlik sayfası bölümleri">
       <a href="#about">Etkinlik hakkında</a>
       {event.venueAddress && event.format !== 'ONLINE' && <a href="#location">Mekân</a>}
       {event.faqs.length > 0 && <a href="#faq">SSS</a>}
-      {registrationOpen && <a href={registrationHref}>Kayıt</a>}
+      {registrationOpen && <a href={registrationHref}>Başvuru</a>}
     </nav>
 
     <div className="public-event-layout" id="event-details">
@@ -85,11 +85,11 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
         {event.visibility !== 'INVITE_ONLY' && <EventShare title={event.title}/>}
       </div>
       {dedicatedRegistration && registrationOpen
-        ? <aside className="registration-card registration-launch-card" id="registration"><p className="eyebrow">KAYIT FORMU</p><h2>Başvurunuzu tamamlayın</h2><p className="registration-explainer">Formda iletişim bilgilerinin ardından {fields.length} etkinlik sorusu bulunuyor.</p><a className="event-submit-button" href={registrationHref}>Kayıt formunu aç <span>→</span></a><p className="registration-security"><span>✓</span> Yanıtlarınız yalnızca bu etkinliğin kayıt süreci için kullanılır.</p></aside>
+        ? <aside className="registration-card registration-launch-card" id="registration"><p className="eyebrow">BAŞVURU FORMU</p><h2>Başvurunuzu tamamlayın</h2><p className="registration-explainer">Formda iletişim bilgilerinin ardından {fields.length} etkinlik sorusu bulunuyor.</p><a className="event-submit-button" href={registrationHref}>Başvuru formunu aç <span>→</span></a><p className="registration-security"><span>✓</span> Yanıtlarınız yalnızca bu etkinliğin başvuru süreci için kullanılır.</p></aside>
         : <RegistrationForm orgSlug={orgSlug} eventSlug={eventSlug} open={registrationOpen} consents={consents} fields={fields} formVersionId={formVersionId} session={session}/>}
     </div>
 
     <footer className="public-event-footer"><div className="footer-organizer"><span className="public-organizer-logo">{event.organization.logoUrl ? <img src={event.organization.logoUrl} alt=""/> : <b>{initials}</b>}</span><div><strong>{event.organization.name}</strong><small>Düzenleyen kurum</small></div></div><span className="eventise-trust"><i>e</i> eventise</span></footer>
-    {registrationOpen && <a className="mobile-registration-cta" href={registrationHref}>Kayıt ol <span>→</span></a>}
+    {registrationOpen && <a className="mobile-registration-cta" href={registrationHref}>Başvur <span>→</span></a>}
   </main>;
 }

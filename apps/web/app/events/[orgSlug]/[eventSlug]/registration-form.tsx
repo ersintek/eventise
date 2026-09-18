@@ -27,7 +27,7 @@ const statusLabel: Record<string, string> = {
 const statusMessage: Record<string, string> = {
   SUBMITTED: 'Başvurunuz güvenle kaydedildi.',
   PENDING: 'Kurum başvurunuzu değerlendiriyor. Sonuç e-postayla bildirilecek.',
-  ACCEPTED: 'Kaydınız tamamlandı. Etkinlik bilgilerini katılımcı alanınızdan takip edebilirsiniz.',
+  ACCEPTED: 'Başvurunuz kabul edildi. Etkinlik bilgilerini katılımcı alanınızdan takip edebilirsiniz.',
   WAITLISTED: 'Kontenjan dolu olduğu için yedek listeye alındınız.',
   REJECTED: 'Başvurunuz bu etkinlik için kabul edilmedi.',
 };
@@ -84,12 +84,12 @@ export function RegistrationForm({ orgSlug, eventSlug, open, consents, fields, f
   }
 
   const cardClass = `registration-card${standalone ? ' standalone-registration-form' : ''}`;
-  if (!open) return <aside className={`${cardClass} registration-state`} id="registration"><span className="registration-icon">–</span><p className="eyebrow">KAYIT DURUMU</p><h2>Kayıt formu kapalı</h2><p className="registration-explainer">Etkinlik bilgilerini inceleyebilirsiniz; şu anda yeni kayıt kabul edilmiyor.</p></aside>;
+  if (!open) return <aside className={`${cardClass} registration-state`} id="registration"><span className="registration-icon">–</span><p className="eyebrow">BAŞVURU DURUMU</p><h2>Başvuru formu kapalı</h2><p className="registration-explainer">Etkinlik bilgilerini inceleyebilirsiniz; şu anda yeni başvuru alınmıyor.</p></aside>;
   if (existing) return <aside className={`${cardClass} registration-state`} id="registration"><span className="registration-icon">✓</span><p className="eyebrow">BAŞVURU DURUMUNUZ</p><h2>{statusLabel[existing.applicationStatus] ?? existing.applicationStatus}</h2><p className="registration-explainer">{statusMessage[existing.applicationStatus] ?? 'Başvurunuz kaydedildi.'}</p><p className="participant-notice"><b>{user?.email}</b></p></aside>;
   if (complete) return <aside className={`${cardClass} registration-state success`} id="registration"><span className="registration-icon">✓</span><p className="eyebrow">BAŞVURUNUZ ALINDI</p><h2>Başvuru tamamlandı</h2><p className="registration-explainer">{message}</p><p className="registration-security">Bilgileriniz güvenli biçimde kaydedildi.</p></aside>;
 
   return <form className={cardClass} id="registration" onSubmit={submit}>
-    <div className="registration-heading"><p className="eyebrow">KAYIT FORMU</p><h2>Etkinliğe kayıt</h2><p className="registration-explainer">Zorunlu alanları doldurup başvurunuzu gönderin.</p></div>
+    <div className="registration-heading"><p className="eyebrow">BAŞVURU FORMU</p><h2>Etkinliğe başvurun</h2><p className="registration-explainer">Zorunlu alanları doldurup başvurunuzu gönderin.</p></div>
     {user && <p className="participant-notice"><b>{user.email}</b> hesabıyla devam ediyorsunuz.</p>}
     <fieldset className="registration-form-section">
       <legend>İletişim bilgileri</legend>
@@ -114,6 +114,6 @@ export function RegistrationForm({ orgSlug, eventSlug, open, consents, fields, f
     </fieldset>
     {message && <p className="notice" role="status">{message}</p>}
     <button className="event-submit-button" disabled={busy || missingConsentVersion}>{busy ? 'Gönderiliyor…' : 'Başvuruyu gönder'}<span>→</span></button>
-    <p className="registration-security"><span>✓</span> Bilgileriniz yalnızca bu etkinliğin kayıt süreci için kullanılır.</p>
+    <p className="registration-security"><span>✓</span> Bilgileriniz yalnızca bu etkinliğin başvuru süreci için kullanılır.</p>
   </form>;
 }

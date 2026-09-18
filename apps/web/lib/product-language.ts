@@ -2,6 +2,23 @@ export const publicationLabel = (status?: string) => status === 'PUBLISHED' ? 'Y
 
 export const registrationLabel = (status?: string) => status === 'OPEN' ? 'Açık' : 'Kapalı';
 
+/** Uygulamanın her yerinde aynı anlamla kullanılan ürün sözlüğü. */
+export const productTerms = {
+  application: 'Başvuru',
+  applicationForm: 'Başvuru Formu',
+  participant: 'Katılımcı',
+  attendanceConfirmation: 'Katılım teyidi',
+  entryAndAttendance: 'Giriş ve Katılım',
+  applicationPage: 'Başvuru Sayfası',
+  visualIdentity: 'Görsel Kimlik',
+  announcement: 'Duyuru',
+  reminder: 'Hatırlatma',
+  automaticEmail: 'Otomatik e-posta',
+  eventTools: 'Etkinlik Araçları',
+  postEvent: 'Etkinlik Sonrası',
+  certificates: 'Sertifikalar',
+} as const;
+
 export const applicationStatusLabel: Record<string, string> = {
   SUBMITTED: 'Beklemede',
   PENDING: 'Beklemede',

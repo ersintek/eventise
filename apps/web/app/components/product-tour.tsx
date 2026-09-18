@@ -96,7 +96,7 @@ export function ProductTour({ eventPath }: { eventPath: string }) {
       <span className="tour-spark">e</span><p className="eyebrow">ETKİNLİK ÇALIŞMA ALANI</p>
       <h2 id="tour-welcome-title">Bölümleri ve durumları tanıyın.</h2>
       <p>Bu tur, etkinliği hangi bölümden yöneteceğinizi ve durum kontrollerinin ne yaptığını gösterir.</p>
-      <div className="tour-value-row"><span>Etkinlik öncesi</span><span>Etkinlik sırasında</span><span>Etkinlik sonrası</span></div>
+      <div className="tour-value-row"><span>Etkinlik öncesi</span><span>Etkinlik günü</span><span>Etkinlik sonrası</span></div>
       <div className="tour-actions"><button type="button" className="tour-text-button" onClick={() => close(true)}>Şimdi değil</button><button type="button" className="primary" onClick={() => { window.scrollTo({ top: 0, behavior: 'auto' }); setWelcome(false); }}>Kısa turu başlat <span>→</span></button></div>
     </div>
   </div>;

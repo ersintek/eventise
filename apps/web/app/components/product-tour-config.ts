@@ -1,4 +1,4 @@
-export const EVENTISE_TOUR_VERSION = 'event-workspace-v5';
+export const EVENTISE_TOUR_VERSION = 'event-workspace-v6';
 
 export type TourStep = {
   id: string;
@@ -15,19 +15,19 @@ export const EVENTISE_TOUR_STEPS: TourStep[] = [
     description: 'Etkinliğin adı, tarihi, durumları ve bütün yönetim bölümleri bu çalışma alanında bir arada kalır.',
   },
   {
-    id: 'publication', target: 'publication-controls', eyebrow: 'YAYIN VE KAYIT',
-    title: 'Yayın ve kayıt durumlarını ayrı yönetin.',
-    description: 'Etkinlik Taslak veya Yayında; kayıt formu Açık veya Kapalı olabilir. Taslaktaki bir etkinliğin kayıt formunu açarsanız iki durum birlikte güncellenir.',
+    id: 'publication', target: 'publication-controls', eyebrow: 'YAYIN VE BAŞVURU',
+    title: 'Yayın ve başvuru durumlarını ayrı yönetin.',
+    description: 'Etkinlik Taslak veya Yayında; Başvuru Formu Açık veya Kapalı olabilir. Taslaktaki bir etkinlikte başvuru formunu açarsanız iki durum birlikte güncellenir.',
   },
   {
     id: 'before-event', target: 'pre-event-area', eyebrow: 'ETKİNLİK ÖNCESİ',
     title: 'Hazırlıkları dört bölümde tamamlayın.',
-    description: 'Etkinlik Bilgileri, Başvurular, İletişim ve Araçlar; yayından katılımcı iletişimine kadar bütün hazırlıkları kapsar.',
+    description: 'Etkinlik Öncesi, Etkinlik Günü, Etkinlik Sonrası ve İletişim bölümleri; sürecin her adımını tek ve anlaşılır bir yerde toplar.',
   },
   {
-    id: 'during-event', target: 'during-event-area', eyebrow: 'ETKİNLİK SIRASINDA',
+    id: 'during-event', target: 'during-event-area', eyebrow: 'ETKİNLİK GÜNÜ',
     title: 'Katılımı buradan takip edin.',
-    description: 'QR kodu, katılımcı listesi veya kapıda kayıt ile girişleri doğrulayın; etkinlikten önce kısa bir prova yapın.',
+    description: 'QR kodu, katılımcı listesi veya kapıda katılımcı ekleme ile giriş ve katılımı yönetin.',
   },
   {
     id: 'after-event', target: 'post-event-area', eyebrow: 'ETKİNLİK SONRASI',

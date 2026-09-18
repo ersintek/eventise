@@ -84,7 +84,7 @@ export function TemplateForm({ label, description, automatic, initialSubject, in
   return (
     <form className="template-form" onSubmit={save}>
       <div className="template-form-heading">
-        <div><span className={automatic ? 'template-kind automatic' : 'template-kind scheduled'}>{automatic ? 'Otomatik gönderilir' : 'Planlanarak gönderilir'}</span><h3>{label}</h3><p>{description}</p></div>
+        <div><span className={automatic ? 'template-kind automatic' : 'template-kind scheduled'}>{automatic ? 'Otomatik e-posta' : 'Planlanmış hatırlatma'}</span><h3>{label}</h3><p>{description}</p></div>
       </div>
       <div className="template-edit-grid">
         <div className="template-fields">

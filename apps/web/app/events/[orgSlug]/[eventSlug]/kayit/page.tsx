@@ -9,7 +9,7 @@ type PageProps = { params: Promise<{ orgSlug: string; eventSlug: string }> };
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { orgSlug, eventSlug } = await params;
   const event = await getPublicEvent(orgSlug, eventSlug);
-  return event ? { title: `${event.title} kayıt formu` } : { title: 'Etkinlik bulunamadı' };
+  return event ? { title: `${event.title} başvuru formu` } : { title: 'Etkinlik bulunamadı' };
 }
 
 export default async function RegistrationPage({ params }: PageProps) {
@@ -32,7 +32,7 @@ export default async function RegistrationPage({ params }: PageProps) {
 
     <div className="public-registration-shell">
       <section className="registration-page-intro">
-        <p className="section-kicker">KAYIT FORMU</p>
+        <p className="section-kicker">BAŞVURU FORMU</p>
         <h1>{event.title}</h1>
         <p>{event.summary || 'Başvurunuzu tamamlamak için aşağıdaki alanları doldurun.'}</p>
         <div className="registration-page-progress" aria-label="Form içeriği">

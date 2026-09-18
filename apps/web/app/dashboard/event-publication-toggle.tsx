@@ -22,7 +22,7 @@ export function EventPublicationToggle({ eventId, eventTitle, organizationId, pu
 
   async function toggle() {
     const closesRegistration = isPublished && registration === 'OPEN';
-    if (closesRegistration && !window.confirm('Etkinlik yayından kaldırılacak ve kayıt formu kapatılacak. Devam edilsin mi?')) return;
+    if (closesRegistration && !window.confirm('Etkinlik yayından kaldırılacak ve başvuru formu kapatılacak. Devam edilsin mi?')) return;
 
     const nextPublication = isPublished ? 'UNPUBLISHED' : 'PUBLISHED';
     const nextRegistration = closesRegistration ? 'CLOSED' : registration;

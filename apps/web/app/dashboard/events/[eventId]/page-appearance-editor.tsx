@@ -58,7 +58,7 @@ export function PageAppearanceEditor({ organizationId, eventId, organizationName
       const confirm = await fetch(`${endpoint}/page-assets/confirm`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind, assetId: grant.assetId, reservationId: grant.reservationId }) });
       const data = await confirm.json();
       if (!confirm.ok) throw new Error(Array.isArray(data.message) ? data.message.join(' ') : data.message ?? 'Görsel doğrulanamadı.');
-      setAppearance(data); setMessage(kind === 'LOGO' ? 'Kurum logosu güncellendi.' : 'Kapak görseli güncellendi.');
+      setAppearance(data); setMessage(kind === 'LOGO' ? 'Logo güncellendi.' : 'Kapak görseli güncellendi.');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Görsel yüklenemedi.');
     } finally {
@@ -67,7 +67,7 @@ export function PageAppearanceEditor({ organizationId, eventId, organizationName
   }
 
   async function remove(kind: 'LOGO' | 'COVER') {
-    if (!window.confirm(kind === 'LOGO' ? 'Kurum logosu tüm etkinlik sayfalarından kaldırılacak. Devam edilsin mi?' : 'Kapak görseli etkinlik sayfasından kaldırılsın mı?')) return;
+    if (!window.confirm(kind === 'LOGO' ? 'Kurum logosu tüm etkinlik ve başvuru sayfalarından kaldırılacak. Devam edilsin mi?' : 'Kapak görseli başvuru sayfasından kaldırılsın mı?')) return;
     setBusy(kind); setMessage('');
     try {
       const response = await fetch(`${endpoint}/page-assets/${kind}`, { method: 'DELETE' });
@@ -97,10 +97,10 @@ export function PageAppearanceEditor({ organizationId, eventId, organizationName
 
   return <section className="appearance-workspace">
     <div className="appearance-controls">
-      <div className="appearance-intro"><p className="eyebrow">ETKİNLİK SAYFASI</p><h2>Markanızı öne çıkarın</h2><p>Üç sade ayarla sayfanızı kurumunuza ait hale getirin. Değişiklikleri sağdaki önizlemede görebilirsiniz.</p></div>
+      <div className="appearance-intro"><p className="eyebrow">BAŞVURU SAYFASI GÖRÜNÜMÜ</p><h2>Görsel Kimlik</h2><p>Kurum logosu tüm etkinlik ve başvuru sayfalarında kullanılır; kapak görseli ve vurgu rengi bu etkinliğe özeldir. Değişiklikleri sağdaki önizlemede görebilirsiniz.</p></div>
       <article className="appearance-setting-card">
-        <div className="appearance-setting-heading"><span>1</span><div><h3>Kurum logosu</h3><p>Tüm etkinlik sayfalarında kurum adınızla birlikte görünür.</p></div></div>
-        <div className="asset-control-row"><div className="asset-thumbnail logo-thumbnail">{appearance.logoUrl ? <img src={appearance.logoUrl} alt="Yüklü kurum logosu"/> : <b>{initial}</b>}</div><div><label className="secondary upload-button">{busy === 'LOGO' ? 'Yükleniyor…' : appearance.logoUrl ? 'Logoyu değiştir' : 'Logo yükle'}<input type="file" accept="image/jpeg,image/png,image/webp" disabled={Boolean(busy)} onChange={event => upload('LOGO', event)}/></label>{appearance.logoUrl && <button type="button" className="text-danger" disabled={Boolean(busy)} onClick={() => remove('LOGO')}>Kaldır</button>}<small>PNG, JPG veya WebP · en fazla 5 MB</small></div></div>
+        <div className="appearance-setting-heading"><span>1</span><div><h3>Kurum logosu</h3><p>Kurum adınızla birlikte tüm etkinlik ve başvuru sayfalarında görünür.</p></div></div>
+        <div className="asset-control-row"><div className="asset-thumbnail logo-thumbnail">{appearance.logoUrl ? <img src={appearance.logoUrl} alt="Yüklü logo"/> : <b>{initial}</b>}</div><div><label className="secondary upload-button">{busy === 'LOGO' ? 'Yükleniyor…' : appearance.logoUrl ? 'Logoyu değiştir' : 'Logo yükle'}<input type="file" accept="image/jpeg,image/png,image/webp" disabled={Boolean(busy)} onChange={event => upload('LOGO', event)}/></label>{appearance.logoUrl && <button type="button" className="text-danger" disabled={Boolean(busy)} onClick={() => remove('LOGO')}>Kaldır</button>}<small>PNG, JPG veya WebP · en fazla 5 MB</small></div></div>
       </article>
       <article className="appearance-setting-card">
         <div className="appearance-setting-heading"><span>2</span><div><h3>Kapak görseli</h3><p>Etkinliğinizi ilk bakışta anlatan yatay bir görsel seçin.</p></div></div>
@@ -116,8 +116,8 @@ export function PageAppearanceEditor({ organizationId, eventId, organizationName
     <aside className="appearance-preview-shell" aria-label="Etkinlik sayfası önizlemesi">
       <div className="appearance-preview-label"><span>CANLI ÖNİZLEME</span><small>Masaüstü görünümü</small></div>
       <div className="appearance-preview" style={{ '--preview-accent': appearance.accentColor } as React.CSSProperties}>
-        <div className={`preview-cover${appearance.coverImageUrl ? '' : ' empty'}`}>{appearance.coverImageUrl && <img src={appearance.coverImageUrl} alt="" />}<span>KAYIT AÇIK</span></div>
-        <div className="preview-body"><div className="preview-org">{appearance.logoUrl ? <img src={appearance.logoUrl} alt=""/> : <b>{initial}</b>}<span>{organizationName}</span></div><h3>{title}</h3><p>{summary || 'Etkinliğin kısa açıklaması burada görünür.'}</p><div className="preview-facts"><span>{date}</span><span>{venueName || 'Mekân daha sonra duyurulacak'}</span></div><button type="button" tabIndex={-1}>Kayıt ol</button></div>
+        <div className={`preview-cover${appearance.coverImageUrl ? '' : ' empty'}`}>{appearance.coverImageUrl && <img src={appearance.coverImageUrl} alt="" />}<span>BAŞVURUYA AÇIK</span></div>
+        <div className="preview-body"><div className="preview-org">{appearance.logoUrl ? <img src={appearance.logoUrl} alt=""/> : <b>{initial}</b>}<span>{organizationName}</span></div><h3>{title}</h3><p>{summary || 'Etkinliğin kısa açıklaması burada görünür.'}</p><div className="preview-facts"><span>{date}</span><span>{venueName || 'Mekân daha sonra duyurulacak'}</span></div><button type="button" tabIndex={-1}>Başvur</button></div>
       </div>
     </aside>
   </section>;

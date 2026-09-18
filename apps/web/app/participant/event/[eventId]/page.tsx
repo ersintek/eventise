@@ -30,7 +30,7 @@ export default async function ParticipantEventPage({ params }: { params: Promise
         <Link href="/participant" className="participant-back">← Tüm etkinliklerim</Link>
         <h1>{title}</h1>
       </div>
-      <section className="empty-state participant-empty"><span className="empty-illustration">✦</span><h2>Bu etkinliğe kaydınız bulunamadı</h2><p>Etkinlik sayfasından kayıt olabilirsiniz.</p></section>
+      <section className="empty-state participant-empty"><span className="empty-illustration">✦</span><h2>Bu etkinlik için başvurunuz bulunamadı</h2><p>Etkinlik sayfasından başvurabilirsiniz.</p></section>
     </main>;
   }
 

@@ -152,7 +152,7 @@ export default async function Dashboard() {
           <div>
             <p className="eyebrow">ETKİNLİKLER</p>
             <h2>Tüm etkinlikler</h2>
-            <p>Tarih, etkinlik durumu ve kayıt formu durumu.</p>
+            <p>Tarih, etkinlik durumu ve başvuru formu durumu.</p>
           </div>
           <span>{events.length} etkinlik</span>
         </div>

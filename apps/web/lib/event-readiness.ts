@@ -27,7 +27,7 @@ export function nextEventTask(event: ReadinessEvent, now = Date.now()): EventTas
   if (event.publicationStatus !== 'PUBLISHED') return {
     eyebrow: 'YAYINA HAZIRLIK',
     title: `${event.title} etkinliğini gözden geçirin.`,
-    body: 'Etkinlik bilgilerini ve kayıt formunu kontrol ettikten sonra etkinliği yayınlayabilirsiniz.',
+    body: 'Etkinlik bilgilerini ve başvuru formunu kontrol ettikten sonra etkinliği yayınlayabilirsiniz.',
     action: 'Etkinlik bilgilerini aç',
     href: `${base}/settings?subtab=info`,
     priority: 100,
@@ -57,10 +57,10 @@ export function nextEventTask(event: ReadinessEvent, now = Date.now()): EventTas
     priority: 50,
   };
   if (event.registrationStatus !== 'OPEN') return {
-    eyebrow: 'KAYIT FORMU KAPALI',
-    title: `${event.title} için kayıt formunu kontrol edin.`,
-    body: 'Etkinlik sayfası yayında. Yeni başvuru almak istiyorsanız kayıt formunu açabilirsiniz.',
-    action: 'Kayıt formunu aç',
+    eyebrow: 'BAŞVURU FORMU KAPALI',
+    title: `${event.title} için başvuru formunu kontrol edin.`,
+    body: 'Etkinlik sayfası yayında. Yeni başvuru almak istiyorsanız başvuru formunu açabilirsiniz.',
+    action: 'Başvuru formunu aç',
     href: `${base}/settings?subtab=forms`,
     priority: 70,
   };

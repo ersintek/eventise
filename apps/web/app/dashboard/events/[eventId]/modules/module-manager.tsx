@@ -1,8 +1,8 @@
 'use client';
 import { FormEvent, useState } from 'react';
+import Link from 'next/link';
 import { ManualGroups } from './manual-groups';
 import { TestComparison } from './test-comparison';
-import { FeedbackEditor } from '../visual-editors';
 import { AssessmentEditor } from './assessment-editor';
 
 type Game = { id: string; title: string; status: string; _count: { participants: number; responses: number } };
@@ -12,14 +12,14 @@ type Comparison = { pre: { submissions: number; average: number | null }; post: 
 export function ModuleManager(p: {
   organizationId: string; eventId: string;
   initialGroups: any[]; initialGames: Game[]; initialAssessments: Assessment[];
-  initialFeedback: any[]; initialFeatures: any[]; roster: any[]; initialComparison: Comparison;
+  initialFeatures: any[]; roster: any[]; initialComparison: Comparison;
 }) {
   const { organizationId, eventId } = p;
   const [tab, setTab] = useState('tests');
   const [groups, setGroups] = useState(p.initialGroups);
+  const [features, setFeatures] = useState(p.initialFeatures);
   const [games, setGames] = useState(p.initialGames);
   const [assessments, setAssessments] = useState(p.initialAssessments);
-  const [feedback, setFeedback] = useState(p.initialFeedback);
   const [comparison, setComparison] = useState(p.initialComparison);
   const [message, setMessage] = useState('');
   const [gameDetails, setGameDetails] = useState<any>(null);
@@ -96,24 +96,28 @@ export function ModuleManager(p: {
     if (r) { setComparison(r); setMessage('Karşılaştırma yenilendi.'); }
   }
 
-  // === FEEDBACK ===
-  async function createFeedback(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const f = new FormData(e.currentTarget as HTMLFormElement);
-    const qs = JSON.parse(String(f.get('questions') || '[]')).filter((q: any) => q.label.trim());
-    if (!qs.length) { setMessage('En az bir soru ekleyin.'); return; }
-    const r = await api(base + '/feedback', 'POST', { title: f.get('title'), schema: { questions: qs.map((q: any, i: number) => ({ id: 'q' + (i + 1), type: q.type, label: q.label })) } });
-    if (!r) return;
-    await api('organizations/' + organizationId + '/feedback/' + r.id + '/open', 'PATCH', { open: true });
-    setFeedback(v => [{ ...r, open: true, _count: { submissions: 0 } }, ...v]);
-    setMessage('Geri bildirim formu oluşturuldu.');
-  }
+  const tabs: [string, string][] = [['tests', 'Ön ve Son Test'], ['game', 'Tanışma Oyunu'], ['groups', 'Katılımcıları Grupla']];
+  const toolFeatures = [
+    { key: 'assessments', label: 'Ön ve Son Test', help: 'Katılımcıların testleri görmesini açar veya kapatır.' },
+    { key: 'icebreaker', label: 'Tanışma Oyunu', help: 'Tanışma oyununun katılımcı alanında görünmesini yönetir.' },
+    { key: 'groups', label: 'Katılımcıları Grupla', help: 'Grupları katılımcı alanında kullanıma açar veya kapatır.' },
+  ];
 
-  const tabs: [string, string][] = [['tests', 'Ön Test ve Son Test'], ['game', 'Tanışma Oyunu'], ['feedback', 'Geri Bildirim'], ['groups', 'Gruplar']];
+  async function toggleFeature(key: string, label: string) {
+    const enabled = !features.find((feature: any) => feature.key === key)?.enabled;
+    const result = await api(`${base}/features/${key}`, 'PUT', { enabled, config: {} });
+    if (!result) return;
+    setFeatures(current => current.map((feature: any) => feature.key === key ? { ...feature, enabled } : feature));
+    setMessage(`${label} ${enabled ? 'açıldı' : 'kapatıldı'}.`);
+  }
 
   return (
     <>
-      <nav className="workspace-tabs">{tabs.map(([k, l]) => <button key={k} className={tab === k ? 'active' : ''} onClick={() => setTab(k)}>{l}</button>)}</nav>
+      <section className="workspace-card tool-availability">
+        <div className="section-intro"><p className="eyebrow">ETKİNLİK ARAÇLARI</p><h2>Katılımcılara açık araçlar</h2><p>Bir aracı hazırladıktan sonra katılımcıların kullanabilmesi için açın. Kapatmak için aynı düğmeye tıklayın.</p></div>
+        <div className="feature-switches">{toolFeatures.map(feature => { const enabled = Boolean(features.find((item: any) => item.key === feature.key)?.enabled); return <button type="button" key={feature.key} className={enabled ? 'feature-on' : 'feature-off'} disabled={busy} title={feature.help} onClick={() => toggleFeature(feature.key, feature.label)}>{feature.label}: {enabled ? 'Açık' : 'Kapalı'}</button>; })}</div>
+      </section>
+      <nav className="workspace-tabs" aria-label="Etkinlik araçları">{tabs.map(([k, l]) => <button key={k} className={tab === k ? 'active' : ''} onClick={() => setTab(k)}>{l}</button>)}<Link href={`/dashboard/events/${eventId}/communication?subtab=notifications`}>Duyuru Gönder</Link></nav>
       {message && <p className="notice">{message}</p>}
       <section className="module-workspace">
         {tab === 'tests' && (
@@ -177,17 +181,6 @@ export function ModuleManager(p: {
             )}
           </>
         )}
-        {tab === 'feedback' && (
-          <>
-            <form className="workspace-card" onSubmit={createFeedback}>
-              <div className="section-intro"><h2>Geri bildirim formu oluştur</h2><p>Etkinliği değerlendirmek için katılımcılara sorular hazırlayın.</p></div>
-              <label>Form başlığı<input name="title" defaultValue="Etkinlik geri bildirimi" required /></label>
-              <FeedbackEditor />
-              <button className="primary" disabled={busy}>{busy ? 'Oluşturuluyor…' : 'Formu oluştur ve aç'}</button>
-            </form>
-            {feedback.map((f: any) => <article className="workspace-card" key={f.id}><h3>{f.title}</h3><p>{f._count.submissions} yanıt</p></article>)}
-          </>
-        )}
         {tab === 'groups' && (
           <GroupsPanel organizationId={organizationId} eventId={eventId} groups={groups} setGroups={setGroups} api={api} roster={p.roster} />
         )}
@@ -199,15 +192,19 @@ export function ModuleManager(p: {
 function GroupsPanel({ organizationId, eventId, groups, setGroups, api, roster }: any) {
   const [busy, setBusy] = useState(false);
   async function generate(e: FormEvent<HTMLFormElement>) { e.preventDefault(); setBusy(true); const d = new FormData(e.currentTarget); const r = await api('organizations/' + organizationId + '/events/' + eventId + '/groups/generate', 'POST', { count: Number(d.get('count')), strategy: d.get('strategy') }); if (r) setGroups(r); setBusy(false); }
+  async function saveManual(manualGroups: string[][]) { setBusy(true); const result = await api('organizations/' + organizationId + '/events/' + eventId + '/groups/manual', 'POST', { groups: manualGroups }); if (result) setGroups(result); setBusy(false); return Boolean(result); }
+  const people = roster.map((item: any) => ({ id: item.id, firstName: item.firstName, lastName: item.lastName }));
+  const assigned = groups.map((group: any) => (group.members ?? []).map((member: any) => member.registration.id));
   return (
     <>
       <form className="workspace-card" onSubmit={generate}>
-        <div className="section-intro"><h2>Otomatik gruplama</h2></div>
+        <div className="section-intro"><h2>Otomatik gruplama</h2><p>Kabul edilen katılımcıları eşit sayıda gruplara dağıtın.</p></div>
         <label>Grup sayısı<input name="count" type="number" min="1" defaultValue="2" /></label>
         <label>Dağıtım yöntemi<select name="strategy"><option value="RANDOM">Rastgele</option><option value="BALANCED">Dengeli</option></select></label>
         <button className="primary" disabled={busy}>Grupları oluştur</button>
       </form>
-      <div className="group-board">{groups.map((g: any) => <article className="workspace-card" key={g.id}><h3>{g.name}</h3>{g.members.map((m: any) => <span className="participant-chip" key={m.registration.id}>{m.registration.firstName} {m.registration.lastName}</span>)}</article>)}</div>
+      <ManualGroups key={assigned.flat().join(':') || 'new-groups'} people={people} initial={assigned} onSave={saveManual}/>
+      {groups.length > 0 && <div className="group-board">{groups.map((g: any) => <article className="workspace-card" key={g.id}><h3>{g.name}</h3>{(g.members ?? []).map((m: any) => <span className="participant-chip" key={m.registration.id}>{m.registration.firstName} {m.registration.lastName}</span>)}</article>)}</div>}
     </>
   );
 }
