@@ -70,7 +70,7 @@ export function EventWorkspace({organization,event:initialEvent,initialRegistrat
     if(!window.confirm('Etkinlik silme süreci başlatılsın mı? Etkinlik 30 gün boyunca geri alınabilir.'))return;
     if(await run(()=>request(`organizations/${organization.id}/events/${event.id}/deletion`,{method:'POST'}),'Etkinlik silme süreci başlatıldı.'))router.push('/dashboard#events');
   }
-  const subLink=(href:string,label:string,key:string,icon=false)=><Link href={href} className={`${subtab===key?'active':''}${icon?' workspace-tab-icon':''}`} aria-label={icon?label:undefined} title={icon?label:undefined} onClick={e=>{e.preventDefault();if(hasUnsavedChanges&&!window.confirm('Kaydedilmemiş değişiklikleriniz var. Bu bölümden ayrılmak istiyor musunuz?'))return;setInfoDirty(false);setFaqDirty(false);setFormDirty(false);setSubtab(key);router.push(href);router.refresh()}}>{icon?<span aria-hidden="true">•••</span>:label}</Link>;
+  const subLink=(href:string,label:string,key:string,danger=false)=><Link href={href} className={`${subtab===key?'active':''}${danger?' danger-tab':''}`} onClick={e=>{e.preventDefault();if(hasUnsavedChanges&&!window.confirm('Kaydedilmemiş değişiklikleriniz var. Bu bölümden ayrılmak istiyor musunuz?'))return;setInfoDirty(false);setFaqDirty(false);setFormDirty(false);setSubtab(key);router.push(href);router.refresh()}}>{label}</Link>;
 
   return <>
     <ActionFeedback feedback={feedback} onDismiss={()=>setFeedback(null)}/>
@@ -82,7 +82,7 @@ export function EventWorkspace({organization,event:initialEvent,initialRegistrat
         {subLink(`${base}/settings?subtab=appearance`,'Başvuru Sayfası Görünümü','appearance')}
         {subLink(`${base}/settings?subtab=forms`,'Başvuru Formu','forms')}
         {subLink(`${base}/settings?subtab=faq`,'SSS','faq')}
-        {subLink(`${base}/settings?subtab=manage`,'Diğer etkinlik işlemleri','manage',true)}
+        {subLink(`${base}/settings?subtab=manage`,'Etkinliği Sil','manage',true)}
       </nav>
       {subtab==='appearance'&&<PageAppearanceEditor organizationId={organization.id} eventId={event.id} organizationName={(organization as {name?:string}).name??''} title={event.title} summary={event.summary} startsAt={event.startsAt} venueName={event.venueName}/>}
       {subtab==='info'&&<form className="workspace-card event-settings" onSubmit={saveSettings} onChange={()=>setInfoDirty(true)}>
