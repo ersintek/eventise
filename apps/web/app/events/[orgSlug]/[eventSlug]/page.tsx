@@ -65,7 +65,7 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
 
     <section className="event-fact-strip" aria-label="Etkinlik özeti">
       <article><span className="fact-icon">01</span><div><small>TARİH VE SAAT</small><strong>{formatDateLong(event.startsAt)}</strong><p>{sameDay ? `${formatTime(event.startsAt)}–${formatTime(event.endsAt)}` : `${formatTime(event.startsAt)} – ${formatDateLong(event.endsAt)}, ${formatTime(event.endsAt)}`}</p></div></article>
-      <article><span className="fact-icon">02</span><div><small>{event.format === 'OFFLINE' ? 'MEKÂN' : 'KATILIM'}</small><strong>{event.format === 'ONLINE' ? 'Çevrim içi' : event.venueName || formatLabel}</strong>{event.format === 'HYBRID' && <p className="hybrid-participation-label">{hybridParticipationLabel}</p>}{event.venueAddress && event.format !== 'ONLINE' && <p>{event.venueAddress}</p>}</div></article>
+      <article><span className="fact-icon">02</span><div><small>{event.format === 'OFFLINE' ? 'MEKÂN' : 'KATILIM'}</small><strong>{event.format === 'ONLINE' ? 'Çevrim içi' : event.venueName || formatLabel}</strong>{event.venueAddress && event.format !== 'ONLINE' && <p>{event.venueAddress}</p>}{event.format === 'HYBRID' && <p className="hybrid-participation-label">{hybridParticipationLabel}</p>}</div></article>
       <article><span className="fact-icon">03</span><div><small>KONTENJAN</small><strong>{event.capacity} katılımcı</strong><p>{event.registrationMode === 'APPROVAL' ? 'Başvurular değerlendirilir' : 'Kayıt sırasına göre'}</p></div></article>
     </section>
 

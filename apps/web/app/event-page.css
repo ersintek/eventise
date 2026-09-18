@@ -68,4 +68,4 @@
   .public-registration-page{padding-bottom:2rem}.registration-page-header .public-organizer-brand span:last-child{display:none}.registration-back-link{padding:.6rem .25rem}.public-registration-shell{margin-top:1.25rem}.registration-page-intro{padding:0 .25rem}.registration-page-intro h1{font-size:clamp(1.9rem,9vw,2.5rem);overflow-wrap:anywhere;text-wrap:pretty}.registration-page-intro>p:not(.section-kicker){overflow-wrap:anywhere}.registration-page-progress{display:grid;grid-template-columns:1fr}.public-registration-page .standalone-registration-form{padding:1.2rem}.standalone-registration-form .two{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){.event-register-button,.share-link,.color-choices button{transition:none}}
- .hybrid-participation-label{color:var(--event-accent-ink)!important;font-weight:800}
+.hybrid-participation-label{margin-top:.55rem!important;padding-top:.55rem;border-top:1px solid var(--event-accent-line);color:var(--event-accent-ink)!important;font-weight:800}
