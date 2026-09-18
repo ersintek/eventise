@@ -35,6 +35,7 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
   const { consents, fields, formVersionId, session } = await getRegistrationContext(event.id);
   const registrationOpen = event.registrationStatus === 'OPEN';
   const formatLabel = event.format === 'ONLINE' ? 'Çevrim içi' : event.format === 'HYBRID' ? 'Hibrit' : 'Yüz yüze';
+  const hybridParticipationLabel = '+ Online Katılım (Hibrit)';
   const sameDay = new Date(event.startsAt).toDateString() === new Date(event.endsAt).toDateString();
   const initials = event.organization.name.trim().slice(0, 1).toLocaleUpperCase('tr-TR');
   const style = { '--event-accent': event.accentColor || '#4F46E5' } as CSSProperties;
@@ -64,7 +65,7 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
 
     <section className="event-fact-strip" aria-label="Etkinlik özeti">
       <article><span className="fact-icon">01</span><div><small>TARİH VE SAAT</small><strong>{formatDateLong(event.startsAt)}</strong><p>{sameDay ? `${formatTime(event.startsAt)}–${formatTime(event.endsAt)}` : `${formatTime(event.startsAt)} – ${formatDateLong(event.endsAt)}, ${formatTime(event.endsAt)}`}</p></div></article>
-      <article><span className="fact-icon">02</span><div><small>{event.format === 'OFFLINE' ? 'MEKÂN' : 'KATILIM'}</small><strong>{event.format === 'ONLINE' ? 'Çevrim içi' : event.venueName || formatLabel}</strong>{event.venueAddress && event.format !== 'ONLINE' && <p>{event.venueAddress}</p>}</div></article>
+      <article><span className="fact-icon">02</span><div><small>{event.format === 'OFFLINE' ? 'MEKÂN' : 'KATILIM'}</small><strong>{event.format === 'ONLINE' ? 'Çevrim içi' : event.venueName || formatLabel}</strong>{event.format === 'HYBRID' && <p className="hybrid-participation-label">{hybridParticipationLabel}</p>}{event.venueAddress && event.format !== 'ONLINE' && <p>{event.venueAddress}</p>}</div></article>
       <article><span className="fact-icon">03</span><div><small>KONTENJAN</small><strong>{event.capacity} katılımcı</strong><p>{event.registrationMode === 'APPROVAL' ? 'Başvurular değerlendirilir' : 'Kayıt sırasına göre'}</p></div></article>
     </section>
 
@@ -78,7 +79,7 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
     <div className="public-event-layout" id="event-details">
       <div className="public-event-content">
         <section className="public-content-section event-about" id="about"><p className="section-kicker">ETKİNLİK BİLGİLERİ</p><h2>Etkinlik hakkında</h2>{aboutDescription ? <MarkdownContent>{aboutDescription}</MarkdownContent> : <p>{event.summary || 'Etkinlik açıklaması henüz eklenmedi.'}</p>}</section>
-        {event.venueAddress && event.format !== 'ONLINE' && <section className="public-content-section event-location" id="location"><p className="section-kicker">MEKÂN</p><h2>{event.venueName || 'Etkinlik mekânı'}</h2><div className="location-card"><span>⌖</span><div><p>{event.venueAddress}</p><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venueAddress)}`} target="_blank" rel="noopener noreferrer">Haritada aç ↗</a></div></div></section>}
+        {event.venueAddress && event.format !== 'ONLINE' && <section className="public-content-section event-location" id="location"><p className="section-kicker">MEKÂN</p><h2>{event.venueName || 'Etkinlik mekânı'}</h2><div className="location-card"><span>⌖</span><div><p>{event.venueAddress}</p>{event.format === 'HYBRID' && <p className="hybrid-participation-label">{hybridParticipationLabel}</p>}<a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venueAddress)}`} target="_blank" rel="noopener noreferrer">Haritada aç ↗</a></div></div></section>}
         <section className="public-content-section organizer-card" id="organizer"><div className="organizer-card-logo">{event.organization.logoUrl ? <img src={event.organization.logoUrl} alt=""/> : <b>{initials}</b>}</div><div><p className="section-kicker">DÜZENLEYEN KURUM</p><h2>{event.organization.name}</h2>{event.organization.description && <p>{event.organization.description}</p>}{event.organization.website && <a href={event.organization.website} target="_blank" rel="noopener noreferrer">Kurumun web sitesini ziyaret et ↗</a>}</div></section>
         {event.faqs.length > 0 && <section className="public-content-section event-faq" id="faq"><p className="section-kicker">SSS</p><h2>Sık sorulan sorular</h2><div>{event.faqs.map(item => <details key={item.id}><summary>{item.question}<span>+</span></summary><p>{item.answer}</p></details>)}</div></section>}
         {event.visibility !== 'INVITE_ONLY' && <EventShare title={event.title}/>}
