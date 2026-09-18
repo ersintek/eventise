@@ -7,7 +7,6 @@ export default async function EventSettings({ params, searchParams }: { params: 
   const { organization, event, registrations, forms, templates, consents, reminders } = await loadEventData(eventId);
   return <main className="builder-shell">
     {created === '1' && <div className={`route-flash ${appearance === 'failed' ? 'warning' : 'success'}`} role="status"><b>Etkinlik taslak olarak oluşturuldu.</b><span>{appearance === 'failed' ? 'Kapak görseli yüklenemedi; Başvuru Sayfası Görünümü bölümünden yeniden deneyebilirsiniz.' : 'Bilgileri gözden geçirebilir ve hazır olduğunuzda etkinliği Yayında durumuna geçirebilirsiniz.'}</span></div>}
-    <div className="workspace-page-heading"><div><p className="eyebrow">ETKİNLİK ÖNCESİ</p><h2>Etkinlik Bilgileri</h2><p>Etkinlik bilgilerini, başvuru sayfası görünümünü, başvuru formunu ve SSS alanını yönetin.</p></div></div>
     <EventWorkspace organization={organization} event={event} initialRegistrations={registrations} forms={forms} templates={templates} consents={consents} initialReminders={reminders} section="settings" initialSubtab={subtab ?? 'info'} />
   </main>;
 }

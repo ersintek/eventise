@@ -135,7 +135,7 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
 
   return <header className={`event-command-center simplified${compact ? ' is-compact' : ''}`} data-tour-id="event-command-center">
     <ActionFeedback feedback={feedback} onDismiss={() => setFeedback(null)} />
-    <div className="event-topline"><span className="workspace-label">ETKİNLİK YÖNETİMİ</span></div>
+    <div className="event-topline"><strong className="workspace-label">Etkinlik Yönetimi</strong></div>
     <div className="event-command-main event-command-light-row">
       <div className="event-identity">
         <div className="event-identity-date" aria-hidden="true"><strong>{eventDate.getDate()}</strong><span>{eventDate.toLocaleDateString('tr-TR', { month: 'short' })}</span></div>
