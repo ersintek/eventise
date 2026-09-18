@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDateLong } from '@/lib/datetime';
 import { productTerms, publicationLabel, registrationLabel } from '@/lib/product-language';
 import { ActionFeedback, type FeedbackState } from '../../../components/action-feedback';
@@ -43,11 +43,7 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
   const [registration, setRegistration] = useState(registrationStatus);
   const [busy, setBusy] = useState(false);
   const [compact, setCompact] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackState>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const deleteRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let frame = 0;
@@ -59,21 +55,10 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
         setCompact(current => current ? y > 32 : y > 150);
       });
     };
-    const onPointerDown = (event: PointerEvent) => {
-      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false);
-      if (!deleteRef.current?.contains(event.target as Node)) setDeleteOpen(false);
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') { setMenuOpen(false); setDeleteOpen(false); }
-    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    document.addEventListener('pointerdown', onPointerDown);
-    document.addEventListener('keydown', onKeyDown);
     return () => {
       window.removeEventListener('scroll', onScroll);
-      document.removeEventListener('pointerdown', onPointerDown);
-      document.removeEventListener('keydown', onKeyDown);
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
@@ -90,6 +75,9 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
               : pathname.includes('/post-event') ? 'results'
                 : pathname.includes('/certificates') ? 'certificate' : 'info';
   const groups = [
+    { label: 'İletişim ve Paylaşım', tourId: 'communication-area', links: [
+      [`${base}/communication`, 'İletişim', 'communication'],
+    ] },
     { label: 'Etkinlik Öncesi', tourId: 'pre-event-area', links: [
       [`${base}/settings?subtab=info`, 'Etkinlik Bilgileri', 'info'],
       [`${base}/applications`, 'Başvuru Yönetimi', 'applications'],
@@ -102,9 +90,6 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
       [`${base}/post-event?tab=feedback`, 'Geri Bildirim', 'feedback'],
       [`${base}/certificates`, productTerms.certificates, 'certificate'],
       [`${base}/post-event`, 'Sonuçlar', 'results'],
-    ] },
-    { label: 'İletişim', tourId: 'communication-area', className: 'is-utility', links: [
-      [`${base}/communication`, 'İletişim', 'communication'],
     ] },
   ];
 
@@ -148,14 +133,6 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
     await update(publication, 'OPEN', 'Başvuru formu açıldı.');
   }
 
-  async function removeEvent() {
-    if (!window.confirm('Etkinlik silme süreci başlatılsın mı? Etkinlik 30 gün boyunca geri alınabilir.')) return;
-    setBusy(true);
-    const response = await fetch(`/api/backend/organizations/${organizationId}/events/${eventId}/deletion`, { method: 'POST' });
-    if (response.ok) router.push('/dashboard#events');
-    else { setBusy(false); setFeedback({ kind: 'error', message: 'Etkinlik silinemedi.' }); }
-  }
-
   return <header className={`event-command-center simplified${compact ? ' is-compact' : ''}`} data-tour-id="event-command-center">
     <ActionFeedback feedback={feedback} onDismiss={() => setFeedback(null)} />
     <div className="event-topline">
@@ -181,25 +158,12 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
           <small>{registration === 'OPEN' ? 'Yeni başvurular alınır · kapatmak için tıklayın' : 'Yeni başvuru alınmaz · açmak için tıklayın'}</small>
         </div>
         <a className="event-preview-button" href={publication === 'PUBLISHED' ? publicUrl : `${base}/settings?subtab=appearance`} target={publication === 'PUBLISHED' ? '_blank' : undefined} rel="noopener noreferrer">
-          <span aria-hidden="true">↗</span><b>{publication === 'PUBLISHED' ? 'Etkinlik sayfasını aç' : 'Başvuru sayfasını düzenle'}</b>
+          <span aria-hidden="true">↗</span><b>{publication === 'PUBLISHED' ? 'Başvuru Sayfasını Aç' : 'Başvuru sayfasını düzenle'}</b>
         </a>
-        <div className="event-more" ref={menuRef}>
-          <button type="button" aria-haspopup="menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}>•••<span className="sr-only">Diğer işlemler</span></button>
-          {menuOpen && <div className="event-more-menu" role="menu">
-            <Link role="menuitem" href={`${base}/communication?subtab=notifications`}>Duyuru gönder</Link>
-            <Link role="menuitem" href={`${base}/settings?subtab=appearance`}>Başvuru sayfası görünümü</Link>
-            <button role="menuitem" type="button" onClick={() => { setMenuOpen(false); setDeleteOpen(true); }}>Etkinliği sil</button>
-          </div>}
-        </div>
       </div>
     </div>
-    {deleteOpen && <div className="event-delete-inline" ref={deleteRef} role="dialog" aria-labelledby="event-delete-title">
-      <div><b id="event-delete-title">Etkinliği silmek üzeresiniz</b><p>Etkinlik 30 gün boyunca geri alınabilir, ardından kalıcı olarak silinir.</p></div>
-      <button type="button" onClick={() => setDeleteOpen(false)}>Vazgeç</button>
-      <button type="button" className="danger" disabled={busy} onClick={removeEvent}>{busy ? 'Siliniyor…' : 'Etkinliği sil'}</button>
-    </div>}
     <nav className="event-primary-nav grouped" aria-label="Etkinlik bölümleri">
-      {groups.map(group => <div className={`event-nav-group ${group.className ?? ''}`} data-tour-id={group.tourId} key={group.label}><small>{group.label}</small><div>{group.links.map(([href, label, key]) => <Link data-tour-id={`${key}-area`} key={key} href={href} className={current === key ? 'active' : ''} aria-current={current === key ? 'page' : undefined}><Icon name={key}/><span>{label}</span>{key === 'applications' && registrationCount > 0 && <em>{registrationCount}</em>}</Link>)}</div></div>)}
+      {groups.map(group => <div className="event-nav-group" data-tour-id={group.tourId} key={group.label}><small>{group.label}</small><div>{group.links.map(([href, label, key]) => <Link data-tour-id={`${key}-area`} key={key} href={href} className={current === key ? 'active' : ''} aria-current={current === key ? 'page' : undefined}><Icon name={key}/><span>{label}</span>{key === 'applications' && registrationCount > 0 && <em>{registrationCount}</em>}</Link>)}</div></div>)}
     </nav>
   </header>;
 }
