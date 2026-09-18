@@ -80,7 +80,7 @@ export default async function Dashboard() {
       };
 
   return <main className="app-shell">
-    <AppNav organization={organization} active="home" systemAdmin={me.systemRole === 'SYSTEM_ADMIN'} />
+    <AppNav organization={organization} active="events" systemAdmin={me.systemRole === 'SYSTEM_ADMIN'} />
     <section className="dashboard home-dashboard">
       <MobileTopBar />
 

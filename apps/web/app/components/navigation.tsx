@@ -7,7 +7,7 @@ import { BetaNotice } from './beta-notice';
 
 type Organization = { name: string; memberships?: Array<{ role?: string }> };
 type IconName = 'home' | 'calendar' | 'plus' | 'users' | 'building' | 'usage' | 'shield' | 'book' | 'info' | 'mail' | 'updates' | 'logout' | 'menu' | 'arrow' | 'chevron';
-type NavGroupName = 'start' | 'events' | 'organization' | 'admin' | 'support' | 'eventise';
+type NavGroupName = 'admin' | 'support' | 'eventise';
 
 const roleNames: Record<string, string> = {
   ORGANIZATION_ADMIN: 'Kurum yöneticisi', OWNER: 'Kurum yöneticisi', ADMIN: 'Yönetici', EVENT_MANAGER: 'Etkinlik yetkilisi', FIELD_STAFF: 'Saha görevlisi', STAFF: 'Ekip üyesi', MEMBER: 'Üye', SYSTEM_ADMIN: 'Sistem yöneticisi',
@@ -40,17 +40,13 @@ function Mark() { return <Link className="brand" href="/dashboard" aria-label="E
 export function AppNav({ organization, active, systemAdmin = false, compactDefault = false }: { organization: Organization; active: string; systemAdmin?: boolean; compactDefault?: boolean }) {
   const [collapsed, setCollapsed] = useState(compactDefault);
   const [viewerName, setViewerName] = useState('Kullanıcı');
-  const activeGroup: NavGroupName = active === 'events' || active === 'new'
-    ? 'events'
-    : active === 'settings' || active === 'quota'
-      ? 'organization'
-      : active === 'admin'
-        ? 'admin'
-        : active === 'help' || active === 'contact'
-          ? 'support'
-          : active === 'about' || active === 'updates'
-            ? 'eventise'
-            : 'start';
+  const activeGroup: NavGroupName | null = active === 'admin'
+    ? 'admin'
+    : active === 'help' || active === 'contact'
+      ? 'support'
+      : active === 'about' || active === 'updates'
+        ? 'eventise'
+        : null;
   const [openGroup, setOpenGroup] = useState<NavGroupName | null>(activeGroup);
   useEffect(() => {
     const saved = localStorage.getItem('eventise-nav-collapsed');
@@ -76,7 +72,7 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
   }
   function group(name: NavGroupName, label: string, children: React.ReactNode) {
     const open = openGroup === name;
-    return <div className={`nav-group${open ? ' open' : ''}`}>
+    return <div className={`nav-group nav-group-${name}${open ? ' open' : ''}`}>
       <button
         type="button"
         className="nav-group-toggle"
@@ -92,15 +88,34 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
       </div>
     </div>;
   }
-  const item = (href: string, label: string, description: string, key: string, icon: IconName, emphasis = false) => <Link
+  function staticGroup(label: string, children: React.ReactNode) {
+    return <div className="nav-group nav-group-static">
+      <div className="nav-static-heading">{label}</div>
+      <div className="nav-group-content">
+        <div className="nav-group-content-inner">{children}</div>
+      </div>
+    </div>;
+  }
+  const item = (href: string, label: string, description: string, key: string, icon: IconName, emphasis = false, bordered = false) => <Link
     title={collapsed ? label : undefined}
     aria-label={`${label}: ${description}`}
     aria-current={active === key ? 'page' : undefined}
-    className={`${active === key ? 'active ' : ''}${emphasis ? 'nav-emphasis' : ''}`.trim()}
+    className={`${active === key ? 'active ' : ''}${emphasis ? 'nav-emphasis ' : ''}${bordered ? 'nav-bordered-item' : ''}`.trim()}
     href={href}
   >
     <Icon name={icon}/>
     <span className="nav-item-copy"><b>{label}</b><small>{description}</small></span>
+  </Link>;
+  const updatesItem = <Link
+    href="/dashboard/about/updates"
+    className={`nav-updates-spotlight${active === 'updates' ? ' active' : ''}`}
+    aria-current={active === 'updates' ? 'page' : undefined}
+    aria-label="Yenilikler: 1.0.0-beta.2 sürümünde neler değişti?"
+    title={collapsed ? 'Yenilikler' : undefined}
+  >
+    <span className="nav-updates-icon"><Icon name="updates"/><i aria-hidden="true" /></span>
+    <span className="nav-item-copy"><span><b>Yenilikler</b><em>BETA</em></span><small>v1.0.0-beta.2 · Tur ve rehber</small></span>
+    <Icon name="arrow"/>
   </Link>;
   const reportProblem = <a href="#sorun-bildir" title={collapsed ? 'Sorun Bildir' : undefined} aria-label="Sorun Bildir" onClick={event => {
     event.preventDefault();
@@ -115,23 +130,11 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
     <div className="brand-row"><Mark /><BetaNotice /><button className="nav-collapse" onClick={toggle} aria-label={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'} title={collapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}><Icon name="menu"/></button></div>
     <div className="org-chip" title={`${organization.name} · ${viewerName}`}><span><Icon name="building"/></span><div><b>{organization.name}</b><strong>{viewerName}</strong><em>{roleNames[role] ?? role}</em></div></div>
     <nav aria-label="Ana menü">
-      <Link
-        href="/dashboard/about/updates"
-        className={`nav-updates-spotlight${active === 'updates' ? ' active' : ''}`}
-        aria-current={active === 'updates' ? 'page' : undefined}
-        aria-label="Yenilikler: 1.0.0-beta.2 sürümünde neler değişti?"
-        title={collapsed ? 'Yenilikler' : undefined}
-      >
-        <span className="nav-updates-icon"><Icon name="updates"/><i aria-hidden="true" /></span>
-        <span className="nav-item-copy"><span><b>Yenilikler</b><em>BETA</em></span><small>v1.0.0-beta.2 · Tur ve rehber</small></span>
-        <Icon name="arrow"/>
-      </Link>
-      {group('start', 'Başlangıç', item('/dashboard', 'Ana sayfa', 'Günün özeti ve bekleyen işler', 'home', 'home'))}
-      {group('events', 'Etkinlikler', <>{item('/dashboard#events', 'Etkinlikler', 'Tüm etkinlikleri görüntüle', 'events', 'calendar')}{item('/dashboard/events/new', 'Yeni etkinlik', 'Adım adım etkinlik oluştur', 'new', 'plus', true)}</>)}
-      {group('organization', 'Kurum', <>{item('/dashboard/settings', 'Kurum ve ekip', 'Bilgiler, üyeler ve yetkiler', 'settings', 'building')}{item('/dashboard/quota', 'Kullanım', 'Dosya ve depolama limitleri', 'quota', 'usage')}</>)}
+      {staticGroup('Etkinlikler', <>{item('/dashboard', 'Etkinlikler', 'Tüm etkinlikleri görüntüle', 'events', 'calendar')}{item('/dashboard/events/new', 'Yeni etkinlik', 'Adım adım etkinlik oluştur', 'new', 'plus', true)}</>)}
+      {staticGroup('Ayarlar', <>{item('/dashboard/settings', 'Ayarlar', 'Bilgiler, üyeler ve yetkiler', 'settings', 'building')}{item('/dashboard/quota', 'Kullanım', 'Dosya ve depolama limitleri', 'quota', 'usage')}</>)}
       {systemAdmin && group('admin', 'Yönetim', item('/admin', 'Sistem yönetimi', 'Kurumlar, kullanıcılar ve planlar', 'admin', 'shield'))}
       {group('support', 'Yardım ve Destek', <>{restartTour}{item('/yardim', 'Kullanım rehberi', 'Adım adım kullanım bilgileri', 'help', 'book')}{item('/dashboard/contact', 'İletişim', 'Soru, öneri ve iş birliği için yazın', 'contact', 'mail')}{reportProblem}</>)}
-      {group('eventise', 'Eventise', item('/dashboard/about', 'Eventise hakkında', 'Ürünümüzü ve yaklaşımımızı tanıyın', 'about', 'info'))}
+      {group('eventise', 'Eventise', <>{item('/dashboard/about', 'Eventise hakkında', 'Ürünümüzü ve yaklaşımımızı tanıyın', 'about', 'info', false, true)}{updatesItem}</>)}
     </nav>
     <div className="nav-footer">
       <div className="nav-logout"><Icon name="logout"/><LogoutButton /></div>
