@@ -59,6 +59,9 @@ test('unauthenticated protected routes return to login on desktop and mobile', a
 
   await page.goto('/dashboard');
   await expect(page).toHaveURL(/\/login$/);
+
+  await page.goto('/dashboard-2');
+  await expect(page).toHaveURL(/\/login\/organization$/);
 });
 
 test('registration and login content fits the active viewport', async ({ page }) => {

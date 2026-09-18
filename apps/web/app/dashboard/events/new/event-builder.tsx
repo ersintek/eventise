@@ -50,7 +50,7 @@ const formatLabels: Record<EventFormat, string> = {
   HYBRID: 'Hibrit',
 };
 
-export function EventBuilder({ organization }: { organization: { id: string; slug: string; name: string } }) {
+export function EventBuilder({ organization, afterCreateBase = '/dashboard/events' }: { organization: { id: string; slug: string; name: string }; afterCreateBase?: string }) {
   const [text, setText] = useState('');
   const [form, setForm] = useState<FormState>({
     title: '',
@@ -203,7 +203,7 @@ export function EventBuilder({ organization }: { organization: { id: string; slu
           if (!confirmed.ok) throw new Error('Kapak görseli doğrulanamadı.');
         }
       } catch { appearanceFailed = true; }
-      location.href = `/dashboard/events/${data.id}/settings?subtab=info&created=1${appearanceFailed ? '&appearance=failed' : ''}`;
+      location.href = `${afterCreateBase}/${data.id}/settings?subtab=info&created=1${appearanceFailed ? '&appearance=failed' : ''}`;
     } catch {
       setMessage('Bağlantı kurulamadı. Bilgileriniz korunuyor; lütfen yeniden deneyin.');
     } finally {

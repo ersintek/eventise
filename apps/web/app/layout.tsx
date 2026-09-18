@@ -21,6 +21,7 @@ import './admin.css';
 import './operations.css';
 import './event-page.css';
 import './visual-refresh.css';
+import './dashboard-two.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://eventise.sici.dev'),

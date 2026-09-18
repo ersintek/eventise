@@ -42,12 +42,12 @@ async function request(path:string,options:RequestInit={}) {
   return data;
 }
 
-export function EventWorkspace({organization,event:initialEvent,initialRegistrations,forms,templates,consents,initialReminders,section='settings',initialSubtab='info'}:{organization:{id:string;slug:string};event:EventInfo;initialRegistrations:unknown[];forms:unknown[];templates:unknown[];consents:unknown[];initialReminders:unknown[];section?:EventSection;initialSubtab?:string}) {
+export function EventWorkspace({organization,event:initialEvent,initialRegistrations,forms,templates,consents,initialReminders,section='settings',initialSubtab='info',basePath}:{organization:{id:string;slug:string};event:EventInfo;initialRegistrations:unknown[];forms:unknown[];templates:unknown[];consents:unknown[];initialReminders:unknown[];section?:EventSection;initialSubtab?:string;basePath?:string}) {
   const[event,setEvent]=useState(initialEvent),[subtab,setSubtab]=useState(initialSubtab),[feedback,setFeedback]=useState<FeedbackState>(null),[feedbackTrigger,setFeedbackTrigger]=useState(''),[busy,setBusy]=useState(false),[reminders,setReminders]=useState(initialReminders as Reminder[]),[settingsFormat,setSettingsFormat]=useState<string>(initialEvent.format??'OFFLINE'),[notifTitle,setNotifTitle]=useState(''),[notifBody,setNotifBody]=useState(''),[notifAudience,setNotifAudience]=useState('ACCEPTED'),[descDraft,setDescDraft]=useState(initialEvent.description??''),[summaryDraft,setSummaryDraft]=useState(initialEvent.summary??'');
   const[eventConsent,setEventConsent]=useState<Consent|null>((consents as Consent[])[0]??null);
   const[infoDirty,setInfoDirty]=useState(false),[faqDirty,setFaqDirty]=useState(false),[formDirty,setFormDirty]=useState(false),[savedAt,setSavedAt]=useState<Date|null>(null);
   const[formFields,setFormFields]=useState<Field[]>(()=>(forms as FormInfo[])[0]?.versions[0]?.schema?.fields??[]);
-  const base=`/dashboard/events/${event.id}`;
+  const base=basePath??`/dashboard/events/${event.id}`;
   const typedForms=forms as FormInfo[],typedTemplates=templates as Template[],reminderTemplates=typedTemplates.filter(template=>template.category==='REMINDER');
   const accepted=useMemo(()=>(initialRegistrations as Registration[]).filter(r=>r.applicationStatus==='ACCEPTED').length,[initialRegistrations]);
   const hasUnsavedChanges=infoDirty||faqDirty||formDirty;
