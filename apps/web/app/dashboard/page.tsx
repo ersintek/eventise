@@ -59,9 +59,6 @@ export default async function Dashboard() {
   const events = await api<EventSummary[]>(`organizations/${organization.id}/events`, token);
   const now = Date.now();
   const orderedEvents = [...events].sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
-  const upcoming = orderedEvents.filter(event => new Date(event.endsAt).getTime() >= now);
-  const published = events.filter(event => event.publicationStatus === 'PUBLISHED').length;
-  const registrations = events.reduce((total, event) => total + (event._count?.registrations ?? 0), 0);
   const today = new Date(now);
   const firstName = me.firstName?.trim();
   const longDate = new Intl.DateTimeFormat('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' }).format(today);
@@ -80,24 +77,6 @@ export default async function Dashboard() {
           <span aria-hidden="true">＋</span> Yeni etkinlik
         </Link>
       </header>
-
-      <section className="home-metrics" aria-label="Etkinlik özeti">
-        <article>
-          <span className="metric-label"><i className="metric-dot indigo" />Yaklaşan etkinlik</span>
-          <b>{upcoming.length}</b>
-          <small>etkinlik takvimde</small>
-        </article>
-        <article>
-          <span className="metric-label"><i className="metric-dot green" />Toplam başvuru</span>
-          <b>{registrations.toLocaleString('tr-TR')}</b>
-          <small>tüm etkinliklerde</small>
-        </article>
-        <article>
-          <span className="metric-label"><i className="metric-dot coral" />Yayında</span>
-          <b>{published}</b>
-          <small>etkinlik sayfası yayında</small>
-        </article>
-      </section>
 
       <section id="events" className="home-events">
         <div className="home-section-heading">
