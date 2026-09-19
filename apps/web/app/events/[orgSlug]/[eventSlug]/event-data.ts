@@ -22,7 +22,7 @@ export interface EventData {
 }
 
 export type Consent = { required: boolean; definition: { title: string; versions: Array<{ id: string; text: string }> } };
-type Session = { user: { email: string; firstName: string; lastName: string }; registration: { applicationStatus: string } | null } | null;
+type Session = { user: { email: string; firstName: string; lastName: string }; registration: { applicationStatus: string; answers: Record<string, unknown> } | null } | null;
 
 export async function getPublicEvent(orgSlug: string, eventSlug: string): Promise<EventData | null> {
   const response = await fetch(`${process.env.API_INTERNAL_URL}/api/public/events/${orgSlug}/${eventSlug}`, { cache: 'no-store' });

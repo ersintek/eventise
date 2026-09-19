@@ -22,7 +22,6 @@ export default async function EventDay({ params }: { params: Promise<{ eventId: 
   if (!organizations.length) redirect('/onboarding');
   const organizationId = organizations[0].id;
   const { eventId } = await params;
-  const activation = await json<{ eventToken: string }>(`${base}/organizations/${organizationId}/events/${eventId}/check-in/activate`, token, { method: 'POST', body: '{}' });
   const [stats, roster, features, events] = await Promise.all([
     json<Stats>(`${base}/organizations/${organizationId}/events/${eventId}/check-in/stats`, token),
     json<RosterItem[]>(`${base}/organizations/${organizationId}/events/${eventId}/check-in/roster`, token),
@@ -31,7 +30,9 @@ export default async function EventDay({ params }: { params: Promise<{ eventId: 
   ]);
   const event = events.find(item => item.id === eventId);
   if (!event) redirect('/dashboard');
-  const url = `${process.env.PUBLIC_APP_URL ?? 'http://localhost:3001'}/check-in/${activation.eventToken}`;
-  const qr = await QRCode.toDataURL(url, { width: 420, margin: 2, color: { dark: '#17493a', light: '#ffffff' } });
-  return <main className="builder-shell"><div className="workspace-page-heading"><div><p className="eyebrow">ETKİNLİK GÜNÜ</p><h2>Giriş ve Katılım</h2><p>Girişleri, katılım teyidini ve kapıda katılımcı eklemeyi yönetin.</p></div></div><section className="day-layout"><aside className="checkin-panel"><div><p className="eyebrow">KATILIM TEYİDİ QR KODU</p><h2>Girişte okutun</h2><p>Katılımcı kodu okutup e-posta adresiyle girişini doğrular.</p></div><img src={qr} alt="Katılım teyidi QR kodu"/><details><summary>Bağlantıyı göster</summary><code>{url}</code></details></aside><FieldOperations organizationId={organizationId} eventId={eventId} initialStats={stats} initialRoster={roster} initialFeatures={features}/></section></main>;
+  const checkInEnabled = features.some(feature => feature.key === 'check_in' && feature.enabled);
+  const activation = checkInEnabled ? await json<{ eventToken: string }>(`${base}/organizations/${organizationId}/events/${eventId}/check-in/activate`, token, { method: 'POST', body: '{}' }) : null;
+  const url = activation ? `${process.env.PUBLIC_APP_URL ?? 'http://localhost:3001'}/check-in/${activation.eventToken}` : null;
+  const qr = url ? await QRCode.toDataURL(url, { width: 420, margin: 2, color: { dark: '#17493a', light: '#ffffff' } }) : null;
+  return <main className="builder-shell"><div className="workspace-page-heading"><div><p className="eyebrow">ETKİNLİK GÜNÜ</p><h2>Giriş ve Katılım</h2><p>Girişleri, katılım teyidini ve kapıda katılımcı eklemeyi yönetin.</p></div></div><section className="day-layout">{checkInEnabled&&url&&qr?<aside className="checkin-panel"><div><p className="eyebrow">KATILIM TEYİDİ QR KODU</p><h2>Girişte okutun</h2><p>Katılımcı kodu okutup e-posta adresiyle girişini doğrular.</p></div><img src={qr} alt="Katılım teyidi QR kodu"/><details><summary>Bağlantıyı göster</summary><code>{url}</code></details></aside>:<aside className="checkin-panel"><div><p className="eyebrow">KATILIM TEYİDİ</p><h2>QR ile katılım teyidi kapalı</h2><p>QR kodu oluşturmak için aşağıdaki Etkinlik Günü Araçları bölümünden “QR ile katılım teyidi” özelliğini açın.</p><a className="secondary link-button" href="#event-day-tools">Araçlara git</a></div></aside>}<FieldOperations organizationId={organizationId} eventId={eventId} initialStats={stats} initialRoster={roster} initialFeatures={features}/></section></main>;
 }

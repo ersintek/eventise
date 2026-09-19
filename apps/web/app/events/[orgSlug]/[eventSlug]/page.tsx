@@ -86,7 +86,7 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
       </div>
       {dedicatedRegistration && registrationOpen
         ? <aside className="registration-card registration-launch-card" id="registration"><p className="eyebrow">BAŞVURU FORMU</p><h2>Başvurunuzu tamamlayın</h2><p className="registration-explainer">Formda iletişim bilgilerinin ardından {fields.length} etkinlik sorusu bulunuyor.</p><a className="event-submit-button" href={registrationHref}>Başvuru formunu aç <span>→</span></a><p className="registration-security"><span>✓</span> Yanıtlarınız yalnızca bu etkinliğin başvuru süreci için kullanılır.</p></aside>
-        : <RegistrationForm orgSlug={orgSlug} eventSlug={eventSlug} open={registrationOpen} consents={consents} fields={fields} formVersionId={formVersionId} session={session}/>}
+        : <RegistrationForm eventId={event.id} orgSlug={orgSlug} eventSlug={eventSlug} open={registrationOpen} consents={consents} fields={fields} formVersionId={formVersionId} registrationMode={event.registrationMode} session={session}/>}
     </div>
 
     <footer className="public-event-footer"><div className="footer-organizer"><span className="public-organizer-logo">{event.organization.logoUrl ? <img src={event.organization.logoUrl} alt=""/> : <b>{initials}</b>}</span><div><strong>{event.organization.name}</strong><small>Düzenleyen kurum</small></div></div><span className="eventise-trust"><i>e</i> eventise</span></footer>

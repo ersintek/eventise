@@ -6,13 +6,15 @@ type Consent = { required: boolean; definition: { title: string; versions: Array
 export type RegistrationField = { key: string; type: 'text' | 'textarea' | 'email' | 'phone' | 'number' | 'select' | 'checkbox'; label: string; required: boolean; options: string[] };
 
 type RegistrationFormProps = {
+  eventId: string;
   orgSlug: string;
   eventSlug: string;
   open: boolean;
   consents: Consent[];
   fields: RegistrationField[];
   formVersionId?: string;
-  session: { user: { email: string; firstName: string; lastName: string }; registration: { applicationStatus: string } | null } | null;
+  registrationMode: string;
+  session: { user: { email: string; firstName: string; lastName: string }; registration: { applicationStatus: string; answers: Record<string, unknown> } | null } | null;
   standalone?: boolean;
 };
 
@@ -32,10 +34,16 @@ const statusMessage: Record<string, string> = {
   REJECTED: 'Başvurunuz bu etkinlik için kabul edilmedi.',
 };
 
-export function RegistrationForm({ orgSlug, eventSlug, open, consents, fields, formVersionId, session, standalone = false }: RegistrationFormProps) {
+function RegistrationEmailReminder() {
+  return <section className="registration-email-reminder" aria-label="E-posta bildirimi hatırlatması"><b>E-posta kutunuzu kontrol edin</b><p>Size gönderdiğimiz e-posta spam klasöründeyse güvenli e-posta olarak işaretleyin. Bu etkinlikle ilgili bildirimleri almanız için önemlidir.</p></section>;
+}
+
+export function RegistrationForm({ eventId, orgSlug, eventSlug, open, consents, fields, formVersionId, registrationMode, session, standalone = false }: RegistrationFormProps) {
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [complete, setComplete] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState(session?.registration?.applicationStatus);
   const user = session?.user;
   const existing = session?.registration;
   const eventConsent = consents[0];
@@ -83,10 +91,42 @@ export function RegistrationForm({ orgSlug, eventSlug, open, consents, fields, f
     }
   }
 
+  async function updateAnswers(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (registrationMode === 'APPROVAL' && !window.confirm('Yanıtlarınızı güncellediğinizde başvurunuz yeniden değerlendirmeye alınacaktır. Devam etmek istiyor musunuz?')) return;
+    setBusy(true); setMessage('');
+    const data = new FormData(event.currentTarget);
+    const answers = Object.fromEntries(fields.map(field => [field.key, field.type === 'checkbox' ? data.get(field.key) === 'on' : data.get(field.key)]));
+    try {
+      const update = await fetch(`/api/backend/participant/events/${eventId}/registration`, { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ answers }) });
+      const result = await update.json();
+      if (!update.ok) throw new Error(Array.isArray(result.message) ? result.message.join(' ') : result.message ?? 'Başvurunuz güncellenemedi.');
+      setApplicationStatus(result.applicationStatus);
+      setEditMode(false);
+      setMessage(result.requiresReview ? 'Yanıtlarınız güncellendi. Başvurunuz yeniden değerlendirmeye alındı.' : 'Yanıtlarınız güncellendi. Başvurunuz onaylı olarak kalıyor.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Başvurunuz güncellenemedi.');
+    } finally { setBusy(false); }
+  }
+
   const cardClass = `registration-card${standalone ? ' standalone-registration-form' : ''}`;
   if (!open) return <aside className={`${cardClass} registration-state`} id="registration"><span className="registration-icon">–</span><p className="eyebrow">BAŞVURU DURUMU</p><h2>Başvuru formu kapalı</h2><p className="registration-explainer">Etkinlik bilgilerini inceleyebilirsiniz; şu anda yeni başvuru alınmıyor.</p></aside>;
-  if (existing) return <aside className={`${cardClass} registration-state`} id="registration"><span className="registration-icon">✓</span><p className="eyebrow">BAŞVURU DURUMUNUZ</p><h2>{statusLabel[existing.applicationStatus] ?? existing.applicationStatus}</h2><p className="registration-explainer">{statusMessage[existing.applicationStatus] ?? 'Başvurunuz kaydedildi.'}</p><p className="participant-notice"><b>{user?.email}</b></p></aside>;
-  if (complete) return <aside className={`${cardClass} registration-state success`} id="registration"><span className="registration-icon">✓</span><p className="eyebrow">BAŞVURUNUZ ALINDI</p><h2>Başvuru tamamlandı</h2><p className="registration-explainer">{message}</p><section className="registration-email-reminder" aria-label="E-posta bildirimi hatırlatması"><b>E-posta kutunuzu kontrol edin</b><p>Size gönderdiğimiz e-posta spam klasöründeyse güvenli e-posta olarak işaretleyin. Bu etkinlikle ilgili bildirimleri almanız için önemlidir.</p></section><p className="registration-security">Bilgileriniz güvenli biçimde kaydedildi.</p></aside>;
+  if (existing && !editMode) return <aside className={`${cardClass} registration-state`} id="registration"><span className="registration-icon">✓</span><p className="eyebrow">BAŞVURU DURUMUNUZ</p><h2>{statusLabel[applicationStatus ?? existing.applicationStatus] ?? applicationStatus ?? existing.applicationStatus}</h2><p className="registration-explainer">{message || statusMessage[applicationStatus ?? existing.applicationStatus] || 'Başvurunuz kaydedildi.'}</p><RegistrationEmailReminder/><p className="participant-notice"><b>{user?.email}</b></p>{(applicationStatus ?? existing.applicationStatus)==='ACCEPTED'&&<button type="button" className="secondary" onClick={()=>setEditMode(true)}>Yanıtlarımı düzenle</button>}</aside>;
+  if (complete) return <aside className={`${cardClass} registration-state success`} id="registration"><span className="registration-icon">✓</span><p className="eyebrow">BAŞVURUNUZ ALINDI</p><h2>Başvuru tamamlandı</h2><p className="registration-explainer">{message}</p><RegistrationEmailReminder/><p className="registration-security">Bilgileriniz güvenli biçimde kaydedildi.</p></aside>;
+
+  if (existing && editMode) return <form className={cardClass} id="registration" onSubmit={updateAnswers}>
+    <div className="registration-heading"><p className="eyebrow">BAŞVURU YANITLARINIZ</p><h2>Yanıtlarınızı düzenleyin</h2><p className="registration-explainer">Yalnızca etkinlik sorularındaki yanıtlarınızı güncelleyebilirsiniz.</p></div>
+    {registrationMode === 'APPROVAL' && <p className="participant-notice"><b>Önemli:</b> Kaydettiğinizde başvurunuz yeniden değerlendirmeye alınacaktır.</p>}
+    <fieldset className="registration-form-section"><legend>Etkinlik soruları</legend>{fields.length ? fields.map(field => field.type === 'checkbox'
+      ? <label className="consent custom-consent" key={field.key}><input name={field.key} type="checkbox" required={field.required} defaultChecked={Boolean(existing.answers?.[field.key])}/><span><b>{field.label}</b></span></label>
+      : <label key={field.key}>{field.label}{field.required && <span className="required-mark"> *</span>}{field.type === 'textarea'
+        ? <textarea name={field.key} required={field.required} defaultValue={String(existing.answers?.[field.key] ?? '')}/>
+        : field.type === 'select'
+          ? <select name={field.key} required={field.required} defaultValue={String(existing.answers?.[field.key] ?? '')}><option value="">Seçin</option>{(field.options ?? []).map(option => <option key={option}>{option}</option>)}</select>
+          : <input name={field.key} type={field.type === 'phone' ? 'tel' : field.type} required={field.required} defaultValue={String(existing.answers?.[field.key] ?? '')}/>}</label>) : <p className="friendly-status">Bu başvuru formunda düzenlenebilecek ek soru yok.</p>}</fieldset>
+    {message && <p className="notice" role="status">{message}</p>}<div className="action-links"><button type="button" className="secondary" disabled={busy} onClick={()=>setEditMode(false)}>Vazgeç</button><button className="event-submit-button" disabled={busy||!fields.length}>{busy?'Kaydediliyor…':'Yanıtları kaydet'}<span>→</span></button></div>
+  </form>;
 
   return <form className={cardClass} id="registration" onSubmit={submit}>
     <div className="registration-heading"><p className="eyebrow">BAŞVURU FORMU</p><h2>Etkinliğe başvurun</h2><p className="registration-explainer">Zorunlu alanları doldurup başvurunuzu gönderin.</p></div>

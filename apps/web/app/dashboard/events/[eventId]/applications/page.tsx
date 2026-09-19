@@ -1,4 +1,5 @@
 import { Applications } from '../applications';
+import { ApplicationsNav } from '../applications-nav';
 import { loadEventData } from '../event-data';
 
 export default async function EventApplications({ params }: { params: Promise<{ eventId: string }> }) {
@@ -7,6 +8,7 @@ export default async function EventApplications({ params }: { params: Promise<{ 
   const fields = event.form?.versions?.[0]?.schema?.fields ?? [];
   return <main className="builder-shell">
     <div className="workspace-page-heading"><div><p className="eyebrow">BAŞVURU YÖNETİMİ</p><h2>Başvurular</h2><p>Başvuruları değerlendirin ve kabul edilen katılımcıları takip edin.</p></div><span className="heading-count">{registrations.length} başvuru</span></div>
+    <ApplicationsNav eventId={event.id} active="applications"/>
     <Applications organizationId={organization.id} eventId={event.id} capacity={event.capacity} initial={registrations} fields={fields}/>
   </main>;
 }

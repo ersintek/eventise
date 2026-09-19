@@ -42,12 +42,14 @@ export default async function RegistrationPage({ params }: PageProps) {
         </div>
       </section>
       <RegistrationForm
+        eventId={event.id}
         orgSlug={orgSlug}
         eventSlug={eventSlug}
         open={event.registrationStatus === 'OPEN'}
         consents={consents}
         fields={fields}
         formVersionId={formVersionId}
+        registrationMode={event.registrationMode}
         session={session}
         standalone
       />
