@@ -82,7 +82,7 @@ export function RegistrationForm({ eventId, orgSlug, eventSlug, open, consents, 
       if (response.ok) {
         setComplete(true);
         form.reset();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        requestAnimationFrame(() => document.querySelector<HTMLElement>('.registration-email-reminder')?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
       }
     } catch {
       setMessage('Bağlantı kurulamadı. Bilgileriniz korunuyor; lütfen yeniden deneyin.');
