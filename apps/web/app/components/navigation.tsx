@@ -7,7 +7,7 @@ import { BetaNotice } from './beta-notice';
 
 type Organization = { name: string; memberships?: Array<{ role?: string }> };
 type IconName = 'home' | 'calendar' | 'plus' | 'users' | 'building' | 'usage' | 'shield' | 'book' | 'info' | 'mail' | 'updates' | 'logout' | 'menu' | 'arrow' | 'chevron';
-type NavGroupName = 'admin' | 'support' | 'eventise';
+type NavGroupName = 'admin' | 'support';
 
 const roleNames: Record<string, string> = {
   ORGANIZATION_ADMIN: 'Kurum yöneticisi', OWNER: 'Kurum yöneticisi', ADMIN: 'Yönetici', EVENT_MANAGER: 'Etkinlik yetkilisi', FIELD_STAFF: 'Saha görevlisi', STAFF: 'Ekip üyesi', MEMBER: 'Üye', SYSTEM_ADMIN: 'Sistem yöneticisi',
@@ -44,9 +44,7 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
     ? 'admin'
     : active === 'help' || active === 'contact'
       ? 'support'
-      : active === 'about' || active === 'updates'
-        ? 'eventise'
-        : null;
+      : null;
   const [openGroup, setOpenGroup] = useState<NavGroupName | null>(activeGroup);
   useEffect(() => {
     const saved = localStorage.getItem('eventise-nav-collapsed');
@@ -131,10 +129,11 @@ export function AppNav({ organization, active, systemAdmin = false, compactDefau
     <div className="org-chip" title={`${organization.name} · ${viewerName}`}><span><Icon name="building"/></span><div><b>{organization.name}</b><strong>{viewerName}</strong><em>{roleNames[role] ?? role}</em></div></div>
     <nav aria-label="Ana menü">
       {staticGroup('Etkinlikler', <>{item('/dashboard', 'Etkinlikler', 'Tüm etkinlikleri görüntüle', 'events', 'calendar')}{item('/dashboard/events/new', 'Yeni etkinlik', 'Adım adım etkinlik oluştur', 'new', 'plus', true)}</>)}
-      {staticGroup('Ayarlar', <>{item('/dashboard/settings', 'Ayarlar', 'Bilgiler, üyeler ve yetkiler', 'settings', 'building')}{item('/dashboard/quota', 'Kullanım', 'Dosya ve depolama limitleri', 'quota', 'usage')}</>)}
+      {staticGroup('Ayarlar', <>{item('/dashboard/settings', 'Ayarlar', 'Kurum, ekip ve kişisel ayarlar', 'settings', 'building')}{item('/dashboard/quota', 'Kullanım', 'Dosya ve depolama limitleri', 'quota', 'usage')}</>)}
       {systemAdmin && group('admin', 'Yönetim', item('/admin', 'Sistem yönetimi', 'Kurumlar, kullanıcılar ve planlar', 'admin', 'shield'))}
       {group('support', 'Yardım ve Destek', <>{restartTour}{item('/yardim', 'Kullanım rehberi', 'Adım adım kullanım bilgileri', 'help', 'book')}{item('/dashboard/contact', 'İletişim', 'Soru, öneri ve iş birliği için yazın', 'contact', 'mail')}{reportProblem}</>)}
-      {group('eventise', 'Eventise', <>{item('/dashboard/about', 'Eventise hakkında', 'Ürünümüzü ve yaklaşımımızı tanıyın', 'about', 'info', false, true)}{updatesItem}</>)}
+      {item('/dashboard/about', 'Eventise hakkında', 'Ürünümüzü ve yaklaşımımızı tanıyın', 'about', 'info', false, true)}
+      {updatesItem}
     </nav>
     <div className="nav-footer">
       <div className="nav-logout"><Icon name="logout"/><LogoutButton /></div>

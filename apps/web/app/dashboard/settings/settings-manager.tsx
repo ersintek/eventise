@@ -10,6 +10,8 @@ type SettingsManagerProps = {
   me: any;
 };
 
+type SettingsTab = 'organization' | 'team' | 'personal';
+
 export function SettingsManager({
   organization,
   members: initialMembers,
@@ -21,6 +23,7 @@ export function SettingsManager({
   const [joinRequests, setJoinRequests] = useState(initialJoinRequests);
   const [invitations, setInvitations] = useState(initialInvitations);
   const [message, setMessage] = useState('');
+  const [tab, setTab] = useState<SettingsTab>('organization');
 
   async function call(path: string, method: string, body?: object) {
     const response = await fetch(`/api/backend/${path}`, {
@@ -98,8 +101,15 @@ export function SettingsManager({
 
   return (
     <>
+      <nav className="workspace-tabs settings-tabs" aria-label="Ayar bölümleri" role="tablist">
+        <button id="settings-tab-organization" type="button" role="tab" aria-selected={tab === 'organization'} aria-controls="settings-organization" className={tab === 'organization' ? 'active' : ''} onClick={() => setTab('organization')}>Kurum Bilgileri</button>
+        <button id="settings-tab-team" type="button" role="tab" aria-selected={tab === 'team'} aria-controls="settings-team" className={tab === 'team' ? 'active' : ''} onClick={() => setTab('team')}>Ekip Yönetimi</button>
+        <button id="settings-tab-personal" type="button" role="tab" aria-selected={tab === 'personal'} aria-controls="settings-personal" className={tab === 'personal' ? 'active' : ''} onClick={() => setTab('personal')}>Kişisel Kullanıcı Ayarları</button>
+      </nav>
+
+      {tab === 'organization' && <div id="settings-organization" className="settings-tab-panel" role="tabpanel" aria-labelledby="settings-tab-organization">
       <section className="settings-section">
-        <div className="settings-section-heading"><span>01</span><div><h2>Kurum bilgileri</h2><p>Etkinliklerde ve katılımcı iletişiminde görünen kurumsal bilgiler.</p></div></div>
+        <div className="settings-section-heading"><div><h2>Kurum bilgileri</h2><p>Etkinliklerde ve katılımcı iletişiminde görünen kurumsal bilgiler.</p></div></div>
         <form className="settings-card" onSubmit={saveOrganization}>
           <label>Kurum adı<input name="name" defaultValue={organization.name} required /></label>
           <label>Açıklama<textarea name="description" defaultValue={organization.description} /></label>
@@ -108,9 +118,11 @@ export function SettingsManager({
           <button className="primary">Kurum bilgilerini kaydet</button>
         </form>
       </section>
+      </div>}
 
+      {tab === 'team' && <div id="settings-team" className="settings-tab-panel" role="tabpanel" aria-labelledby="settings-tab-team">
       <section className="settings-section">
-        <div className="settings-section-heading"><span>02</span><div><h2>Ekip yönetimi</h2><p>Yeni ekip üyeleri ekleyin, bekleyen istekleri değerlendirin ve erişimleri görün.</p></div></div>
+        <div className="settings-section-heading"><div><h2>Ekip yönetimi</h2><p>Yeni ekip üyeleri ekleyin, bekleyen istekleri değerlendirin ve erişimleri görün.</p></div></div>
         <div className="team-layout">
         <form className="settings-card invite-card" onSubmit={addMember}>
           <h3>Ekip üyesi ekle</h3>
@@ -182,9 +194,11 @@ export function SettingsManager({
           ))}
         </section>
       )}
+      </div>}
 
+      {tab === 'personal' && <div id="settings-personal" className="settings-tab-panel" role="tabpanel" aria-labelledby="settings-tab-personal">
       <section className="settings-section">
-        <div className="settings-section-heading"><span>03</span><div><h2>Kişisel tercihler</h2><p>Yalnızca sizin hesabınıza ait profil ve bildirim ayarları.</p></div></div>
+        <div className="settings-section-heading"><div><h2>Kişisel kullanıcı ayarları</h2><p>Yalnızca sizin hesabınıza ait profil ve bildirim ayarları.</p></div></div>
         <form className="settings-card" onSubmit={profile}>
           <label>Ad<input name="firstName" defaultValue={me.firstName} required /></label>
           <label>Soyad<input name="lastName" defaultValue={me.lastName} required /></label>
@@ -220,6 +234,7 @@ export function SettingsManager({
           30 günlük silme sürecini başlat
         </button>
       </section>
+      </div>}
       {message && <p className="notice" role="status">{message}</p>}
     </>
   );
