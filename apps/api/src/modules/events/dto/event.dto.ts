@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EventFormat, EventRegistrationStatus, EventVisibility, RegistrationMode } from '@prisma/client';
-import { IsArray, IsDateString, IsEnum, IsInt, IsOptional, IsString, Length, Matches, MaxLength, Min, ValidateNested } from 'class-validator';
+import { IsArray, IsDateString, IsEnum, IsIn, IsInt, IsOptional, IsString, Length, Matches, MaxLength, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class FaqDto { @IsString() @MaxLength(300) question!: string; @IsString() @MaxLength(5000) answer!: string; }
@@ -16,7 +16,7 @@ export class CreateEventDto {
   @IsOptional() @IsString() onlineLink?: string;
   @IsDateString() startsAt!: string;
   @IsDateString() endsAt!: string;
-  @IsOptional() @IsString() timezone?: string;
+  @IsString() @IsIn(['Europe/Istanbul', 'Europe/London', 'Europe/Berlin', 'America/New_York', 'America/Los_Angeles']) timezone!: string;
   @IsInt() @Min(1) capacity!: number;
   @IsOptional() @IsEnum(EventVisibility) visibility?: EventVisibility;
   @IsOptional() @IsEnum(RegistrationMode) registrationMode?: RegistrationMode;
@@ -36,6 +36,7 @@ export class UpdateEventDto {
   @IsOptional() @IsString() onlineLink?:string;
   @IsDateString() startsAt!:string;
   @IsDateString() endsAt!:string;
+  @IsString() @IsIn(['Europe/Istanbul', 'Europe/London', 'Europe/Berlin', 'America/New_York', 'America/Los_Angeles']) timezone!:string;
   @IsInt() @Min(1) capacity!:number;
   @IsEnum(EventVisibility) visibility!:EventVisibility;
   @IsEnum(RegistrationMode) registrationMode!:RegistrationMode;

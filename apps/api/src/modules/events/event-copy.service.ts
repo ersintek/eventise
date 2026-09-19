@@ -14,7 +14,7 @@ export class EventCopyService {
     const registrations = await this.prisma.eventRegistration.findMany({
       where: { email: user.email, applicationStatus: 'ACCEPTED' },
       select: {
-        event: { select: { id: true, title: true, startsAt: true, endsAt: true, organization: { select: { id: true, name: true, slug: true } } } },
+        event: { select: { id: true, title: true, startsAt: true, endsAt: true, timezone: true, organization: { select: { id: true, name: true, slug: true } } } },
         certificates: { where: { status: 'READY' }, select: { id: true, verificationCode: true, issuedAt: true } },
       },
       orderBy: { event: { startsAt: 'desc' } },
@@ -31,7 +31,7 @@ export class EventCopyService {
     if (!follows.length) return [];
     return this.prisma.event.findMany({
       where: { organizationId: { in: follows.map(item => item.organizationId) }, publicationStatus: 'PUBLISHED', visibility: 'PUBLIC', endsAt: { gte: new Date() } },
-      select: { id: true, title: true, slug: true, summary: true, startsAt: true, registrationStatus: true, organization: { select: { id: true, name: true, slug: true } } },
+      select: { id: true, title: true, slug: true, summary: true, startsAt: true, timezone: true, registrationStatus: true, organization: { select: { id: true, name: true, slug: true } } },
       orderBy: { startsAt: 'asc' },
       take: 50,
     });
@@ -56,6 +56,7 @@ export class EventCopyService {
         summary: true,
         startsAt: true,
         endsAt: true,
+        timezone: true,
         format: true,
         venueName: true,
         capacity: true,

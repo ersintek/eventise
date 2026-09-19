@@ -22,6 +22,7 @@ export default async function ParticipantEventPage({ params }: { params: Promise
   const title = eventInfo?.title ?? 'Etkinlik';
   const orgName = eventInfo?.organization?.name ?? '';
   const startsAt = eventInfo?.startsAt;
+  const timezone = eventInfo?.timezone ?? 'Europe/Istanbul';
   const eventCerts = certificates.filter((c: any) => c.event?.id === eventId);
 
   if (!session?.registration) {
@@ -39,6 +40,6 @@ export default async function ParticipantEventPage({ params }: { params: Promise
       <Link href="/participant" className="participant-back">← Tüm etkinliklerim</Link>
       <p className="eyebrow">{orgName}</p>
     </div>
-    {startsAt && <ParticipantArea eventId={eventId} title={title} orgName={orgName} startsAt={startsAt} certificates={eventCerts} />}
+    {startsAt && <ParticipantArea eventId={eventId} title={title} orgName={orgName} startsAt={startsAt} timezone={timezone} certificates={eventCerts} />}
   </main>;
 }

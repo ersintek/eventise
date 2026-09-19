@@ -30,12 +30,13 @@ type Props = {
   title: string;
   eventSlug: string;
   startsAt: string;
+  timezone: string;
   publicationStatus: string;
   registrationStatus: string;
   registrationCount?: number;
 };
 
-export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug, organizationName, title, eventSlug, startsAt, publicationStatus, registrationStatus, registrationCount = 0 }: Props) {
+export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug, organizationName, title, eventSlug, startsAt, timezone, publicationStatus, registrationStatus, registrationCount = 0 }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -139,7 +140,7 @@ export function EventWorkspaceHeader({ eventId, organizationId, organizationSlug
     <div className="event-command-main event-command-light-row">
       <div className="event-identity">
         <div className="event-identity-date" aria-hidden="true"><strong>{eventDate.getDate()}</strong><span>{eventDate.toLocaleDateString('tr-TR', { month: 'short' })}</span></div>
-        <div><span>{organizationName}</span><h1>{title}</h1><p>{formatDateLong(startsAt)}</p></div>
+        <div><span>{organizationName}</span><h1>{title}</h1><p>{formatDateLong(startsAt, timezone)}</p></div>
       </div>
       <div className="event-state-actions" aria-label="Etkinlik durumları" data-tour-id="publication-controls">
         <div className="event-state-control">

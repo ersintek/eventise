@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ChangeEvent, FormEvent, useState } from 'react';
-import { formatDateTime, toLocalDateInputValue, toLocalDatetimeInputValue } from '@/lib/datetime';
+import { DEFAULT_EVENT_TIMEZONE, eventTimezones, toLocalDateInputValue, toLocalDatetimeInputValue, zonedDateTimeToUtcIso } from '@/lib/datetime';
 import { MarkdownEditor } from './markdown-editor';
 
 type EventFormat = 'OFFLINE' | 'ONLINE' | 'HYBRID';
@@ -13,6 +13,7 @@ type FormState = {
   description: string;
   startsAt: string;
   endsAt: string;
+  timezone: string;
   format: EventFormat;
   venueName: string;
   venueAddress: string;
@@ -59,6 +60,7 @@ export function EventBuilder({ organization }: { organization: { id: string; slu
     description: '',
     startsAt: '',
     endsAt: '',
+    timezone: DEFAULT_EVENT_TIMEZONE,
     format: 'OFFLINE',
     venueName: '',
     venueAddress: '',
@@ -142,8 +144,8 @@ export function EventBuilder({ organization }: { organization: { id: string; slu
       return;
     }
     if (step === 1) {
-      if (!form.startsAt || !form.endsAt) {
-        setMessage('Başlangıç ve bitiş zamanını seçmeniz gerekiyor.');
+      if (!form.startsAt || !form.endsAt || !form.timezone) {
+        setMessage('Başlangıç, bitiş ve zaman dilimini seçmeniz gerekiyor.');
         return;
       }
       if (new Date(form.endsAt) <= new Date(form.startsAt)) {
@@ -178,8 +180,8 @@ export function EventBuilder({ organization }: { organization: { id: string; slu
         body: JSON.stringify({
           ...form,
           slug,
-          startsAt: new Date(form.startsAt).toISOString(),
-          endsAt: new Date(form.endsAt).toISOString(),
+          startsAt: zonedDateTimeToUtcIso(form.startsAt, form.timezone),
+          endsAt: zonedDateTimeToUtcIso(form.endsAt, form.timezone),
           capacity: Number(form.capacity),
           faqs: [],
         }),
@@ -221,7 +223,7 @@ export function EventBuilder({ organization }: { organization: { id: string; slu
 
   const organizationInitial = organization.name.trim().slice(0, 1).toLocaleUpperCase('tr-TR');
   const previewDate = form.startsAt
-    ? new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(form.startsAt))
+    ? new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${form.startsAt}:00`))
     : 'Tarih daha sonra';
   const previewTime = form.startsAt
     ? `${form.startsAt.slice(11, 16)}${form.endsAt ? ` – ${form.endsAt.slice(11, 16)}` : ''}`
@@ -281,9 +283,10 @@ export function EventBuilder({ organization }: { organization: { id: string; slu
             {(['OFFLINE', 'ONLINE', 'HYBRID'] as EventFormat[]).map(value => <label key={value} className={form.format === value ? 'selected' : ''}><input type="radio" name="format" checked={form.format === value} onChange={() => set('format', value)}/><span>{formatLabels[value]}</span></label>)}
           </div></fieldset>
           <div className="date-card-grid">
-            <label className={needsReview('startsAt')?'needs-review':''}><span className="field-heading">Başlangıç <small>Zorunlu</small>{needsReview('startsAt')&&<em>Kontrol edin</em>}</span><div className="datetime-inputs"><input required aria-label="Başlangıç tarihi" type="date" value={form.startsAt.slice(0, 10)} onChange={event => set('startsAt', `${event.target.value}T${form.startsAt.slice(11, 16) || '10:00'}`)}/><input aria-label="Başlangıç saati" type="time" value={form.startsAt.slice(11, 16) || '10:00'} onChange={event => set('startsAt', `${form.startsAt.slice(0, 10) || toLocalDateInputValue(new Date())}T${event.target.value}`)}/></div></label>
-            <label className={needsReview('endsAt')?'needs-review':''}><span className="field-heading">Bitiş <small>Zorunlu</small>{needsReview('endsAt')&&<em>Kontrol edin</em>}</span><div className="datetime-inputs"><input required aria-label="Bitiş tarihi" type="date" value={form.endsAt.slice(0, 10)} onChange={event => set('endsAt', `${event.target.value}T${form.endsAt.slice(11, 16) || '18:00'}`)}/><input aria-label="Bitiş saati" type="time" value={form.endsAt.slice(11, 16) || '18:00'} onChange={event => set('endsAt', `${form.endsAt.slice(0, 10) || toLocalDateInputValue(new Date())}T${event.target.value}`)}/></div></label>
+            <label className={needsReview('startsAt')?'needs-review':''}><span className="field-heading">Başlangıç <small>Zorunlu</small>{needsReview('startsAt')&&<em>Kontrol edin</em>}</span><div className="datetime-inputs"><input required aria-label="Başlangıç tarihi" type="date" value={form.startsAt.slice(0, 10)} onChange={event => set('startsAt', `${event.target.value}T${form.startsAt.slice(11, 16) || '10:00'}`)}/><input required step="60" aria-label="Başlangıç saati" type="time" value={form.startsAt.slice(11, 16) || '10:00'} onChange={event => set('startsAt', `${form.startsAt.slice(0, 10) || toLocalDateInputValue(new Date(), form.timezone)}T${event.target.value}`)}/></div></label>
+            <label className={needsReview('endsAt')?'needs-review':''}><span className="field-heading">Bitiş <small>Zorunlu</small>{needsReview('endsAt')&&<em>Kontrol edin</em>}</span><div className="datetime-inputs"><input required aria-label="Bitiş tarihi" type="date" value={form.endsAt.slice(0, 10)} onChange={event => set('endsAt', `${event.target.value}T${form.endsAt.slice(11, 16) || '18:00'}`)}/><input required step="60" aria-label="Bitiş saati" type="time" value={form.endsAt.slice(11, 16) || '18:00'} onChange={event => set('endsAt', `${form.endsAt.slice(0, 10) || toLocalDateInputValue(new Date(), form.timezone)}T${event.target.value}`)}/></div></label>
           </div>
+          <label className="select-row"><span><b>Zaman dilimi</b><small>Katılımcılar etkinlik saatini bu zaman diliminde görür.</small></span><select required value={form.timezone} onChange={event => set('timezone', event.target.value)}>{eventTimezones.map(zone => <option key={zone.value} value={zone.value}>{zone.label}</option>)}</select></label>
           <div className="quick-date-row"><span>Hızlı seçim</span><button type="button" onClick={() => { const date = new Date(); date.setDate(date.getDate() + 7); const value = toLocalDateInputValue(date); setForm(current => ({ ...current, startsAt: `${value}T10:00`, endsAt: `${value}T18:00` })); }}>Önümüzdeki hafta</button><button type="button" onClick={() => { const date = new Date(); date.setMonth(date.getMonth() + 1); const value = toLocalDateInputValue(date); setForm(current => ({ ...current, startsAt: `${value}T10:00`, endsAt: `${value}T18:00` })); }}>Önümüzdeki ay</button></div>
           {form.format !== 'ONLINE' && <div className="location-fields"><label className={needsReview('venueName')?'needs-review':''}><span className="field-heading">Mekân adı <small>İsteğe bağlı</small>{needsReview('venueName')&&<em>Kontrol edin</em>}</span><input value={form.venueName} onChange={event => set('venueName', event.target.value)} placeholder="Örn. İstanbul Planlama Ajansı"/></label><label className={needsReview('venueAddress')?'needs-review':''}><span className="field-heading">Adres <small>İsteğe bağlı</small>{needsReview('venueAddress')&&<em>Kontrol edin</em>}</span><input value={form.venueAddress} onChange={event => set('venueAddress', event.target.value)} placeholder="Açık adres"/></label></div>}
           {form.format !== 'OFFLINE' && <label className={needsReview('onlineLink')?'needs-review':''}><span className="field-heading">Çevrim içi katılım bağlantısı <small>İsteğe bağlı</small>{needsReview('onlineLink')&&<em>Kontrol edin</em>}</span><input type="url" value={form.onlineLink} onChange={event => set('onlineLink', event.target.value)} placeholder="https://…"/><small className="field-note important">Bağlantıyı daha sonra da ekleyebilirsiniz. Yalnızca yetkili katılımcılarla paylaşın.</small></label>}
@@ -311,7 +314,7 @@ export function EventBuilder({ organization }: { organization: { id: string; slu
           </section>
           <dl className="review-list">
             <div><dt>Etkinlik</dt><dd>{form.title}</dd><button type="button" onClick={() => goToStep(0)}>Düzenle</button></div>
-            <div><dt>Zaman</dt><dd>{form.startsAt ? `${formatDateTime(form.startsAt)} – ${formatDateTime(form.endsAt)}` : 'Seçilmedi'}</dd><button type="button" onClick={() => goToStep(1)}>Düzenle</button></div>
+            <div><dt>Zaman</dt><dd>{form.startsAt ? `${form.startsAt.replace('T', ' ')} – ${form.endsAt.replace('T', ' ')} · ${eventTimezones.find(zone => zone.value === form.timezone)?.label}` : 'Seçilmedi'}</dd><button type="button" onClick={() => goToStep(1)}>Düzenle</button></div>
             <div><dt>Yer</dt><dd>{formatLabels[form.format]} · {previewLocation}</dd><button type="button" onClick={() => goToStep(1)}>Düzenle</button></div>
             <div><dt>Kayıt</dt><dd>{form.registrationMode === 'APPROVAL' ? 'Başvuru onayı' : 'Otomatik kabul'} · {form.capacity} kişi</dd><button type="button" onClick={() => goToStep(2)}>Düzenle</button></div>
             <div><dt>Görünürlük</dt><dd>{visibilityLabels[form.visibility]}</dd><button type="button" onClick={() => goToStep(2)}>Düzenle</button></div>

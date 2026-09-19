@@ -11,6 +11,7 @@ type EventSummary = {
   title: string;
   startsAt: string;
   endsAt: string;
+  timezone: string;
   publicationStatus: string;
   registrationStatus: string;
   registrationSummary?: { total: number; pending: number; accepted: number; waitlisted: number; rejected: number };
@@ -109,7 +110,7 @@ export default async function Dashboard() {
                     <span className={`home-status registration-${event.registrationStatus.toLowerCase()}`}>Form: {registrationLabel(event.registrationStatus)}</span>
                   </span>
                 </div>
-                <p>{formatDate(event.startsAt)} · {formatTime(event.startsAt)}</p>
+                <p>{formatDate(event.startsAt, event.timezone)} · {formatTime(event.startsAt, event.timezone)}</p>
               </div>
               <div className="home-event-registration">
                 <b>{event._count?.registrations ?? 0}</b>

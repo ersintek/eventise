@@ -21,6 +21,7 @@ export default async function EventLayout({
         title={event.title}
         eventSlug={event.slug}
         startsAt={event.startsAt}
+        timezone={event.timezone}
         publicationStatus={event.publicationStatus}
         registrationStatus={event.registrationStatus}
         registrationCount={event._count?.registrations ?? 0}

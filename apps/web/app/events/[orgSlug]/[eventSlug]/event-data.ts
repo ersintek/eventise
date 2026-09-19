@@ -8,6 +8,7 @@ export interface EventData {
   description: string | null;
   startsAt: string;
   endsAt: string;
+  timezone: string;
   format: 'OFFLINE' | 'ONLINE' | 'HYBRID';
   venueName: string | null;
   venueAddress: string | null;

@@ -36,7 +36,7 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
   const registrationOpen = event.registrationStatus === 'OPEN';
   const formatLabel = event.format === 'ONLINE' ? 'Çevrim içi' : event.format === 'HYBRID' ? 'Hibrit' : 'Yüz yüze';
   const hybridParticipationLabel = '+ Online Katılım (Hibrit)';
-  const sameDay = new Date(event.startsAt).toDateString() === new Date(event.endsAt).toDateString();
+  const sameDay = formatDateLong(event.startsAt, event.timezone) === formatDateLong(event.endsAt, event.timezone);
   const initials = event.organization.name.trim().slice(0, 1).toLocaleUpperCase('tr-TR');
   const style = { '--event-accent': event.accentColor || '#4F46E5' } as CSSProperties;
   const dedicatedRegistration = fields.length > 5;
@@ -64,7 +64,7 @@ export default async function PublicEvent({ params }: { params: Promise<{ orgSlu
     </section>
 
     <section className="event-fact-strip" aria-label="Etkinlik özeti">
-      <article><span className="fact-icon">01</span><div><small>TARİH VE SAAT</small><strong>{formatDateLong(event.startsAt)}</strong><p>{sameDay ? `${formatTime(event.startsAt)}–${formatTime(event.endsAt)}` : `${formatTime(event.startsAt)} – ${formatDateLong(event.endsAt)}, ${formatTime(event.endsAt)}`}</p></div></article>
+      <article><span className="fact-icon">01</span><div><small>TARİH VE SAAT</small><strong>{formatDateLong(event.startsAt, event.timezone)}</strong><p>{sameDay ? `${formatTime(event.startsAt, event.timezone)}–${formatTime(event.endsAt, event.timezone)}` : `${formatTime(event.startsAt, event.timezone)} – ${formatDateLong(event.endsAt, event.timezone)}, ${formatTime(event.endsAt, event.timezone)}`} · {event.timezone === 'Europe/Istanbul' ? 'GMT+3' : event.timezone}</p></div></article>
       <article><span className="fact-icon">02</span><div><small>{event.format === 'OFFLINE' ? 'MEKÂN' : 'KATILIM'}</small><strong>{event.format === 'ONLINE' ? 'Çevrim içi' : event.venueName || formatLabel}</strong>{event.venueAddress && event.format !== 'ONLINE' && <p>{event.venueAddress}</p>}{event.format === 'HYBRID' && <p className="hybrid-participation-label">{hybridParticipationLabel}</p>}</div></article>
       <article><span className="fact-icon">03</span><div><small>KONTENJAN</small><strong>{event.capacity} katılımcı</strong><p>{event.registrationMode === 'APPROVAL' ? 'Başvurular değerlendirilir' : 'Başvuru sırasına göre'}</p></div></article>
     </section>
