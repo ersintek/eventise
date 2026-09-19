@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post } from '@nestjs/common';
 import { RegistrationApplicationStatus } from '@prisma/client';
 import { IsArray, IsBoolean, IsEmail, IsEnum, IsObject, IsOptional, IsString, Length, MaxLength } from 'class-validator';
 import { AccountSetupService } from '../identity/account-setup.service';
@@ -19,4 +19,5 @@ export class RegistrationsController {
   @Post('participant/events/:eventId/accept-invitation') async accept(@CurrentUser() u: AuthenticatedUser, @Param('eventId') eventId: string) { const { invitation, user } = await this.invitations.accept(u.id, eventId); return this.registrations.submit(invitation.event.organization.slug, invitation.event.slug, { email: user.email, firstName: user.firstName, lastName: user.lastName, answers: { source: 'invitation' }, consentVersionIds: [] }); }
   @Get('organizations/:organizationId/events/:eventId/registrations') list(@CurrentUser() u: AuthenticatedUser, @Param('organizationId') o: string, @Param('eventId') e: string) { return this.registrations.list(u.id, o, e); }
   @Patch('organizations/:organizationId/registrations/:id/decision') decide(@CurrentUser() u: AuthenticatedUser, @Param('organizationId') o: string, @Param('id') id: string, @Body() d: DecisionDto) { return this.registrations.decide(u.id, o, id, d.status, d.reason ?? ''); }
+  @Delete('organizations/:organizationId/registrations/:id') remove(@CurrentUser() u: AuthenticatedUser, @Param('organizationId') o: string, @Param('id') id: string) { return this.registrations.remove(u.id, o, id); }
 }
