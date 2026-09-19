@@ -3,7 +3,6 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AppNav, MobileTopBar } from '../components/navigation';
 import { formatDate, formatTime } from '@/lib/datetime';
-import { nextEventTask } from '@/lib/event-readiness';
 import { publicationLabel, registrationLabel } from '@/lib/product-language';
 import { EventPublicationToggle } from './event-publication-toggle';
 
@@ -61,23 +60,11 @@ export default async function Dashboard() {
   const now = Date.now();
   const orderedEvents = [...events].sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
   const upcoming = orderedEvents.filter(event => new Date(event.endsAt).getTime() >= now);
-  const nextEvent = upcoming[0];
   const published = events.filter(event => event.publicationStatus === 'PUBLISHED').length;
   const registrations = events.reduce((total, event) => total + (event._count?.registrations ?? 0), 0);
   const today = new Date(now);
   const firstName = me.firstName?.trim();
   const longDate = new Intl.DateTimeFormat('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' }).format(today);
-
-  const focus = events.length > 0
-    ? events.map(event => nextEventTask(event, now)).sort((a, b) => b.priority - a.priority)[0]
-    : {
-        eyebrow: 'İLK ADIM',
-        title: 'İlk etkinliğinizi oluşturun.',
-        body: 'Duyuru metnini yapıştırarak veya temel bilgileri girerek başlayabilirsiniz.',
-        href: '/dashboard/events/new',
-        action: 'Etkinlik oluştur',
-        priority: 0,
-      };
 
   return <main className="app-shell">
     <AppNav organization={organization} active="events" systemAdmin={me.systemRole === 'SYSTEM_ADMIN'} />
@@ -88,50 +75,15 @@ export default async function Dashboard() {
         <div>
           <p className="home-date"><span aria-hidden="true" />{longDate}</p>
           <h1>{greeting(today.getHours())}{firstName ? `, ${firstName}` : ''}.</h1>
-          <p>Öncelikli işi görün ve doğrudan ilgili bölüme geçin.</p>
         </div>
         <Link className="home-create-button" href="/dashboard/events/new">
           <span aria-hidden="true">＋</span> Yeni etkinlik
         </Link>
       </header>
 
-      <section className="home-focus" aria-labelledby="focus-title">
-        <div className="home-focus-copy">
-          <p className="home-focus-eyebrow"><span aria-hidden="true" />{focus.eyebrow}</p>
-          <h2 id="focus-title">{focus.title}</h2>
-          <p>{focus.body}</p>
-          <div className="home-focus-actions">
-            <Link className="home-focus-primary" href={focus.href}>{focus.action}<span aria-hidden="true">→</span></Link>
-            {events.length > 0 && <a href="#events">Tüm etkinlikler</a>}
-          </div>
-        </div>
-
-        <aside className="home-next-card" aria-label="Sıradaki etkinlik">
-          {nextEvent ? <>
-            <div className="home-next-topline"><span>Sıradaki</span><em>{relativeDay(nextEvent.startsAt, now)}</em></div>
-            <div className="home-next-event">
-              <div className="home-next-date">
-                <strong>{new Date(nextEvent.startsAt).getDate()}</strong>
-                <span>{new Date(nextEvent.startsAt).toLocaleDateString('tr-TR', { month: 'short' })}</span>
-              </div>
-              <div>
-                <h3>{nextEvent.title}</h3>
-                <p>{formatTime(nextEvent.startsAt)} · {nextEvent._count?.registrations ?? 0} başvuru</p>
-              </div>
-            </div>
-            <Link href={`/dashboard/events/${nextEvent.id}/settings?subtab=info`}>Etkinlik bilgilerini aç <span aria-hidden="true">↗</span></Link>
-          </> : <>
-            <div className="home-next-topline"><span>Etkinlik takvimi</span><em>Hazır</em></div>
-            <div className="home-calendar-empty" aria-hidden="true"><span>e</span></div>
-            <h3>Henüz etkinlik yok.</h3>
-            <p>İlk etkinliğinizi oluşturduğunuzda tarih ve başvuru durumu burada görünecek.</p>
-          </>}
-        </aside>
-      </section>
-
       <section className="home-metrics" aria-label="Etkinlik özeti">
         <article>
-          <span className="metric-label"><i className="metric-dot indigo" />Yaklaşan</span>
+          <span className="metric-label"><i className="metric-dot indigo" />Yaklaşan etkinlik</span>
           <b>{upcoming.length}</b>
           <small>etkinlik takvimde</small>
         </article>
