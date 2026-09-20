@@ -7,6 +7,7 @@ import { StorageProvider } from '../../infrastructure/storage/storage-provider.p
 import { PrismaService } from '../../shared/persistence/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { OrganizationAccessService } from '../organizations/policies/organization-access.service';
+import { TiersService } from '../tiers/tiers.service';
 
 @Injectable()
 export class ReportingService implements OnModuleInit {
@@ -17,6 +18,7 @@ export class ReportingService implements OnModuleInit {
     @Inject(StorageProvider) private storage: StorageProvider,
     @Inject(PdfProvider) private pdf: PdfProvider,
     @Inject(OrganizationAccessService) private access: OrganizationAccessService,
+    @Inject(TiersService) private tiers: TiersService,
     @Inject(AuditService) private audit: AuditService,
   ) {}
 
@@ -45,6 +47,7 @@ export class ReportingService implements OnModuleInit {
 
   async applicationReport(userId: string, organizationId: string, eventId: string) {
     await this.access.requireEventAccess(userId, organizationId, eventId, ['ORGANIZATION_ADMIN', 'EVENT_MANAGER']);
+    await this.tiers.assertFeatureEnabled(organizationId, 'advancedReports');
     const event = await this.prisma.event.findFirst({
       where: { id: eventId, organizationId },
       include: {
@@ -74,6 +77,7 @@ export class ReportingService implements OnModuleInit {
 
   async request(userId: string, organizationId: string, eventId: string, format: 'csv' | 'xlsx' | 'pdf') {
     await this.access.requireEventAccess(userId, organizationId, eventId, ['ORGANIZATION_ADMIN', 'EVENT_MANAGER']);
+    await this.tiers.assertFeatureEnabled(organizationId, 'advancedReports');
     if (!['csv', 'xlsx', 'pdf'].includes(format)) throw new BadRequestException('Rapor formatı CSV, XLSX veya PDF olmalıdır.');
 
     const pending = await this.prisma.reportExport.findFirst({
