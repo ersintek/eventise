@@ -90,6 +90,7 @@ enum ScheduledNotificationStatus {
   SCHEDULED
   CANCELLED
   QUEUED
+  SENT
   FAILED
 }
 
@@ -859,6 +860,7 @@ model ScheduledNotification {
   sendAt DateTime
   status ScheduledNotificationStatus @default(SCHEDULED)
   failureReason String?
+  messages EmailMessage[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([eventId, status, sendAt])
@@ -868,6 +870,8 @@ model EmailMessage {
   id String @id @default(cuid())
   templateId String?
   template EmailTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  scheduledNotificationId String?
+  scheduledNotification ScheduledNotification? @relation(fields: [scheduledNotificationId], references: [id], onDelete: SetNull)
   recipient String
   subject String
   body String
@@ -877,6 +881,7 @@ model EmailMessage {
   lastError String?
   createdAt DateTime @default(now())
   @@index([status, scheduledAt])
+  @@index([scheduledNotificationId])
 }
 
 model OrganizationMembership {

@@ -9,6 +9,7 @@ import { PdfProvider, CertificateField } from '../../infrastructure/pdf/pdf-prov
 import { OrganizationAccessService } from '../organizations/policies/organization-access.service';
 import { AuditService } from '../audit/audit.service';
 import { TiersService } from '../tiers/tiers.service';
+import { toPublicUrl } from '../communications/public-url';
 
 interface CertificateDesign {
   backgroundAssetId?: string | null;
@@ -105,7 +106,7 @@ export class CertificatesService implements OnModuleInit {
       if (!c.registration) throw new BadRequestException('Katılımcı bulunamadı.');
       const participantName = `${c.registration.firstName} ${c.registration.lastName}`;
       const eventDate = new Intl.DateTimeFormat('tr-TR', { dateStyle: 'long' }).format(c.event.startsAt);
-      const verifyUrl = `${process.env.PUBLIC_BASE_URL ?? ''}/certificates/${c.verificationCode}`;
+      const verifyUrl = toPublicUrl(`/certificates/${c.verificationCode}`);
 
       const body = c.template.bodyTemplate
         .replaceAll('{{participant.full_name}}', participantName)
