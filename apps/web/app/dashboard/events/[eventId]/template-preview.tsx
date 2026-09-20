@@ -171,7 +171,7 @@ export function ReminderComposer({ templates, recipientCount, eventTitle, onSche
 
   return <form className="reminder-composer" onSubmit={submit}>
     <div className="reminder-composer-head">
-      <div><p className="eyebrow">YENİ HATIRLATMA</p><h2>Mesajı hazırlayın ve planlayın</h2><p>Seçtiğiniz şablonu bu gönderim için gözden geçirin. Değişiklikler şablona da kaydedilir.</p></div>
+      <div><p className="eyebrow">YENİ HATIRLATMA</p><h2>Mesajı hazırlayın ve planlayın</h2><p>Seçtiğiniz şablonu bu gönderim için gözden geçirin. Bu mesaj yalnızca planladığınız gönderime kaydedilir.</p></div>
       <div className="recipient-summary"><b>{recipientCount}</b><span>kabul edilen katılımcı</span></div>
     </div>
     <div className="reminder-compose-grid">

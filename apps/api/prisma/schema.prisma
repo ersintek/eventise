@@ -854,6 +854,8 @@ model ScheduledNotification {
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   templateId String
   template EmailTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  subject String?
+  body String?
   sendAt DateTime
   status ScheduledNotificationStatus @default(SCHEDULED)
   failureReason String?
