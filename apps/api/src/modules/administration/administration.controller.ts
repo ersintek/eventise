@@ -19,6 +19,8 @@ class EventStatusDto { @IsIn(['UNPUBLISHED', 'ARCHIVED']) publicationStatus!: 'U
 export class AdministrationController {
   constructor(@Inject(AdministrationService) private service: AdministrationService) {}
   @Get('overview') overview() { return this.service.overview(); }
+  @Get('failed-jobs') failedJobs() { return this.service.failedJobs(); }
+  @Post('failed-jobs/:id/retry') retryJob(@CurrentUser() u: AuthenticatedUser, @Param('id') id: string) { return this.service.retryJob(u.id, id); }
   @Get('organizations') organizations() { return this.service.organizations(); }
   @Get('tiers') tiers() { return this.service.tiers(); }
   @Patch('organizations/:organizationId/tier') tier(@CurrentUser() u: AuthenticatedUser, @Param('organizationId') o: string, @Body() d: TierDto) { return this.service.assignTier(u.id, o, d.tierId); }
