@@ -18,7 +18,7 @@ export function ParticipantApplicationList({applications}:{applications:Applicat
 }
 
 /** Tek olay sayfası: modüller otomatik yüklenir + yenile */
-export function ParticipantArea({eventId,title,orgName,startsAt,timezone,certificates}:{eventId:string;title:string;orgName:string;startsAt:string;timezone:string;certificates:Certificate[]}){
+export function ParticipantArea({eventId,title,orgName,startsAt,timezone,venueName,venueAddress,publicEventHref,certificates}:{eventId:string;title:string;orgName:string;startsAt:string;timezone:string;venueName?:string;venueAddress?:string;publicEventHref?:string;certificates:Certificate[]}){
   const[message,setMessage]=useState(''),[current,setCurrent]=useState<Modules|null>(null),[reveals,setReveals]=useState<Record<string,string>>({}),[busy,setBusy]=useState(false),[ratings,setRatings]=useState<Record<string,number>>({}),[refreshKey,setRefreshKey]=useState(0);
   useEffect(()=>{load()},[eventId,refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -48,6 +48,11 @@ export function ParticipantArea({eventId,title,orgName,startsAt,timezone,certifi
       </div>
       <button className="refresh-btn" onClick={()=>setRefreshKey(k=>k+1)} disabled={busy} title="Yenile" aria-label="Etkinlik içeriğini yenile">{busy?'…':'↻'}</button>
     </div>
+
+    {(venueName||venueAddress||publicEventHref)&&<section className="participant-event-details" aria-label="Etkinlik bilgileri">
+      {(venueName||venueAddress)&&<div className="participant-event-detail"><span aria-hidden="true">⌖</span><div><small>ETKİNLİK ADRESİ</small><b>{venueName||'Etkinlik mekânı'}</b>{venueAddress&&<><p>{venueAddress}</p><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueAddress)}`} target="_blank" rel="noopener noreferrer">Haritada aç ↗</a></>}</div></div>}
+      {publicEventHref&&<Link className="participant-public-event-link" href={publicEventHref}>Etkinlik başvuru sayfası <span>→</span></Link>}
+    </section>}
 
     {totalPending>0&&<p className="participant-summary"><b>Şu anda {totalPending} yapman gereken iş var.</b> Önce aşağıdaki görevleri tamamla; ardından etkinlik duyurularını ve dosyalarını inceleyebilirsin.</p>}
 

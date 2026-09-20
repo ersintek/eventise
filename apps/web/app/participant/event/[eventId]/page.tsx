@@ -21,6 +21,8 @@ export default async function ParticipantEventPage({ params }: { params: Promise
   const eventInfo = history.find((h: any) => h.id === eventId);
   const title = eventInfo?.title ?? 'Etkinlik';
   const orgName = eventInfo?.organization?.name ?? '';
+  const orgSlug = eventInfo?.organization?.slug ?? '';
+  const eventSlug = eventInfo?.slug ?? '';
   const startsAt = eventInfo?.startsAt;
   const timezone = eventInfo?.timezone ?? 'Europe/Istanbul';
   const eventCerts = certificates.filter((c: any) => c.event?.id === eventId);
@@ -40,6 +42,6 @@ export default async function ParticipantEventPage({ params }: { params: Promise
       <Link href="/participant" className="participant-back">← Tüm etkinliklerim</Link>
       <p className="eyebrow">{orgName}</p>
     </div>
-    {startsAt && <ParticipantArea eventId={eventId} title={title} orgName={orgName} startsAt={startsAt} timezone={timezone} certificates={eventCerts} />}
+    {startsAt && <ParticipantArea eventId={eventId} title={title} orgName={orgName} startsAt={startsAt} timezone={timezone} venueName={eventInfo?.venueName} venueAddress={eventInfo?.venueAddress} publicEventHref={orgSlug && eventSlug ? `/events/${orgSlug}/${eventSlug}` : undefined} certificates={eventCerts} />}
   </main>;
 }

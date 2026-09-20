@@ -52,6 +52,9 @@
 .participant-event-toolbar h3{font-family:var(--font-display);font-size:var(--fs-xl);font-weight:700;margin:0;letter-spacing:-.02em;color:var(--ink)}
 .participant-event-toolbar small{display:block;color:var(--muted);font-size:var(--fs-sm);margin-top:.125rem}
 .participant-event-toolbar p{color:var(--muted);font-size:var(--fs-sm);margin:.25rem 0 0}
+.participant-event-details{display:flex;align-items:stretch;justify-content:space-between;gap:1rem;margin:0 0 1rem;padding:1rem 1.125rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg)}
+.participant-event-detail{display:flex;gap:.75rem;align-items:flex-start}.participant-event-detail>span{display:grid;place-items:center;flex:0 0 2rem;height:2rem;border-radius:50%;background:var(--soft);color:var(--primary);font-size:1.15rem}.participant-event-detail small{display:block;color:var(--muted);font-size:.7rem;font-weight:700;letter-spacing:.06em}.participant-event-detail b{display:block;margin-top:.15rem}.participant-event-detail p{margin:.25rem 0;color:var(--muted);font-size:var(--fs-sm)}.participant-event-detail a{font-size:var(--fs-sm);font-weight:650}
+.participant-public-event-link{align-self:center;display:inline-flex;align-items:center;gap:.45rem;white-space:nowrap;color:var(--primary);font-size:var(--fs-sm);font-weight:700}.participant-public-event-link span{font-size:1.1em}
 
 /* Yenile butonu (yeniden adlandırıldı: eskiden toolbar-btn ile çakışıyordu) */
 .refresh-btn{flex:none;width:2.75rem;height:2.75rem;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-md);font-size:1.125rem;color:var(--ink-secondary);cursor:pointer;box-shadow:var(--shadow-sm);transition:all var(--transition)}
@@ -205,6 +208,7 @@
   .participant-standalone{padding:1.5rem 1rem}
   .certificate-grid{grid-template-columns:1fr}
   .participant-event-toolbar h3{font-size:var(--fs-lg)}
+  .participant-event-details{display:block}.participant-public-event-link{margin-top:1rem}
   .participant-follow-layout,.participant-profile-grid{grid-template-columns:1fr}
   .discovery-grid{grid-template-columns:1fr}.discovery-heading{align-items:flex-start;gap:.75rem}.discovery-controls{width:100%;justify-content:space-between;flex-wrap:wrap}
   .participant-shell{padding:1.25rem 1rem 3rem}
