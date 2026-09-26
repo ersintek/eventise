@@ -3,6 +3,19 @@ import { ConfigService } from '@nestjs/config';
 import nodemailer, { Transporter } from 'nodemailer';
 import { EmailDeliveryResult, EmailMessage, EmailProvider } from './email-provider.port';
 
+function toPlainText(html: string) {
+  return html
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<a\s+[^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/gi, '$2: $1')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .trim();
+}
+
 @Injectable()
 export class SmtpEmailProvider implements EmailProvider {
   private readonly transporter: Transporter;
@@ -10,7 +23,7 @@ export class SmtpEmailProvider implements EmailProvider {
     this.transporter = nodemailer.createTransport({ host: config.getOrThrow('SMTP_HOST'), port: Number(config.get('SMTP_PORT', 587)), secure: config.get('SMTP_SECURE') === 'true', auth: { user: config.getOrThrow('SMTP_USER'), pass: config.getOrThrow('SMTP_PASSWORD') } });
   }
   async send(message: EmailMessage): Promise<EmailDeliveryResult> {
-    const result = await this.transporter.sendMail({ from: this.config.getOrThrow('EMAIL_FROM'), to: message.to, subject: message.subject, html: message.html, replyTo: message.replyTo, headers: { 'X-Eventise-Idempotency-Key': message.idempotencyKey } });
+    const result = await this.transporter.sendMail({ from: this.config.getOrThrow('EMAIL_FROM'), to: message.to, subject: message.subject, html: message.html, text: toPlainText(message.html), replyTo: message.replyTo, headers: { 'X-Eventise-Idempotency-Key': message.idempotencyKey } });
     if (result.accepted.length === 0) throw new Error(`SMTP sağlayıcısı alıcıyı kabul etmedi${result.rejected.length ? `: ${result.rejected.join(', ')}` : '.'}`);
     return { providerMessageId: result.messageId, accepted: true };
   }
