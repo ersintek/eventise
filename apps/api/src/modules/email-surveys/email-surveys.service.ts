@@ -78,9 +78,11 @@ export class EmailSurveysService {
     const invitation = await this.prisma.emailSurveyInvitation.findUnique({ where: { tokenHash: this.digest(token) }, include: { survey: true } });
     if (!invitation || !invitation.survey.open) throw new NotFoundException('Anket bağlantısı geçersiz veya kapalı.');
     const questions = invitation.survey.questions as unknown as EmailSurveyQuestion[];
-    if (questions.some(question => question.required !== false && !String(answers[question.id] ?? '').trim())) throw new BadRequestException('Lütfen tüm zorunlu soruları yanıtlayın.');
+    if (Object.keys(answers).length > questions.length || questions.some(question => answers[question.id] !== undefined && (typeof answers[question.id] !== 'string' || String(answers[question.id]).length > 4_000))) throw new BadRequestException('Anket yanıtları geçersiz veya çok uzun.');
+    const normalizedAnswers=Object.fromEntries(questions.map(question=>[question.id,String(answers[question.id]??'').trim()]));
+    if (questions.some(question => question.required !== false && !normalizedAnswers[question.id])) throw new BadRequestException('Lütfen tüm zorunlu soruları yanıtlayın.');
     try {
-      await this.prisma.emailSurveyResponse.create({ data: { surveyId: invitation.surveyId, invitationId: invitation.id, registrationId: invitation.registrationId, answers: answers as Prisma.InputJsonValue, isTest: invitation.isTest } });
+      await this.prisma.emailSurveyResponse.create({ data: { surveyId: invitation.surveyId, invitationId: invitation.id, registrationId: invitation.registrationId, answers: normalizedAnswers as Prisma.InputJsonValue, isTest: invitation.isTest } });
     } catch (error) {
       throw new ConflictException('Bu anketi daha önce yanıtladınız.');
     }

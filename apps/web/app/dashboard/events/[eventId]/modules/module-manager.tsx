@@ -124,7 +124,7 @@ export function ModuleManager(p: {
   function exportEmailSurveyResults() {
     if(!surveyResults)return;
     const header=['Katılımcı','E-posta',...surveyResults.survey.questions.map(question=>question.label),'Gönderim zamanı'];
-    const quote=(value:unknown)=>`"${String(value??'').replaceAll('"','""')}"`;
+    const quote=(value:unknown)=>{const text=String(value??'');return `"${(/^[=+\-@]/.test(text)?`'${text}`:text).replaceAll('"','""')}"`};
     const rows=surveyResults.responses.map(response=>[response.name,response.email,...surveyResults.survey.questions.map(question=>response.answers[question.id]??''),new Date(response.submittedAt).toLocaleString('tr-TR')]);
     const url=URL.createObjectURL(new Blob([[header,...rows].map(row=>row.map(quote).join(';')).join('\n')],{type:'text/csv;charset=utf-8'}));
     const link=document.createElement('a');link.href=url;link.download=`${surveyResults.survey.title}-yanitlar.csv`;link.click();URL.revokeObjectURL(url);
