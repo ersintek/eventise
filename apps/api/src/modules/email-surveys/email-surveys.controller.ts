@@ -11,6 +11,7 @@ export class EmailSurveysController {
   constructor(@Inject(EmailSurveysService) private surveys: EmailSurveysService) {}
   @Get('organizations/:organizationId/events/:eventId/email-surveys') list(@CurrentUser() user: AuthenticatedUser, @Param('organizationId') organizationId: string, @Param('eventId') eventId: string) { return this.surveys.list(user.id, organizationId, eventId); }
   @Post('organizations/:organizationId/events/:eventId/email-surveys') create(@CurrentUser() user: AuthenticatedUser, @Param('organizationId') organizationId: string, @Param('eventId') eventId: string, @Body() data: CreateSurveyDto) { return this.surveys.create(user.id, organizationId, eventId, data.title, data.questions); }
+  @Get('organizations/:organizationId/events/:eventId/email-surveys/:surveyId/results') results(@CurrentUser() user: AuthenticatedUser, @Param('organizationId') organizationId: string, @Param('eventId') eventId: string, @Param('surveyId') surveyId: string) { return this.surveys.results(user.id, organizationId, eventId, surveyId); }
   @Public() @Get('public/surveys/:token') getPublic(@Param('token') token: string) { return this.surveys.publicSurvey(token); }
   @Public() @Post('public/surveys/:token/responses') submit(@Param('token') token: string, @Body() data: SubmitSurveyDto) { return this.surveys.submit(token, data.answers); }
 }

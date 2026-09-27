@@ -4,7 +4,7 @@ import { AuthenticatedUser, CurrentUser } from '../identity/policies/current-use
 import { CommunicationsService } from './communications.service';
 class TemplateDto { @IsString() subject!:string; @IsString() body!:string; }
 class ReminderDto { @IsString() templateId!:string; @IsDateString() sendAt!:string; @IsString() subject!:string; @IsString() body!:string; @IsOptional() @IsString() surveyId?:string; }
-class UpdateReminderDto { @IsString() subject!:string; @IsString() body!:string; }
+class UpdateReminderDto { @IsString() subject!:string; @IsString() body!:string; @IsOptional() @IsString() surveyId?:string; }
 class TestReminderDto { @IsEmail() recipient!:string; @IsString() subject!:string; @IsString() body!:string; @IsOptional() @IsString() surveyId?:string; }
 @Controller('organizations/:organizationId') export class CommunicationsController {
   constructor(@Inject(CommunicationsService)private c:CommunicationsService){}
@@ -13,6 +13,6 @@ class TestReminderDto { @IsEmail() recipient!:string; @IsString() subject!:strin
   @Get('events/:eventId/reminders') reminders(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('eventId')e:string){return this.c.listReminders(u.id,o,e)}
   @Post('events/:eventId/reminders') remind(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('eventId')e:string,@Body()d:ReminderDto){return this.c.scheduleReminder(u.id,o,e,d.templateId,new Date(d.sendAt),d.subject,d.body,d.surveyId)}
   @Post('events/:eventId/reminders/test') testReminder(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('eventId')e:string,@Body()d:TestReminderDto){return this.c.sendReminderTest(u.id,o,e,d.recipient,d.subject,d.body,d.surveyId)}
-  @Patch('events/:eventId/reminders/:id') updateReminder(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('eventId')e:string,@Param('id')id:string,@Body()d:UpdateReminderDto){return this.c.updateScheduledReminder(u.id,o,e,id,d.subject,d.body)}
+  @Patch('events/:eventId/reminders/:id') updateReminder(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('eventId')e:string,@Param('id')id:string,@Body()d:UpdateReminderDto){return this.c.updateScheduledReminder(u.id,o,e,id,d.subject,d.body,d.surveyId)}
   @Delete('events/:eventId/reminders/:id') cancel(@CurrentUser()u:AuthenticatedUser,@Param('organizationId')o:string,@Param('eventId')e:string,@Param('id')id:string){return this.c.cancelReminder(u.id,o,e,id)}
 }

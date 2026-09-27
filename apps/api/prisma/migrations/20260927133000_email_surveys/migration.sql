@@ -31,7 +31,10 @@ CREATE TABLE "EmailSurveyResponse" (
   CONSTRAINT "EmailSurveyResponse_pkey" PRIMARY KEY ("id")
 );
 ALTER TABLE "ScheduledNotification" ADD COLUMN "surveyId" TEXT;
+ALTER TABLE "ScheduledNotification" ADD COLUMN "recipientCount" INTEGER;
+ALTER TABLE "EmailMessage" ADD COLUMN "deliveryKey" TEXT;
 CREATE UNIQUE INDEX "EmailSurveyInvitation_tokenHash_key" ON "EmailSurveyInvitation"("tokenHash");
+CREATE UNIQUE INDEX "EmailMessage_deliveryKey_key" ON "EmailMessage"("deliveryKey");
 CREATE UNIQUE INDEX "EmailSurveyResponse_invitationId_key" ON "EmailSurveyResponse"("invitationId");
 CREATE UNIQUE INDEX "EmailSurveyResponse_surveyId_registrationId_key" ON "EmailSurveyResponse"("surveyId", "registrationId");
 CREATE INDEX "EmailSurvey_eventId_open_idx" ON "EmailSurvey"("eventId", "open");

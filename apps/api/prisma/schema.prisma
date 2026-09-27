@@ -911,6 +911,7 @@ model ScheduledNotification {
   subject String?
   body String?
   sendAt DateTime
+  recipientCount Int?
   status ScheduledNotificationStatus @default(SCHEDULED)
   failureReason String?
   messages EmailMessage[]
@@ -922,6 +923,7 @@ model ScheduledNotification {
 
 model EmailMessage {
   id String @id @default(cuid())
+  deliveryKey String? @unique
   templateId String?
   template EmailTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
   scheduledNotificationId String?

@@ -18,6 +18,18 @@ export class EmailSurveysService {
     });
   }
 
+  async results(userId: string, organizationId: string, eventId: string, surveyId: string) {
+    await this.assertSurvey(userId, organizationId, eventId, surveyId);
+    const [survey, responses] = await Promise.all([
+      this.prisma.emailSurvey.findUniqueOrThrow({ where: { id: surveyId }, select: { id: true, title: true, questions: true } }),
+      this.prisma.emailSurveyResponse.findMany({
+        where: { surveyId, isTest: false }, orderBy: { submittedAt: 'asc' },
+        include: { invitation: { select: { recipientName: true, recipientEmail: true } } },
+      }),
+    ]);
+    return { survey, responses: responses.map(response => ({ id: response.id, name: response.invitation.recipientName, email: response.invitation.recipientEmail, answers: response.answers, submittedAt: response.submittedAt })) };
+  }
+
   async create(userId: string, organizationId: string, eventId: string, title: string, questions: EmailSurveyQuestion[]) {
     await this.access.requireEventAccess(userId, organizationId, eventId, ['ORGANIZATION_ADMIN', 'EVENT_MANAGER']);
     if (!title.trim() || !questions.length || questions.some(question => !question.id || !question.label.trim()) || new Set(questions.map(question => question.id)).size !== questions.length) {

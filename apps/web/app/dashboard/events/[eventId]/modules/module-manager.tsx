@@ -9,6 +9,7 @@ type Game = { id: string; title: string; status: string; _count: { participants:
 type Assessment = { id: string; kind: 'PRE_TEST' | 'POST_TEST'; title: string; open: boolean; _count: { submissions: number } };
 type Comparison = { pre: { submissions: number; average: number | null }; post: { submissions: number; average: number | null }; improvement: number | null };
 type EmailSurvey = { id:string; title:string; open:boolean; questions:Array<{id:string;label:string;required?:boolean}>; _count:{responses:number} };
+type EmailSurveyResults = { survey: Pick<EmailSurvey,'id'|'title'|'questions'>; responses:Array<{id:string;name:string;email:string;answers:Record<string,string>;submittedAt:string}> };
 
 export function ModuleManager(p: {
   organizationId: string; eventId: string;
@@ -23,6 +24,7 @@ export function ModuleManager(p: {
   const [assessments, setAssessments] = useState(p.initialAssessments);
   const [comparison, setComparison] = useState(p.initialComparison);
   const [emailSurveys, setEmailSurveys] = useState(p.initialEmailSurveys);
+  const [surveyResults, setSurveyResults] = useState<EmailSurveyResults | null>(null);
   const [message, setMessage] = useState('');
   const [gameDetails, setGameDetails] = useState<any>(null);
   const [subDetails, setSubDetails] = useState<any>(null);
@@ -118,6 +120,15 @@ export function ModuleManager(p: {
     const created=await api(base+'/email-surveys','POST',{title:form.get('title'),questions}); if(!created)return;
     setEmailSurveys(current=>[{...created,_count:{responses:0}},...current]); setMessage('E-posta anketi hazır. Hatırlatmalar ekranında seçip kişiye özel bağlantıyı mesaja ekleyebilirsiniz.'); (e.currentTarget as HTMLFormElement).reset();
   }
+  async function showEmailSurveyResults(survey: EmailSurvey) { const result=await api(base+`/email-surveys/${survey.id}/results`,'GET'); if(result)setSurveyResults(result); }
+  function exportEmailSurveyResults() {
+    if(!surveyResults)return;
+    const header=['Katılımcı','E-posta',...surveyResults.survey.questions.map(question=>question.label),'Gönderim zamanı'];
+    const quote=(value:unknown)=>`"${String(value??'').replaceAll('"','""')}"`;
+    const rows=surveyResults.responses.map(response=>[response.name,response.email,...surveyResults.survey.questions.map(question=>response.answers[question.id]??''),new Date(response.submittedAt).toLocaleString('tr-TR')]);
+    const url=URL.createObjectURL(new Blob([[header,...rows].map(row=>row.map(quote).join(';')).join('\n')],{type:'text/csv;charset=utf-8'}));
+    const link=document.createElement('a');link.href=url;link.download=`${surveyResults.survey.title}-yanitlar.csv`;link.click();URL.revokeObjectURL(url);
+  }
 
   return (
     <>
@@ -165,7 +176,8 @@ export function ModuleManager(p: {
               <label>3. soru<textarea name="question3" required placeholder="Bizimle paylaşmak istediğiniz başka bir şey var mı?"/></label>
               <button className="primary" disabled={busy}>{busy?'Oluşturuluyor…':'E-posta anketini oluştur'}</button>
             </form>
-            {emailSurveys.map(survey=><article className="workspace-card" key={survey.id}><div className="assessment-header"><h3>{survey.title}</h3><span className="pill published">E-posta anketi</span></div><p>{survey._count.responses} yanıt · {survey.open?'Gönderime açık':'Kapalı'}</p><small>Hatırlatmalar ekranında seçip “Kişiye özel anket bağlantısı” alanını e-postaya ekleyin.</small></article>)}
+            {emailSurveys.map(survey=><article className="workspace-card" key={survey.id}><div className="assessment-header"><h3>{survey.title}</h3><span className="pill published">E-posta anketi</span></div><p>{survey._count.responses} yanıt · {survey.open?'Gönderime açık':'Kapalı'}</p><small>Hatırlatmalar ekranında seçip “Kişiye özel anket bağlantısı” alanını e-postaya ekleyin.</small><div className="action-links"><button className="secondary" type="button" disabled={busy} onClick={()=>showEmailSurveyResults(survey)}>Yanıtları gör ({survey._count.responses})</button></div></article>)}
+            {surveyResults&&<article className="workspace-card wide"><div className="section-intro"><h2>{surveyResults.survey.title} · Yanıtlar</h2><p>{surveyResults.responses.length} gerçek yanıt. Test yanıtları gösterilmez.</p></div><div className="action-links"><button type="button" className="secondary" onClick={exportEmailSurveyResults}>CSV indir</button><button type="button" className="secondary" onClick={()=>setSurveyResults(null)}>Kapat</button></div><table className="submissions-table"><thead><tr><th>Katılımcı</th><th>E-posta</th>{surveyResults.survey.questions.map(question=><th key={question.id}>{question.label}</th>)}<th>Zaman</th></tr></thead><tbody>{surveyResults.responses.map(response=><tr key={response.id}><td>{response.name}</td><td>{response.email}</td>{surveyResults.survey.questions.map(question=><td key={question.id}>{response.answers[question.id]??'—'}</td>)}<td>{new Date(response.submittedAt).toLocaleString('tr-TR')}</td></tr>)}</tbody></table></article>}
           </>
         )}
         {tab === 'game' && (
