@@ -350,6 +350,7 @@ model Event {
   groupingRuns GroupingRun[]
   gameSessions GameSession[]
   assessments Assessment[]
+  emailSurveys EmailSurvey[]
   feedbackForms FeedbackForm[]
   notifications InAppNotification[]
   photos EventPhoto[]
@@ -440,6 +441,8 @@ model EventRegistration {
   groupMemberships EventGroupMember[]
   gameParticipations GameParticipant[]
   assessmentSubmissions AssessmentSubmission[]
+  emailSurveyInvitations EmailSurveyInvitation[]
+  emailSurveyResponses EmailSurveyResponse[]
   feedbackSubmissions FeedbackSubmission[]
   uploadedPhotos EventPhoto[]
   certificates Certificate[]
@@ -672,6 +675,54 @@ model AssessmentSubmission {
   @@unique([assessmentId, registrationId])
 }
 
+// Email surveys deliberately do not depend on an Eventise login.  A recipient
+// gets a random, single-response link that is tied to their event registration.
+model EmailSurvey {
+  id          String   @id @default(cuid())
+  eventId     String
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  title       String
+  questions   Json
+  open        Boolean  @default(true)
+  invitations EmailSurveyInvitation[]
+  responses   EmailSurveyResponse[]
+  scheduledNotifications ScheduledNotification[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([eventId, open])
+}
+
+model EmailSurveyInvitation {
+  id             String   @id @default(cuid())
+  surveyId       String
+  survey         EmailSurvey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  registrationId String?
+  registration   EventRegistration? @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  recipientEmail String
+  recipientName  String
+  tokenHash      String   @unique
+  isTest         Boolean  @default(false)
+  sentAt         DateTime?
+  createdAt      DateTime @default(now())
+  @@index([surveyId, registrationId])
+  response EmailSurveyResponse?
+}
+
+model EmailSurveyResponse {
+  id             String   @id @default(cuid())
+  surveyId       String
+  survey         EmailSurvey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  invitationId   String   @unique
+  invitation     EmailSurveyInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  registrationId String?
+  registration   EventRegistration? @relation(fields: [registrationId], references: [id], onDelete: SetNull)
+  answers        Json
+  isTest         Boolean  @default(false)
+  submittedAt    DateTime @default(now())
+  @@unique([surveyId, registrationId])
+  @@index([surveyId, isTest, submittedAt])
+}
+
 model FeedbackForm {
   id String @id @default(cuid())
   eventId String
@@ -855,6 +906,8 @@ model ScheduledNotification {
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
   templateId String
   template EmailTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  surveyId String?
+  survey EmailSurvey? @relation(fields: [surveyId], references: [id], onDelete: SetNull)
   subject String?
   body String?
   sendAt DateTime
@@ -864,6 +917,7 @@ model ScheduledNotification {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([eventId, status, sendAt])
+  @@index([surveyId])
 }
 
 model EmailMessage {

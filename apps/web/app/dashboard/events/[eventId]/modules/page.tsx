@@ -16,16 +16,17 @@ export default async function Modules({ params }: { params: Promise<{ eventId: s
   if (!organizations.length) redirect('/onboarding');
   const { eventId } = await params;
   const organizationId = organizations[0].id;
-  const [groups, games, assessments, features, roster, comparison] = await Promise.all([
+  const [groups, games, assessments, features, roster, comparison, emailSurveys] = await Promise.all([
     get(`${api}/organizations/${organizationId}/events/${eventId}/groups`, token),
     get(`${api}/organizations/${organizationId}/events/${eventId}/games`, token),
     get(`${api}/organizations/${organizationId}/events/${eventId}/assessments`, token),
     get(`${api}/organizations/${organizationId}/events/${eventId}/features`, token),
     get(`${api}/organizations/${organizationId}/events/${eventId}/check-in/roster`, token),
     get(`${api}/organizations/${organizationId}/events/${eventId}/assessments/comparison`, token),
+    get(`${api}/organizations/${organizationId}/events/${eventId}/email-surveys`, token),
   ]);
   return <main className="builder-shell">
     <div className="workspace-page-heading"><div><p className="eyebrow">ETKİNLİK GÜNÜ</p><h2>Etkinlik Araçları</h2><p>Ön ve son testleri, tanışma oyununu ve katılımcı gruplarını buradan yönetin.</p></div></div>
-    <ModuleManager organizationId={organizationId} eventId={eventId} initialGroups={groups} initialGames={games} initialAssessments={assessments} initialFeatures={features} roster={roster} initialComparison={comparison}/>
+    <ModuleManager organizationId={organizationId} eventId={eventId} initialGroups={groups} initialGames={games} initialAssessments={assessments} initialFeatures={features} roster={roster} initialComparison={comparison} initialEmailSurveys={emailSurveys}/>
   </main>;
 }

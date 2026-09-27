@@ -19,6 +19,7 @@ export type EventData = {
   templates: any[];
   consents: any[];
   reminders: any[];
+  emailSurveys: any[];
 };
 
 export async function loadEventData(eventId: string): Promise<EventData> {
@@ -30,12 +31,13 @@ export async function loadEventData(eventId: string): Promise<EventData> {
   const events = await api<any[]>(`organizations/${organization.id}/events`, token);
   const event = events.find((x: any) => x.id === eventId);
   if (!event) redirect('/dashboard');
-  const [registrations, templates, consents, reminders] = await Promise.all([
+  const [registrations, templates, consents, reminders, emailSurveys] = await Promise.all([
     optional(`organizations/${organization.id}/events/${eventId}/registrations`, token, []),
     optional(`organizations/${organization.id}/email-templates`, token, []),
     optional(`public/event-consents/${eventId}`, token, []),
     optional(`organizations/${organization.id}/events/${eventId}/reminders`, token, []),
+    optional(`organizations/${organization.id}/events/${eventId}/email-surveys`, token, []),
   ]);
   const forms = event.form ? [{ id: event.form.id, name: event.title + ' başvuru formu', versions: event.form.versions }] : [];
-  return { organization, event, registrations, forms, templates, consents, reminders };
+  return { organization, event, registrations, forms, templates, consents, reminders, emailSurveys };
 }

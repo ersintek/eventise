@@ -18,6 +18,7 @@ const SAMPLE_VARS: Record<string, string> = {
   'event.public_url': 'https://eventise.sici.dev/events/sici/genclik-iklim',
   'event.participant_url': 'https://eventise.sici.dev/participant',
   'certificate.url': 'https://eventise.sici.dev/certificates/ornek-kod',
+  'survey.url': 'https://eventise.sici.dev/anket/ornek-kisisel-baglanti',
 };
 
 const VARIABLE_LABELS: Record<string, string> = {
@@ -34,6 +35,7 @@ const VARIABLE_LABELS: Record<string, string> = {
   'event.public_url': 'Etkinlik bağlantısı',
   'event.participant_url': 'Katılımcı alanı',
   'certificate.url': 'Sertifika bağlantısı',
+  'survey.url': 'Kişiye özel anket bağlantısı',
 };
 
 const COMMON_VARS = Object.keys(VARIABLE_LABELS);
@@ -45,13 +47,14 @@ function renderPreview(text: string): string {
     .replace(/{{\s*([a-z_]+\.[a-z_]+)\s*}}/g, (_, key) => SAMPLE_VARS[key] ?? `{{${key}}}`);
 }
 
-export function TemplateForm({ label, description, automatic, initialSubject, initialBody, onSave }: {
+export function TemplateForm({ label, description, automatic, initialSubject, initialBody, onSave, onTest }: {
   label: string;
   description: string;
   automatic: boolean;
   initialSubject: string;
   initialBody: string;
   onSave: (subject: string, body: string) => Promise<void>;
+  onTest: (recipient: string, subject: string, body: string) => Promise<boolean>;
 }) {
   const [subject, setSubject] = useState(initialSubject);
   const [body, setBody] = useState(initialBody);
@@ -60,6 +63,7 @@ export function TemplateForm({ label, description, automatic, initialSubject, in
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
   const [showVariables, setShowVariables] = useState(false);
+  const [testRecipient, setTestRecipient] = useState('');
 
   // parent form submit etse bile state senkron kalsın
   useEffect(() => { setSubject(initialSubject); setBody(initialBody); }, [initialSubject, initialBody]);
@@ -115,6 +119,7 @@ export function TemplateForm({ label, description, automatic, initialSubject, in
         </div>
       </div>
       <div className="template-actions">
+        <div className="email-test-panel"><b>Test e-postası</b><label>Test adresi<input type="email" value={testRecipient} onChange={event => setTestRecipient(event.target.value)} placeholder="ornek@eposta.com" /></label><button type="button" className="secondary" disabled={busy || !testRecipient} onClick={async () => { if (await onTest(testRecipient, subject, body)) setTestRecipient(''); }}>Test e-postası gönder</button><small>Yalnızca bu adrese gider; gerçek katılımcılara gönderim yapılmaz.</small></div>
         <span>{error && <small className="error">{error}</small>}</span>
         <button className="primary" disabled={busy||subject===initialSubject&&body===initialBody}>{busy ? 'Kaydediliyor…' : saved ? '✓ Kaydedildi' : 'Değişiklikleri kaydet'}</button>
       </div>
@@ -124,11 +129,13 @@ export function TemplateForm({ label, description, automatic, initialSubject, in
 
 type ReminderTemplate = { id: string; subject: string; body: string; key: string };
 
-export function ReminderComposer({ templates, recipientCount, eventTitle, onSchedule }: {
+export function ReminderComposer({ templates, recipientCount, eventTitle, surveys, onSchedule, onTest }: {
   templates: ReminderTemplate[];
   recipientCount: number;
   eventTitle: string;
-  onSchedule: (templateId: string, sendAt: string, subject: string, body: string) => Promise<boolean>;
+  surveys: Array<{id:string;title:string;open:boolean}>;
+  onSchedule: (templateId: string, sendAt: string, subject: string, body: string, surveyId?:string) => Promise<boolean>;
+  onTest: (recipient:string, subject:string, body:string, surveyId?:string) => Promise<boolean>;
 }) {
   const [templateId, setTemplateId] = useState(templates[0]?.id ?? '');
   const selected = templates.find(template => template.id === templateId) ?? templates[0];
@@ -136,6 +143,8 @@ export function ReminderComposer({ templates, recipientCount, eventTitle, onSche
   const [body, setBody] = useState(selected?.body ?? '');
   const [sendAt, setSendAt] = useState('');
   const [showVariables, setShowVariables] = useState(false);
+  const [surveyId, setSurveyId] = useState('');
+  const [testRecipient, setTestRecipient] = useState('');
   const [busy, setBusy] = useState(false);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
 
@@ -161,7 +170,7 @@ export function ReminderComposer({ templates, recipientCount, eventTitle, onSche
     event.preventDefault();
     setBusy(true);
     try {
-      if (await onSchedule(templateId, sendAt, subject, body)) setSendAt('');
+      if (await onSchedule(templateId, sendAt, subject, body, surveyId || undefined)) setSendAt('');
     } finally {
       setBusy(false);
     }
@@ -179,6 +188,7 @@ export function ReminderComposer({ templates, recipientCount, eventTitle, onSche
         <label>Hatırlatma şablonu<select value={templateId} onChange={event => setTemplateId(event.target.value)}>{templates.map(template => <option value={template.id} key={template.id}>{template.subject}</option>)}</select></label>
         <label>E-posta konusu<input value={subject} onChange={event => setSubject(event.target.value)} required /></label>
         <label>Mesaj<textarea ref={bodyRef} value={body} onChange={event => setBody(event.target.value)} required rows={10} /></label>
+        <label>E-posta anketi <select value={surveyId} onChange={event=>setSurveyId(event.target.value)}><option value="">Anket bağlantısı ekleme</option>{surveys.filter(survey=>survey.open).map(survey=><option value={survey.id} key={survey.id}>{survey.title}</option>)}</select><small>Mesaja “Kişiye özel anket bağlantısı” alanını eklediğinizde seçilen ankete özel tekil bağlantı gönderilir.</small></label>
         <button type="button" className="variable-toggle" onClick={() => setShowVariables(value => !value)}>{showVariables ? 'Kişiselleştirme alanlarını gizle' : '+ Kişiselleştirme alanı ekle'}</button>
         {showVariables && <div className="var-chips">{COMMON_VARS.map(variable => <button type="button" key={variable} className="var-chip" onClick={() => insertVar(variable)} title={`{{${variable}}}`}>{VARIABLE_LABELS[variable]}</button>)}</div>}
       </div>
@@ -192,6 +202,7 @@ export function ReminderComposer({ templates, recipientCount, eventTitle, onSche
           <label>Gönderim tarihi ve saati<input type="datetime-local" value={sendAt} onChange={event => setSendAt(event.target.value)} required /></label>
           <p>{recipientCount > 0 ? `${recipientCount} kabul edilen katılımcıya gönderilecek.` : 'Henüz kabul edilen katılımcı yok. Gönderim anındaki kabul edilen katılımcılar hedeflenir.'}</p>
           <button className="primary" disabled={busy || !templateId || !sendAt}>{busy ? 'Planlanıyor…' : 'Hatırlatmayı planla'}</button>
+          <div className="email-test-panel"><b>Test e-postası</b><label>Test adresi<input type="email" value={testRecipient} onChange={event=>setTestRecipient(event.target.value)} placeholder="ornek@eposta.com"/></label><button type="button" className="secondary" disabled={busy||!testRecipient} onClick={async()=>{if(await onTest(testRecipient,subject,body,surveyId||undefined))setTestRecipient('')}}>Test e-postası gönder</button><small>Yalnızca bu adrese gider; katılımcılara gönderim planlanmaz.</small></div>
         </div>
       </div>
     </div>

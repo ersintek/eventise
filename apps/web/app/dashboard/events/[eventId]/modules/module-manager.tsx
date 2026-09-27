@@ -8,11 +8,12 @@ import { AssessmentEditor } from './assessment-editor';
 type Game = { id: string; title: string; status: string; _count: { participants: number; responses: number } };
 type Assessment = { id: string; kind: 'PRE_TEST' | 'POST_TEST'; title: string; open: boolean; _count: { submissions: number } };
 type Comparison = { pre: { submissions: number; average: number | null }; post: { submissions: number; average: number | null }; improvement: number | null };
+type EmailSurvey = { id:string; title:string; open:boolean; questions:Array<{id:string;label:string;required?:boolean}>; _count:{responses:number} };
 
 export function ModuleManager(p: {
   organizationId: string; eventId: string;
   initialGroups: any[]; initialGames: Game[]; initialAssessments: Assessment[];
-  initialFeatures: any[]; roster: any[]; initialComparison: Comparison;
+  initialFeatures: any[]; roster: any[]; initialComparison: Comparison; initialEmailSurveys: EmailSurvey[];
 }) {
   const { organizationId, eventId } = p;
   const [tab, setTab] = useState('tests');
@@ -21,6 +22,7 @@ export function ModuleManager(p: {
   const [games, setGames] = useState(p.initialGames);
   const [assessments, setAssessments] = useState(p.initialAssessments);
   const [comparison, setComparison] = useState(p.initialComparison);
+  const [emailSurveys, setEmailSurveys] = useState(p.initialEmailSurveys);
   const [message, setMessage] = useState('');
   const [gameDetails, setGameDetails] = useState<any>(null);
   const [subDetails, setSubDetails] = useState<any>(null);
@@ -110,6 +112,12 @@ export function ModuleManager(p: {
     setFeatures(current => current.map((feature: any) => feature.key === key ? { ...feature, enabled } : feature));
     setMessage(`${label} ${enabled ? 'açıldı' : 'kapatıldı'}.`);
   }
+  async function createEmailSurvey(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault(); const form=new FormData(e.currentTarget); const questions=[1,2,3].map(index=>({id:`q${index}`,label:String(form.get(`question${index}`)??''),required:true}));
+    if(questions.some(question=>!question.label.trim())){setMessage('Lütfen üç sorunun da metnini yazın.');return;}
+    const created=await api(base+'/email-surveys','POST',{title:form.get('title'),questions}); if(!created)return;
+    setEmailSurveys(current=>[{...created,_count:{responses:0}},...current]); setMessage('E-posta anketi hazır. Hatırlatmalar ekranında seçip kişiye özel bağlantıyı mesaja ekleyebilirsiniz.'); (e.currentTarget as HTMLFormElement).reset();
+  }
 
   return (
     <>
@@ -149,6 +157,15 @@ export function ModuleManager(p: {
                 </table>
               </article>
             )}
+            <form className="workspace-card" onSubmit={createEmailSurvey}>
+              <div className="section-intro"><p className="eyebrow">E-POSTA ANKETİ</p><h2>Giriş gerektirmeyen beklenti anketi</h2><p>Hatırlatma e-postasına kişiye özel bağlantı ekleyin. Katılımcı Eventise hesabı olmadan yanıtlayabilir.</p></div>
+              <label>Anket başlığı<input name="title" required placeholder="Örn. Sivil Çatlaklar beklenti anketi"/></label>
+              <label>1. soru<textarea name="question1" required placeholder="Bu buluşmadan beklentiniz nedir?"/></label>
+              <label>2. soru<textarea name="question2" required placeholder="Hangi konuların ele alınmasını istersiniz?"/></label>
+              <label>3. soru<textarea name="question3" required placeholder="Bizimle paylaşmak istediğiniz başka bir şey var mı?"/></label>
+              <button className="primary" disabled={busy}>{busy?'Oluşturuluyor…':'E-posta anketini oluştur'}</button>
+            </form>
+            {emailSurveys.map(survey=><article className="workspace-card" key={survey.id}><div className="assessment-header"><h3>{survey.title}</h3><span className="pill published">E-posta anketi</span></div><p>{survey._count.responses} yanıt · {survey.open?'Gönderime açık':'Kapalı'}</p><small>Hatırlatmalar ekranında seçip “Kişiye özel anket bağlantısı” alanını e-postaya ekleyin.</small></article>)}
           </>
         )}
         {tab === 'game' && (
