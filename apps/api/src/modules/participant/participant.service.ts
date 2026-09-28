@@ -3,9 +3,10 @@ import { Prisma, RegistrationApplicationStatus } from '@prisma/client';
 import { PrismaService } from '../../shared/persistence/prisma.service';
 import { FeaturesService } from '../features/features.service';
 import { ResourcesService } from '../resources/resources.service';
+import { EmailSurveysService } from '../email-surveys/email-surveys.service';
 @Injectable()
 export class ParticipantService {
-  constructor(@Inject(PrismaService) private prisma: PrismaService, @Inject(FeaturesService) private features: FeaturesService, @Inject(ResourcesService) private resourcesService: ResourcesService) {}
+  constructor(@Inject(PrismaService) private prisma: PrismaService, @Inject(FeaturesService) private features: FeaturesService, @Inject(ResourcesService) private resourcesService: ResourcesService, @Inject(EmailSurveysService) private emailSurveys: EmailSurveysService) {}
   async registration(userId: string, eventId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true, firstName: true, lastName: true } });
     if (!user) return null;
@@ -41,13 +42,24 @@ export class ParticipantService {
   async modules(userId: string, eventId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } }), email = user?.email.trim().toLowerCase(), registration = email ? await this.prisma.eventRegistration.findUnique({ where: { eventId_email: { eventId, email } } }) : null;
     if (!registration || registration.applicationStatus !== 'ACCEPTED') throw new NotFoundException('Kabul edilmiş katılımcı kaydı bulunamadı.');
-    const [assessments, feedback, games, resources, notifications] = await Promise.all([
-      this.prisma.assessment.findMany({ where: { eventId, open: true }, select: { id: true, kind: true, title: true, schema: true, submissions: { where: { registrationId: registration.id }, select: { id: true, score: true } } } }),
+    const event = await this.prisma.event.findUnique({ where: { id: eventId }, select: { startsAt: true } });
+    if (!event) throw new NotFoundException('Etkinlik bulunamadı.');
+    const beforeEvent = event.startsAt > new Date();
+    const [assessments, feedback, games, resources, notifications, emailSurveys] = await Promise.all([
+      this.prisma.assessment.findMany({ where: { eventId, open: true, kind: beforeEvent ? 'PRE_TEST' : 'POST_TEST' }, select: { id: true, kind: true, title: true, schema: true, submissions: { where: { registrationId: registration.id }, select: { id: true, score: true, answers: true, submittedAt: true } } } }),
       this.prisma.feedbackForm.findMany({ where: { eventId, open: true }, select: { id: true, title: true, schema: true, submissions: { where: { registrationId: registration.id }, select: { id: true } } } }),
       this.prisma.gameSession.findMany({ where: { eventId, status: { in: ['OPEN', 'REVEAL'] } }, select: { id: true, title: true, status: true, config: true, assignments: { where: { registrationId: registration.id } }, responses: { where: { registrationId: registration.id } } } }),
       this.resourcesService.list(userId, eventId),
       this.prisma.inAppNotification.findMany({ where: { userId, eventId }, orderBy: { createdAt: 'desc' }, take: 20 }),
+      this.emailSurveys.availableForRegistration(eventId, registration),
     ]);
-    return { eventId, assessments, feedback, games, resources, notifications };
+    return { eventId, assessments, feedback, games, resources, notifications, emailSurveys };
+  }
+
+  async submitEmailSurvey(userId: string, eventId: string, surveyId: string, answers: Record<string, unknown>) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const registration = user ? await this.prisma.eventRegistration.findUnique({ where: { eventId_email: { eventId, email: user.email.trim().toLowerCase() } } }) : null;
+    if (!registration || registration.applicationStatus !== 'ACCEPTED') throw new NotFoundException('Kabul edilmiş katılımcı kaydı bulunamadı.');
+    return this.emailSurveys.submitForRegistration(eventId, registration, surveyId, answers);
   }
 }
