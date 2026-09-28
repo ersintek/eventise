@@ -25,6 +25,9 @@ export function ModuleManager(p: {
   const [comparison, setComparison] = useState(p.initialComparison);
   const [emailSurveys, setEmailSurveys] = useState(p.initialEmailSurveys);
   const [surveyResults, setSurveyResults] = useState<EmailSurveyResults | null>(null);
+  const [surveyTitle, setSurveyTitle] = useState('');
+  const [surveyQuestions, setSurveyQuestions] = useState<Array<{ id: string; label: string; required: boolean }>>([{ id: 'q1', label: '', required: true }]);
+  const [editingSurvey, setEditingSurvey] = useState<EmailSurvey | null>(null);
   const [message, setMessage] = useState('');
   const [gameDetails, setGameDetails] = useState<any>(null);
   const [subDetails, setSubDetails] = useState<any>(null);
@@ -115,11 +118,18 @@ export function ModuleManager(p: {
     setMessage(`${label} ${enabled ? 'açıldı' : 'kapatıldı'}.`);
   }
   async function createEmailSurvey(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault(); const form=new FormData(e.currentTarget); const questions=[1,2,3].map(index=>({id:`q${index}`,label:String(form.get(`question${index}`)??''),required:true}));
-    if(questions.some(question=>!question.label.trim())){setMessage('Lütfen üç sorunun da metnini yazın.');return;}
-    const created=await api(base+'/email-surveys','POST',{title:form.get('title'),questions}); if(!created)return;
-    setEmailSurveys(current=>[{...created,_count:{responses:0}},...current]); setMessage('E-posta anketi hazır. Hatırlatmalar ekranında seçip kişiye özel bağlantıyı mesaja ekleyebilirsiniz.'); (e.currentTarget as HTMLFormElement).reset();
+    e.preventDefault();
+    const created=await api(base+'/email-surveys','POST',{title:surveyTitle,questions:surveyQuestions}); if(!created)return;
+    setEmailSurveys(current=>[{...created,_count:{responses:0}},...current]); resetSurveyEditor(); setMessage('E-posta anketi hazır. Hatırlatmalar ekranında seçip kişiye özel bağlantıyı mesaja ekleyebilirsiniz.');
   }
+  function resetSurveyEditor(){setEditingSurvey(null);setSurveyTitle('');setSurveyQuestions([{id:'q1',label:'',required:true}]);}
+  function addSurveyQuestion(){setSurveyQuestions(current=>[...current,{id:`q_${Date.now()}_${current.length}`,label:'',required:true}]);}
+  function updateSurveyQuestion(id:string,label:string){setSurveyQuestions(current=>current.map(question=>question.id===id?{...question,label}:question));}
+  function removeSurveyQuestion(id:string){setSurveyQuestions(current=>current.length===1?current:current.filter(question=>question.id!==id));}
+  function startSurveyEdit(survey:EmailSurvey){setEditingSurvey(survey);setSurveyTitle(survey.title);setSurveyQuestions(survey.questions.map(question=>({...question,required:question.required!==false})));}
+  async function saveSurveyEdit(e:FormEvent<HTMLFormElement>){e.preventDefault();if(!editingSurvey)return;const updated=await api(base+`/email-surveys/${editingSurvey.id}`,'PATCH',{title:surveyTitle,questions:surveyQuestions});if(!updated)return;setEmailSurveys(current=>current.map(survey=>survey.id===updated.id?{...survey,...updated}:survey));resetSurveyEditor();setMessage('Anket taslağı güncellendi.');}
+  async function copyEmailSurvey(survey:EmailSurvey){const created=await api(base+`/email-surveys/${survey.id}/copy`,'POST');if(!created)return;const next={...created,_count:{responses:0}};setEmailSurveys(current=>[next,...current]);startSurveyEdit(next);setMessage('Yeni sürüm oluşturuldu. Soruları düzenleyip gönderime açabilirsiniz.');}
+  async function toggleEmailSurvey(survey:EmailSurvey){const updated=await api(base+`/email-surveys/${survey.id}`,'PATCH',{open:!survey.open});if(!updated)return;setEmailSurveys(current=>current.map(item=>item.id===survey.id?{...item,...updated}:item));setMessage(updated.open?'Anket gönderime açıldı.':'Anket kapatıldı; mevcut bağlantılar artık yanıt kabul etmez.');}
   async function showEmailSurveyResults(survey: EmailSurvey) { const result=await api(base+`/email-surveys/${survey.id}/results`,'GET'); if(result)setSurveyResults(result); }
   function exportEmailSurveyResults() {
     if(!surveyResults)return;
@@ -168,16 +178,15 @@ export function ModuleManager(p: {
                 </table>
               </article>
             )}
-            <form className="workspace-card" onSubmit={createEmailSurvey}>
+            <form className="workspace-card" onSubmit={editingSurvey?saveSurveyEdit:createEmailSurvey}>
               <div className="section-intro"><p className="eyebrow">E-POSTA ANKETİ</p><h2>Giriş gerektirmeyen beklenti anketi</h2><p>Hatırlatma e-postasına kişiye özel bağlantı ekleyin. Katılımcı Eventise hesabı olmadan yanıtlayabilir.</p></div>
-              <label>Anket başlığı<input name="title" required placeholder="Örn. Sivil Çatlaklar beklenti anketi"/></label>
-              <label>1. soru<textarea name="question1" required placeholder="Bu buluşmadan beklentiniz nedir?"/></label>
-              <label>2. soru<textarea name="question2" required placeholder="Hangi konuların ele alınmasını istersiniz?"/></label>
-              <label>3. soru<textarea name="question3" required placeholder="Bizimle paylaşmak istediğiniz başka bir şey var mı?"/></label>
-              <button className="primary" disabled={busy}>{busy?'Oluşturuluyor…':'E-posta anketini oluştur'}</button>
+              <label>Anket başlığı<input value={surveyTitle} onChange={event=>setSurveyTitle(event.target.value)} required placeholder="Örn. Sivil Çatlaklar beklenti anketi"/></label>
+              {surveyQuestions.map((question,index)=><label key={question.id}>{index+1}. soru<textarea value={question.label} onChange={event=>updateSurveyQuestion(question.id,event.target.value)} required placeholder="Sorunuzu yazın"/><button className="secondary" type="button" disabled={busy||surveyQuestions.length===1} onClick={()=>removeSurveyQuestion(question.id)}>Soruyu kaldır</button></label>)}
+              <div className="action-links"><button className="secondary" type="button" disabled={busy||surveyQuestions.length>=25} onClick={addSurveyQuestion}>+ Soru ekle</button>{editingSurvey&&<button className="secondary" type="button" disabled={busy} onClick={resetSurveyEditor}>Düzenlemeyi iptal et</button>}</div>
+              <button className="primary" disabled={busy}>{busy?'Kaydediliyor…':editingSurvey?'Taslağı kaydet':'E-posta anketini oluştur'}</button>
             </form>
-            {emailSurveys.map(survey=><article className="workspace-card" key={survey.id}><div className="assessment-header"><h3>{survey.title}</h3><span className="pill published">E-posta anketi</span></div><p>{survey._count.responses} yanıt · {survey.open?'Gönderime açık':'Kapalı'}</p><small>Hatırlatmalar ekranında seçip “Kişiye özel anket bağlantısı” alanını e-postaya ekleyin.</small><div className="action-links"><button className="secondary" type="button" disabled={busy} onClick={()=>showEmailSurveyResults(survey)}>Yanıtları gör ({survey._count.responses})</button></div></article>)}
-            {surveyResults&&<article className="workspace-card wide"><div className="section-intro"><h2>{surveyResults.survey.title} · Yanıtlar</h2><p>{surveyResults.responses.length} gerçek yanıt. Test yanıtları gösterilmez.</p></div><div className="action-links"><button type="button" className="secondary" onClick={exportEmailSurveyResults}>CSV indir</button><button type="button" className="secondary" onClick={()=>setSurveyResults(null)}>Kapat</button></div><table className="submissions-table"><thead><tr><th>Katılımcı</th><th>E-posta</th>{surveyResults.survey.questions.map(question=><th key={question.id}>{question.label}</th>)}<th>Zaman</th></tr></thead><tbody>{surveyResults.responses.map(response=><tr key={response.id}><td>{response.name}</td><td>{response.email}</td>{surveyResults.survey.questions.map(question=><td key={question.id}>{response.answers[question.id]??'—'}</td>)}<td>{new Date(response.submittedAt).toLocaleString('tr-TR')}</td></tr>)}</tbody></table></article>}
+            {emailSurveys.map(survey=><article className="workspace-card" key={survey.id}><div className="assessment-header"><h3>{survey.title}</h3><span className={`pill ${survey.open?'published':''}`}>{survey.open?'Gönderime açık':'Taslak / kapalı'}</span></div><p>{survey._count.responses} katılımcının güncel yanıtı</p><small>{survey.open?'Hatırlatmalar ekranında seçip “Kişiye özel anket bağlantısı” alanını e-postaya ekleyin.':'Anket kapalıyken yeni bağlantı gönderilemez ve mevcut bağlantılar yanıt kabul etmez.'}</small><div className="action-links"><button className="secondary" type="button" disabled={busy} onClick={()=>toggleEmailSurvey(survey)}>{survey.open?'Anketi kapat':'Gönderime aç'}</button>{survey._count.responses===0?<button className="secondary" type="button" disabled={busy} onClick={()=>startSurveyEdit(survey)}>Taslağı düzenle</button>:<button className="secondary" type="button" disabled={busy} onClick={()=>copyEmailSurvey(survey)}>Yeni sürüm oluştur</button>}<button className="secondary" type="button" disabled={busy} onClick={()=>showEmailSurveyResults(survey)}>Yanıtları gör ({survey._count.responses})</button></div></article>)}
+            {surveyResults&&<article className="workspace-card wide"><div className="section-intro"><h2>{surveyResults.survey.title} · Yanıtlar</h2><p>{surveyResults.responses.length} katılımcının güncel yanıtı. Test yanıtları ve önceki sürümler gösterilmez.</p></div><div className="action-links"><button type="button" className="secondary" onClick={exportEmailSurveyResults}>CSV indir</button><button type="button" className="secondary" onClick={()=>setSurveyResults(null)}>Kapat</button></div><table className="submissions-table"><thead><tr><th>Katılımcı</th><th>E-posta</th>{surveyResults.survey.questions.map(question=><th key={question.id}>{question.label}</th>)}<th>Zaman</th></tr></thead><tbody>{surveyResults.responses.map(response=><tr key={response.id}><td>{response.name}</td><td>{response.email}</td>{surveyResults.survey.questions.map(question=><td key={question.id}>{response.answers[question.id]??'—'}</td>)}<td>{new Date(response.submittedAt).toLocaleString('tr-TR')}</td></tr>)}</tbody></table></article>}
           </>
         )}
         {tab === 'game' && (

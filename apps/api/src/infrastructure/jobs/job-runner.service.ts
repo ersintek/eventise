@@ -5,13 +5,18 @@ export type JobHandler = (payload: Record<string, unknown>) => Promise<void>;
 @Injectable()
 export class JobRunnerService {
   private readonly handlers = new Map<string, JobHandler>();
+  private lastRecoveryAt = 0;
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
   register(type: string, handler: JobHandler) { this.handlers.set(type, handler); }
   async runNext(workerId: string): Promise<boolean> {
+    await this.recoverStaleJobs();
     const candidate = await this.prisma.backgroundJob.findFirst({ where: { status: 'PENDING', runAt: { lte: new Date() } }, orderBy: { createdAt: 'asc' } });
     if (!candidate) return false;
     const claimed = await this.prisma.backgroundJob.updateMany({ where: { id: candidate.id, status: 'PENDING' }, data: { status: 'PROCESSING', lockedAt: new Date(), lockedBy: workerId, attempts: { increment: 1 } } });
     if (!claimed.count) return true;
+    const heartbeat = setInterval(() => {
+      void this.prisma.backgroundJob.updateMany({ where: { id: candidate.id, status: 'PROCESSING', lockedBy: workerId }, data: { lockedAt: new Date() } });
+    }, 30_000);
     try {
       const handler = this.handlers.get(candidate.type); if (!handler) throw new Error(`Kayıtlı job handler yok: ${candidate.type}`);
       await handler(candidate.payload as Record<string, unknown>);
@@ -19,7 +24,19 @@ export class JobRunnerService {
     } catch (error) {
       const exhausted = candidate.attempts + 1 >= candidate.maxAttempts;
       await this.prisma.backgroundJob.update({ where: { id: candidate.id }, data: { status: exhausted ? 'FAILED' : 'PENDING', runAt: exhausted ? candidate.runAt : new Date(Date.now() + 30_000), lockedAt: null, lockedBy: null, lastError: error instanceof Error ? error.message.slice(0, 500) : 'Bilinmeyen hata' } });
+    } finally {
+      clearInterval(heartbeat);
     }
     return true;
+  }
+
+  private async recoverStaleJobs() {
+    const now = Date.now();
+    if (now - this.lastRecoveryAt < 30_000) return;
+    this.lastRecoveryAt = now;
+    await this.prisma.backgroundJob.updateMany({
+      where: { status: 'PROCESSING', lockedAt: { lt: new Date(now - 5 * 60_000) } },
+      data: { status: 'PENDING', runAt: new Date(), lockedAt: null, lockedBy: null, lastError: 'Worker bağlantısı kesildi; iş yeniden kuyruğa alındı.' },
+    });
   }
 }

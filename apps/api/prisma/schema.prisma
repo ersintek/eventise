@@ -705,22 +705,22 @@ model EmailSurveyInvitation {
   sentAt         DateTime?
   createdAt      DateTime @default(now())
   @@index([surveyId, registrationId])
-  response EmailSurveyResponse?
+  responses EmailSurveyResponse[]
 }
 
 model EmailSurveyResponse {
   id             String   @id @default(cuid())
   surveyId       String
   survey         EmailSurvey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
-  invitationId   String   @unique
+  invitationId   String
   invitation     EmailSurveyInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
   registrationId String?
   registration   EventRegistration? @relation(fields: [registrationId], references: [id], onDelete: SetNull)
   answers        Json
   isTest         Boolean  @default(false)
   submittedAt    DateTime @default(now())
-  @@unique([surveyId, registrationId])
   @@index([surveyId, isTest, submittedAt])
+  @@index([surveyId, registrationId, submittedAt])
 }
 
 model FeedbackForm {
