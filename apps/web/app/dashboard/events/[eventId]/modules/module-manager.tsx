@@ -26,7 +26,7 @@ export function ModuleManager(p: {
   const [emailSurveys, setEmailSurveys] = useState(p.initialEmailSurveys);
   const [surveyResults, setSurveyResults] = useState<EmailSurveyResults | null>(null);
   const [surveyTitle, setSurveyTitle] = useState('');
-  const [surveyQuestions, setSurveyQuestions] = useState<Array<{ id: string; label: string; required: boolean }>>([{ id: 'q1', label: '', required: true }]);
+  const [surveyQuestions, setSurveyQuestions] = useState<Array<{ id: string; label: string; required: boolean }>>([{ id: 'q1', label: '', required: false }]);
   const [editingSurvey, setEditingSurvey] = useState<EmailSurvey | null>(null);
   const [message, setMessage] = useState('');
   const [gameDetails, setGameDetails] = useState<any>(null);
@@ -122,8 +122,8 @@ export function ModuleManager(p: {
     const created=await api(base+'/email-surveys','POST',{title:surveyTitle,questions:surveyQuestions}); if(!created)return;
     setEmailSurveys(current=>[{...created,_count:{responses:0}},...current]); resetSurveyEditor(); setMessage('E-posta anketi hazır. Hatırlatmalar ekranında seçip kişiye özel bağlantıyı mesaja ekleyebilirsiniz.');
   }
-  function resetSurveyEditor(){setEditingSurvey(null);setSurveyTitle('');setSurveyQuestions([{id:'q1',label:'',required:true}]);}
-  function addSurveyQuestion(){setSurveyQuestions(current=>[...current,{id:`q_${Date.now()}_${current.length}`,label:'',required:true}]);}
+  function resetSurveyEditor(){setEditingSurvey(null);setSurveyTitle('');setSurveyQuestions([{id:'q1',label:'',required:false}]);}
+  function addSurveyQuestion(){setSurveyQuestions(current=>[...current,{id:`q_${Date.now()}_${current.length}`,label:'',required:false}]);}
   function updateSurveyQuestion(id:string,label:string){setSurveyQuestions(current=>current.map(question=>question.id===id?{...question,label}:question));}
   function removeSurveyQuestion(id:string){setSurveyQuestions(current=>current.length===1?current:current.filter(question=>question.id!==id));}
   function startSurveyEdit(survey:EmailSurvey){setEditingSurvey(survey);setSurveyTitle(survey.title);setSurveyQuestions(survey.questions.map(question=>({...question,required:question.required!==false})));}

@@ -43,7 +43,7 @@ export function SurveyForm({ token, survey }: { token: string; survey: Survey })
     {survey.isTest && <p className="friendly-status">Bu test bağlantısının yanıtı gerçek anket sonuçlarına eklenmez.</p>}
     {done ? <div className="friendly-status"><b>Teşekkürler.</b><p>Yanıtınız kaydedildi. Önceki yanıtlar güvenlik nedeniyle gösterilmez.</p><button className="secondary" type="button" onClick={() => setDone(false)}>Yanıtımı yeniden gönder</button></div> : <form onSubmit={submit}>
       <label>E-posta adresiniz<input value={survey.email} readOnly aria-readonly="true" /></label>
-      {survey.questions.map(question => <label key={question.id}>{question.label}<textarea name={question.id} required={question.required !== false} rows={4} /></label>)}
+      {survey.questions.map(question => <label key={question.id}>{question.label}<textarea name={question.id} rows={4} /></label>)}
       {error && <p className="error">{error}</p>}
       <button className="primary" disabled={busy}>{busy ? 'Gönderiliyor…' : 'Yanıtlarımı gönder'}</button>
     </form>}
