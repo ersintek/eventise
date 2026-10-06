@@ -69,6 +69,18 @@ enum EventFormat {
   ONLINE
   HYBRID
 }
+enum Cop31EventStatus {
+  DRAFT
+  PUBLISHED
+  POSTPONED
+  CANCELLED
+  ARCHIVED
+}
+enum Cop31EventFormat {
+  ONLINE
+  IN_PERSON
+  HYBRID
+}
 enum RegistrationApplicationStatus {
   SUBMITTED
   PENDING
@@ -365,6 +377,47 @@ model Event {
   updatedAt DateTime @updatedAt
   @@unique([organizationId, slug])
   @@index([organizationId, publicationStatus])
+}
+
+// COP31 directory records deliberately live outside Eventise's organization,
+// registration and account flows. They share only the same technical platform.
+model Cop31Event {
+  id                String           @id @default(cuid())
+  slug              String           @unique
+  // The legacy flat fields remain as a compatibility projection. The two JSON
+  // documents below are the source of truth for all locale-visible content.
+  contentTr         Json
+  contentEn         Json
+  titleTr           String
+  titleEn           String
+  summaryTr         String
+  summaryEn         String
+  descriptionTr     String?
+  descriptionEn     String?
+  startsAt          DateTime
+  endsAt            DateTime?
+  timezone          String           @default("Europe/Istanbul")
+  format            Cop31EventFormat @default(ONLINE)
+  venueName         String?
+  venueAddress      String?
+  city              String?
+  country           String?
+  organizers        String[]
+  organizerUrl      String?
+  languages         String[]
+  topics            String[]
+  cop31Connection   String
+  registrationUrl   String?
+  informationUrl    String?
+  sourceUrl         String
+  status            Cop31EventStatus @default(DRAFT)
+  featured          Boolean          @default(false)
+  verifiedAt        DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([status, startsAt])
+  @@index([featured, startsAt])
 }
 
 model EventFaqItem {

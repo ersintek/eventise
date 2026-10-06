@@ -37,10 +37,11 @@ import { AbuseProtectionGuard } from './shared/http/abuse-protection.guard';
 import { SupportReportsModule } from './modules/support-reports/support-reports.module';
 import { LegalModule } from './modules/legal/legal.module';
 import { RetentionModule } from './modules/retention/retention.module';
+import { Cop31Module } from './modules/cop31/cop31.module';
 import { EmailSurveysModule } from './modules/email-surveys/email-surveys.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, PdfModule, AiModule, AuthModule, LegalModule, RetentionModule, OrganizationsModule, TiersModule, EventsModule, FormsModule, EmailSurveysModule, CommunicationsModule, ConsentsModule, RegistrationsModule, FeaturesModule, CheckInModule, GroupsModule, ActivitiesModule, AssessmentsModule, FeedbackModule, NotificationsModule, MediaModule, ResourcesModule, CertificatesModule, ReportingModule, AdministrationModule, ParticipantModule, SupportReportsModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, validate: validateEnvironment }), PersistenceModule, AuditModule, JobsModule, EmailModule, StorageModule, PdfModule, AiModule, AuthModule, LegalModule, RetentionModule, OrganizationsModule, TiersModule, EventsModule, Cop31Module, FormsModule, EmailSurveysModule, CommunicationsModule, ConsentsModule, RegistrationsModule, FeaturesModule, CheckInModule, GroupsModule, ActivitiesModule, AssessmentsModule, FeedbackModule, NotificationsModule, MediaModule, ResourcesModule, CertificatesModule, ReportingModule, AdministrationModule, ParticipantModule, SupportReportsModule],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: AbuseProtectionGuard }, { provide: APP_GUARD, useClass: JwtAuthGuard }, { provide: APP_INTERCEPTOR, useClass: BigIntSerializationInterceptor }],
 })
