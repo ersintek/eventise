@@ -36,6 +36,7 @@ export class Cop31Service {
 
   async create(dto: CreateCop31EventDto) {
     await this.assertDates(dto);
+    this.assertPublicationVerification(dto);
     const slug = dto.slug.trim().toLowerCase();
     if (await this.prisma.cop31Event.findUnique({ where: { slug } })) throw new ConflictException('Bu bağlantı kısa adı kullanımda.');
     return this.prisma.cop31Event.create({ data: { ...this.toData(dto), slug } });
@@ -43,6 +44,7 @@ export class Cop31Service {
 
   async update(id: string, dto: Cop31EventDto) {
     await this.assertDates(dto);
+    this.assertPublicationVerification(dto);
     if (!await this.prisma.cop31Event.findUnique({ where: { id }, select: { id: true } })) throw new NotFoundException('Etkinlik bulunamadı.');
     return this.prisma.cop31Event.update({ where: { id }, data: this.toData(dto) });
   }
@@ -50,8 +52,15 @@ export class Cop31Service {
   private async assertDates(dto: Pick<Cop31EventDto, 'startsAt' | 'endsAt' | 'timezone'>) {
     const startsAt = new Date(dto.startsAt);
     const endsAt = dto.endsAt ? new Date(dto.endsAt) : undefined;
-    if (Number.isNaN(startsAt.getTime()) || (endsAt && Number.isNaN(endsAt.getTime())) || (endsAt && endsAt < startsAt)) throw new BadRequestException('Etkinlik tarihleri geçerli ve doğru sırada olmalı.');
+    if (Number.isNaN(startsAt.getTime()) || (endsAt && Number.isNaN(endsAt.getTime())) || (endsAt && endsAt <= startsAt)) throw new BadRequestException('Etkinlik tarihleri geçerli olmalı; bitiş saati başlangıçtan sonra olmalı.');
     try { new Intl.DateTimeFormat('en-CA', { timeZone: dto.timezone }); } catch { throw new BadRequestException('Saat dilimi geçerli bir IANA zaman bölgesi olmalı.'); }
+  }
+
+  private assertPublicationVerification(dto: Pick<Cop31EventDto, 'status' | 'verifiedAt'>) {
+    const isPublic = dto.status === Cop31EventStatus.PUBLISHED || dto.status === Cop31EventStatus.POSTPONED || dto.status === Cop31EventStatus.CANCELLED;
+    if (!isPublic) return;
+    if (!dto.verifiedAt) throw new BadRequestException('Yayınlanan etkinliklerde son doğrulama tarihi zorunludur.');
+    if (new Date(dto.verifiedAt).getTime() > Date.now()) throw new BadRequestException('Son doğrulama tarihi gelecekte olamaz.');
   }
 
   private toData(dto: Cop31EventDto) {

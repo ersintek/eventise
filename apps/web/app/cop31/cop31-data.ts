@@ -3,6 +3,9 @@ import type { Cop31Copy, Cop31Event, Cop31Format, Cop31Locale, Cop31LocalizedCon
 import { trackerExampleEvents } from './cop31-tracker-examples';
 
 const API = process.env.API_INTERNAL_URL;
+// Sample records are useful for a deliberate local design preview, but must
+// never silently replace the verified directory in a deployed environment.
+const useDemoData = process.env.COP31_DEMO_DATA === 'true';
 
 export const copy: Record<Cop31Locale, Cop31Copy> = {
   tr: {
@@ -82,17 +85,17 @@ export const monthName = (event: Cop31Event, locale: Cop31Locale) => new Intl.Da
 export const isPast = (event: Cop31Event) => new Date(event.endsAt ?? event.startsAt).getTime() < Date.now();
 
 export const getCop31Events = cache(async (): Promise<Cop31Event[]> => {
-  if (!API) return trackerExampleEvents;
+  if (!API) return useDemoData ? trackerExampleEvents : [];
   try {
     const response = await fetch(`${API}/api/public/cop31/events`, { cache: 'no-store' });
-    if (!response.ok) return trackerExampleEvents;
+    if (!response.ok) return useDemoData ? trackerExampleEvents : [];
     const events = await response.json() as Cop31Event[];
-    return events.length > 0 ? events : trackerExampleEvents;
-  } catch { return trackerExampleEvents; }
+    return events;
+  } catch { return useDemoData ? trackerExampleEvents : []; }
 });
 
 export const getCop31Event = cache(async (slug: string): Promise<Cop31Event | null> => {
-  const sample = trackerExampleEvents.find(event => event.slug === slug) ?? null;
+  const sample = useDemoData ? trackerExampleEvents.find(event => event.slug === slug) ?? null : null;
   if (!API) return sample;
   try {
     const response = await fetch(`${API}/api/public/cop31/events/${encodeURIComponent(slug)}`, { cache: 'no-store' });
